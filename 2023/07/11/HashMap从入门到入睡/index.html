@@ -1,0 +1,880 @@
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>HashMap从入门到入睡 | ErickRen</title>
+        <meta name="author" content="Erick Ren" />
+        <meta name="description" content="Dream chaser never give up." />
+        <meta name="keywords" content="ErickRen" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+        <link rel="icon" href="https://q1.qlogo.cn/g?b=qq&nk=2969044006&s=5" />
+        <script src="https://cdn.staticfile.org/vue/3.2.47/vue.global.prod.min.js"></script>
+<link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/6.3.0/css/all.min.css" />
+<link rel="stylesheet" href="/css/fonts.min.css" />
+<script> const mixins = {}; </script>
+
+<script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
+
+
+<script src="https://cdn.staticfile.org/highlight.js/11.7.0/highlight.min.js"></script>
+<link
+    rel="stylesheet"
+    href="https://cdn.staticfile.org/highlight.js/11.7.0/styles/Github Dark Dimmed.min.css"
+/>
+<script src="/js/lib/highlight.js"></script>
+
+
+
+<script src="/js/lib/preview.js"></script>
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/css/main.css" />
+
+    <meta name="generator" content="Hexo 6.3.0"></head>
+    <body>
+        <div id="layout">
+            <transition name="fade">
+                <div id="loading" v-show="loading">
+                    <div id="loading-circle">
+                        <h2>LOADING</h2>
+                        <p>Enable the browser cache if loading is slow</p>                        </p>
+                        <img src="/images/loading.gif" />
+                    </div>
+                </div>
+            </transition>
+            <nav id="menu" :class="{ hidden: hiddenMenu, 'menu-color': menuColor}">
+    <div id="desktop-menu">
+        <a class="title" href="/">
+            <span>ERICKREN</span>
+        </a>
+        
+        <a href="/">
+            <i class="fa-solid fa-house fa-fw"></i>
+            <span>&ensp;Home</span>
+        </a>
+        
+        <a href="/about">
+            <i class="fa-solid fa-id-card fa-fw"></i>
+            <span>&ensp;About</span>
+        </a>
+        
+        <a href="/archives">
+            <i class="fa-solid fa-box-archive fa-fw"></i>
+            <span>&ensp;Archives</span>
+        </a>
+        
+        <a href="/categories">
+            <i class="fa-solid fa-bookmark fa-fw"></i>
+            <span>&ensp;Categories</span>
+        </a>
+        
+        <a href="/tags">
+            <i class="fa-solid fa-tags fa-fw"></i>
+            <span>&ensp;Tags</span>
+        </a>
+        
+    </div>
+    <div id="mobile-menu">
+        <div class="title" @click="showMenuItems = !showMenuItems">
+            <i class="fa-solid fa-bars fa-fw"></i>
+            <span>&emsp;ERICKREN</span>
+        </div>
+        <transition name="slide">
+            <div class="items" v-show="showMenuItems">
+                
+                <a href="/">
+                    <div class="item">
+                        <div style="min-width: 20px; max-width: 50px; width: 10%">
+                            <i class="fa-solid fa-house fa-fw"></i>
+                        </div>
+                        <div style="min-width: 100px; max-width: 150%; width: 20%">Home</div>
+                    </div>
+                </a>
+                
+                <a href="/about">
+                    <div class="item">
+                        <div style="min-width: 20px; max-width: 50px; width: 10%">
+                            <i class="fa-solid fa-id-card fa-fw"></i>
+                        </div>
+                        <div style="min-width: 100px; max-width: 150%; width: 20%">About</div>
+                    </div>
+                </a>
+                
+                <a href="/archives">
+                    <div class="item">
+                        <div style="min-width: 20px; max-width: 50px; width: 10%">
+                            <i class="fa-solid fa-box-archive fa-fw"></i>
+                        </div>
+                        <div style="min-width: 100px; max-width: 150%; width: 20%">Archives</div>
+                    </div>
+                </a>
+                
+                <a href="/categories">
+                    <div class="item">
+                        <div style="min-width: 20px; max-width: 50px; width: 10%">
+                            <i class="fa-solid fa-bookmark fa-fw"></i>
+                        </div>
+                        <div style="min-width: 100px; max-width: 150%; width: 20%">Categories</div>
+                    </div>
+                </a>
+                
+                <a href="/tags">
+                    <div class="item">
+                        <div style="min-width: 20px; max-width: 50px; width: 10%">
+                            <i class="fa-solid fa-tags fa-fw"></i>
+                        </div>
+                        <div style="min-width: 100px; max-width: 150%; width: 20%">Tags</div>
+                    </div>
+                </a>
+                
+            </div>
+        </transition>
+    </div>
+</nav>
+<transition name="fade">
+    <div id="menu-curtain" @click="showMenuItems = !showMenuItems" v-show="showMenuItems"></div>
+</transition>
+
+            <transition name="into">
+                <div id="main" v-show="!loading">
+                    <div class="article">
+    <div>
+        <h1>HashMap从入门到入睡</h1>
+    </div>
+    <div class="info">
+        <span class="date">
+            <span class="icon">
+                <i class="fa-solid fa-calendar fa-fw"></i>
+            </span>
+            2023/7/11
+        </span>
+        
+        <span class="category">
+            <a href="/categories/tech/">
+                <span class="icon">
+                    <i class="fa-solid fa-bookmark fa-fw"></i>
+                </span>
+                tech
+            </a>
+        </span>
+        
+        
+        <span class="tags">
+            <span class="icon">
+                <i class="fa-solid fa-tags fa-fw"></i>
+            </span>
+            
+            <span class="tag">
+                
+                <a href="/tags/Java/" style="color: #ff7d73">Java</a>
+            </span>
+            
+            <span class="tag">
+                
+                <a href="/tags/HashMap/" style="color: #03a9f4">HashMap</a>
+            </span>
+            
+        </span>
+        
+    </div>
+    
+    <div class="content" v-pre>
+        <blockquote>
+<p> 谨以此文献给在HashMap家族中迷失的岁月。。。。。</p>
+</blockquote>
+ <span id="more"></span>
+
+<h1 id="什么是Hash"><a href="#什么是Hash" class="headerlink" title="什么是Hash"></a>什么是Hash</h1><p>Hash，即散列函数，或者叫哈希函数。它可以<strong>任意长度</strong>的输入通过算法转换成一个<strong>定长</strong>的输出，这个输出就是<strong>散列值</strong>，或者叫<strong>哈希值</strong>。在后文中称为Hash值。</p>
+<p>因为是<strong>无穷对应有限</strong>，则必有多个输入对应相同的输出，即<strong>散列冲突</strong>，或叫<strong>哈希冲突</strong>。</p>
+<p>哈希算法有以下特点：</p>
+<ul>
+<li>从输出无法推导出输入。</li>
+<li>散列冲突的概率要尽可能小。</li>
+<li><strong>数据敏感</strong>，对输入的简单修改会导致输出的巨大差异。</li>
+</ul>
+<h2 id="为什么不能使用基本数据类型"><a href="#为什么不能使用基本数据类型" class="headerlink" title="为什么不能使用基本数据类型"></a>为什么不能使用基本数据类型</h2><p>HashMap存储元素首先调用hashCode()方法，计算其Hash值。若相同，则认为是相同的数据，不存储。如果Hash值不同，则再调用其equals()方法进行比较，若返回true则认为是相同对象，不存储。若返回false则存储。</p>
+<p>因此如果使用基本数据类型，则<strong>无法调用hashCode()或equals()方法</strong>。而包装类有这些方法。</p>
+<p>其次，而在HashMap设计中，使用了<strong>泛型</strong>约束key和value的类型，即HashMap&lt;K, V&gt;;而泛型在Java中必须是Object类型的。而基本数据类型不是Object类型，因此不可以作为键值。</p>
+<p>虽然在使用中可以使用map.put(100, “java”)以添加值，但实际是<strong>自动装箱机制</strong>将100变为了Integer类型。</p>
+<h2 id="HashMap是如何计算Hash的？"><a href="#HashMap是如何计算Hash的？" class="headerlink" title="HashMap是如何计算Hash的？"></a>HashMap是如何计算Hash的？</h2><pre><code class="java">static final int hash(Object key) &#123;
+        int h;
+        return (key == null) ? 0 : (h = key.hashCode()) ^ (h &gt;&gt;&gt; 16);
+    &#125;
+</code></pre>
+<p>通过Key的hashCode()方法，获得一个int类型的散列值。之后再与散列值<strong>右移16位</strong>的结果进行**异或(^)**运算。</p>
+<p>右移16位是因为int类型为4个字节，32个比特，右移16位可以让将Hash值的高16位和低16位进行异或运算，然后将高16位的结果右移16位，得到一个较为均匀的Hash值，这样可以减少Hash冲突的发生。</p>
+<h1 id="HashMap"><a href="#HashMap" class="headerlink" title="HashMap"></a>HashMap</h1><h2 id="HashMap的使用"><a href="#HashMap的使用" class="headerlink" title="HashMap的使用"></a>HashMap的使用</h2><h3 id="简单使用"><a href="#简单使用" class="headerlink" title="简单使用"></a>简单使用</h3><pre><code class="java">import java.util.HashMap;
+
+public class HashMapUse &#123;
+    public static void main(String[] args) &#123;
+        HashMap&lt;String, String&gt; map = new HashMap&lt;&gt;(); //创建HashMap
+        map.put(&quot;key&quot;, &quot;value&quot;); // 存入值
+        map.put(&quot;erick&quot;, &quot;ren&quot;);
+        map.put(null, &quot;yunliyunwai&quot;);
+        map.get(&quot;key&quot;); // 取出并打印值 -&gt; value
+        map.isEmpty(); // 检查map是否为空 -&gt; false
+        map.containsKey(&quot;key&quot;); // 检查map是否存在该键 -&gt; true
+        map.containsValue(&quot;valuee&quot;); // 检查map是否存在该值 -&gt; false
+        map.values(); // map中所有值 -&gt; [ren, yunliyunwai, value]
+        map.size(); // map大小 -&gt; 3
+        map.keySet(); // map中所有键 -&gt; [erick, null, key]
+        map.entrySet(); // map中所有键与值 -&gt; [erick=ren, null=yunliyunwai, key=value]
+        HashMap&lt;String, String&gt; map2 = new HashMap&lt;&gt;();
+        map2.put(&quot;nihao&quot;, &quot;hello&quot;);
+        map.putAll(map2); // 将新map2追加到map中
+        System.out.println(map); // -&gt; &#123;erick=ren, null=yunliyunwai, nihao=hello, key=value&#125;
+        map.remove(&quot;erick&quot;); // 删除map中ren键（包括值）
+        map.remove(&quot;key&quot;, &quot;valuee&quot;); // 另一种方法(JDK1.8新增)，但是请注意，如果key与value对不上的话，是不会删除成功的。
+        System.out.println(map); // -&gt; &#123;null=yunliyunwai, nihao=hello, key=value&#125;
+        Object map3 = map.clone(); // 克隆map数组。注意：此处map3必须是Object类型
+        System.out.println(map3); // -&gt; &#123;null=yunliyunwai, nihao=hello, key=value&#125;
+        map.clear(); // 清空map
+        System.out.println(map); // -&gt; &#123;&#125;
+    &#125;
+&#125;
+</code></pre>
+<h3 id="JDK1-8新增方法"><a href="#JDK1-8新增方法" class="headerlink" title="JDK1.8新增方法"></a>JDK1.8新增方法</h3><pre><code class="java">public class JDK8HashMap &#123;
+    public static void main(String[] args) &#123;
+        HashMap&lt;String, Integer&gt; map = new HashMap&lt;&gt;();
+        map.put(&quot;key&quot;, 100);
+        map.putIfAbsent(&quot;key&quot;, 200); // 若map中不存在key即插入，若存在则不作处理
+        map.putIfAbsent(&quot;newkey&quot;, 300);
+        System.out.println(map); // -&gt; &#123;newkey=300, key=100&#125;
+        map.compute(&quot;key&quot;, (key, value)-&gt; value - value * 10 / 100); // 重新计算并赋值key,注意：这里使用了Lambda表达式，本质上这里应该是一个BiFunction函数式接口
+        map.compute(&quot;abc&quot;, (key, value)-&gt; value - value * 10 / 100); // Exception in thread &quot;main&quot; java.lang.NullPointerException: Cannot invoke &quot;java.lang.Integer.intValue()&quot; because &quot;value&quot; is null
+        System.out.println(map); // -&gt; &#123;newkey=300, key=90&#125;
+        map.computeIfAbsent(&quot;new_key&quot;, key -&gt; 200); //当key不存在时，会将该键值对添加到map中
+        System.out.println(map); // -&gt; &#123;new_key=200, newkey=300, key=90&#125;
+        map.computeIfAbsent(&quot;new_key&quot;, key -&gt; 10); // 当key存在时，不作操作
+        System.out.println(map); // -&gt; &#123;new_key=200, newkey=300, key=90&#125;
+        map.computeIfPresent(&quot;asdasd&quot;, (key, value) -&gt; value - value * 20 / 100); // 当键存在时才会执行，否则忽略。
+        System.out.println(map); // -&gt; &#123;new_key=200, newkey=300, key=90&#125;
+    &#125;
+&#125;
+</code></pre>
+<h2 id="HashMap的特点"><a href="#HashMap的特点" class="headerlink" title="HashMap的特点"></a>HashMap的特点</h2><ul>
+<li>HashMap是<a href="###%E4%B8%BA%E4%BB%80%E4%B9%88HashMap%E6%98%AF%E6%97%A0%E5%BA%8F%E7%9A%84%EF%BC%9F">无序</a>的数据结构。<a href="##LinkedHashMap">LinkedHashMap</a>是有序的。</li>
+<li>HashMap查询效率最高的数据结构，但这是<strong>以空间为代价换来的</strong>（以空间换时间）。</li>
+<li>HashMap可以将null作为键和值。<strong>请注意：ConcurrentHashMap不可以将null作为键或者值的。</strong></li>
+<li>HashMap不论任何版本都<a href="##HashMap%E7%9A%84%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8%E9%97%AE%E9%A2%98">线程不安全</a>。</li>
+</ul>
+<h2 id="HashMap数据结构"><a href="#HashMap数据结构" class="headerlink" title="HashMap数据结构"></a>HashMap数据结构</h2><h3 id="JDK1-7"><a href="#JDK1-7" class="headerlink" title="JDK1.7"></a>JDK1.7</h3><p>在JDK1.7中，HashMap采用<strong>数组+链表</strong>的形式实现。</p>
+<p>在每次插入数据是，会根据key计算对应的Hash值，利用位运算将Hash值转化为对应数组下标，根据下标找到数组中的对应位置。若位置对应的Entry对象不为空，则以<strong>头插</strong>的方式将数据插入到链表中；若为空，则直接将数据插入到Entry数组中。</p>
+<h4 id="头插是什么意思？"><a href="#头插是什么意思？" class="headerlink" title="头插是什么意思？"></a>头插是什么意思？</h4><p><img src="/2023/07/11/HashMap%E4%BB%8E%E5%85%A5%E9%97%A8%E5%88%B0%E5%85%A5%E7%9D%A1/1.jpg" alt="1"></p>
+<p>此时有一个代号为1的数据计算Hash得出下标欲加入HashMap中，此时数组对应位置为空，则顺利插入。</p>
+<p><img src="/2023/07/11/HashMap%E4%BB%8E%E5%85%A5%E9%97%A8%E5%88%B0%E5%85%A5%E7%9D%A1/2.jpg" alt="2"></p>
+<p>此时又有代号为2的数据计算，欲加入到与1相同的位置，但对应位置不为空，则用头插方式插入。</p>
+<p><img src="/2023/07/11/HashMap%E4%BB%8E%E5%85%A5%E9%97%A8%E5%88%B0%E5%85%A5%E7%9D%A1/4.jpg" alt="4"></p>
+<p>此时2指向1。即插入到了链表的“头部”。</p>
+<p>重复上述操作，得到如下HashMap。</p>
+<p><img src="/2023/07/11/HashMap%E4%BB%8E%E5%85%A5%E9%97%A8%E5%88%B0%E5%85%A5%E7%9D%A1/5.jpg" alt="5"></p>
+<p>而在查找时，Hash值只能定位到数组下标，而必须循环查找所有节点，所以JDK1.7中HashMap get()方法的时间复杂度为O(N)。</p>
+<p><img src="/2023/07/11/HashMap%E4%BB%8E%E5%85%A5%E9%97%A8%E5%88%B0%E5%85%A5%E7%9D%A1/6.jpg" alt="6"></p>
+<p>需要注意的是，这其中每个数据都存储一个键值对。这每一个键值对叫Entry，但JDK1.8后叫Node。</p>
+<h3 id="JDK1-8"><a href="#JDK1-8" class="headerlink" title="JDK1.8"></a>JDK1.8</h3><p>JDK1.8的HashMap数据结构与1.7基本相同，但在链表长度大于8，<strong>且</strong>Node[]数组（在1.7叫Entry[]）长度大于64时，会将该部分链表转化为红黑树。</p>
+<p><img src="/2023/07/11/HashMap%E4%BB%8E%E5%85%A5%E9%97%A8%E5%88%B0%E5%85%A5%E7%9D%A1/7.jpg" alt="7"></p>
+<p>将链表转换成红黑树前会判断，如果当前数组的长度小于 64，那么会选择先进行<strong>数组扩容</strong>，而不是转换为红黑树，以减少搜索时间。</p>
+<p><img src="/2023/07/11/HashMap%E4%BB%8E%E5%85%A5%E9%97%A8%E5%88%B0%E5%85%A5%E7%9D%A1/8.jpg" alt="8"></p>
+<p>注意：当红黑树长度小于6时会退化成链表结构。</p>
+<h3 id="HashMap的扩容机制"><a href="#HashMap的扩容机制" class="headerlink" title="HashMap的扩容机制"></a>HashMap的扩容机制</h3><h4 id="扩容机制"><a href="#扩容机制" class="headerlink" title="扩容机制"></a>扩容机制</h4><p>如果HashMap存储的键值对数量超过<a href="####%E9%98%88%E5%80%BC(threshold)">阈值</a>，则会进行扩容操作。</p>
+<p>HashMap的扩容机制有以下步骤：</p>
+<h5 id="JDK1-7-1"><a href="#JDK1-7-1" class="headerlink" title="JDK1.7"></a>JDK1.7</h5><ul>
+<li>创建一个新的Entry数组，长度为原来的2倍。(实质上是当前容量左移一位)（newtableSize &#x3D; tableSize &lt;&lt; 1）</li>
+<li>将原来数组的每个元素重新计算Hash值并放入新的数组中。</li>
+</ul>
+<h5 id="JDK1-8-1"><a href="#JDK1-8-1" class="headerlink" title="JDK1.8"></a>JDK1.8</h5><h6 id="如何通过Hash值计算index"><a href="#如何通过Hash值计算index" class="headerlink" title="如何通过Hash值计算index"></a>如何通过Hash值计算index</h6><p>在代码中，计算index是这样的：</p>
+<pre><code class="java">p = tab[i = (n - 1) &amp; hash]
+</code></pre>
+<p>即：将数组长度-1并转化为二进制，再将二进制的Hash值做与(&amp;)运算。</p>
+<p>与运算简单来说即为：当两个都为1时为1，其余都是0。</p>
+<p>例如：</p>
+<p>现有Hash值10 0001 0101</p>
+<p>数组长度为16，16-1&#x3D;15的二进制为00 0000 01111</p>
+<p><img src="/2023/07/11/HashMap%E4%BB%8E%E5%85%A5%E9%97%A8%E5%88%B0%E5%85%A5%E7%9D%A1/9.jpg" alt="9"></p>
+<p>所得00 0000 0101 十进制为5，即数组索引为5。</p>
+<h6 id="高低位算法"><a href="#高低位算法" class="headerlink" title="高低位算法"></a>高低位算法</h6><p>JDK1.8中引入了高低位算法，其扩容时引用高低位机制。Node数组中某个位置的链表或者红黑树的结点扩容时，不再以1.7的方式计算索引位置，而是将Node结点的Hash值与旧数组长度进行与运算。<strong>如果计算出来的值为0，表示该结点为低位结点</strong>，将旧数组所有低位结点组合成一个新的Node链表，并赋值到新数组相同位置。<strong>如果计算出来的值不为0，表示该结点为高位结点</strong>，将旧数组所有高位结点组合成一个新的Node链表，赋值给新数组当前位置加上旧数组长度的位置。</p>
+<p>例如：现在欲将<a href="######%E5%A6%82%E4%BD%95%E9%80%9A%E8%BF%87Hash%E5%80%BC%E8%AE%A1%E7%AE%97index">上述例子</a>中16扩容为32，则扩容后的length-1为31，即0001 1111。</p>
+<p>Hash值对新容量计算索引值时，后四位不变(因为都是1)，唯一变化的是第五位，即从原来的0变为1。</p>
+<p>上述例子中5索引的二进制值00 0000 0101，我们仍以1.7方法计算新索引值。</p>
+<p><img src="/2023/07/11/HashMap%E4%BB%8E%E5%85%A5%E9%97%A8%E5%88%B0%E5%85%A5%E7%9D%A1/10.jpg" alt="10"></p>
+<p>得到新索引值二进制为00 0001 0101二进制即为21，会发现，原索引值为5，加上旧数组长度（16）为21。</p>
+<p>我们再将其与旧数组长度进行与运算。</p>
+<p><img src="/2023/07/11/HashMap%E4%BB%8E%E5%85%A5%E9%97%A8%E5%88%B0%E5%85%A5%E7%9D%A1/11.jpg" alt="11"></p>
+<p>得到结果00 0001 0000十进制为16，不为0。所以它是高位节点。</p>
+<p>再有一例子：10 0000 0101，经计算新旧索引都为5。通过旧长度与运算可得</p>
+<p><img src="/2023/07/11/HashMap%E4%BB%8E%E5%85%A5%E9%97%A8%E5%88%B0%E5%85%A5%E7%9D%A1/12.jpg" alt="12"></p>
+<p>结果为0，所以它是低位结点。</p>
+<h6 id="扩容过程"><a href="#扩容过程" class="headerlink" title="扩容过程"></a>扩容过程</h6><ul>
+<li>创建新的Node数组，长度为原来的2倍。</li>
+<li>依据规律直接按位计算高低位结点，并赋值到新数组对应结点。</li>
+</ul>
+<h6 id="为什么要采用高低位算法？"><a href="#为什么要采用高低位算法？" class="headerlink" title="为什么要采用高低位算法？"></a>为什么要采用高低位算法？</h6><p>HashMap采用高低位算法主要是为了<strong>减少哈希冲突</strong>，提高哈希表的性能。(因为哈希冲突的部分可能会被重新匀到新的索引位置，而1.7冲突的部分全保留)</p>
+<p>HashMap数组的长度是2的幂次方，因此它的长度减1的二进制表示是全1的，如1111、111111等，这样做异或运算后可以保证高位和低位的信息都被保留下来。最终的哈希值也比较均匀地分布在数组的不同位置上，减少哈希冲突的发生，提高了HashMap的性能。</p>
+<h4 id="负载因子-loadFactor"><a href="#负载因子-loadFactor" class="headerlink" title="负载因子(loadFactor)"></a>负载因子(loadFactor)</h4><p>负载因子在HashMap初始化时即指定。默认为0.75。</p>
+<pre><code class="java">static final float DEFAULT_LOAD_FACTOR = 0.75f;
+public HashMap() &#123;
+    this.loadFactor = DEFAULT_LOAD_FACTOR;
+&#125;
+</code></pre>
+<p>同时，HashMap重载了HashMap：</p>
+<pre><code class="java">public HashMap(int initialCapacity, float loadFactor) &#123;
+    if (initialCapacity &lt; 0)
+        throw new IllegalArgumentException(&quot;Illegal initial capacity: &quot; +
+                                           initialCapacity);
+    if (initialCapacity &gt; MAXIMUM_CAPACITY)
+        initialCapacity = MAXIMUM_CAPACITY;
+    if (loadFactor &lt;= 0 || Float.isNaN(loadFactor))
+        throw new IllegalArgumentException(&quot;Illegal load factor: &quot; +
+                                           loadFactor);
+    this.loadFactor = loadFactor;
+    this.threshold = tableSizeFor(initialCapacity);
+&#125;
+</code></pre>
+<p>负载因子是HashMap实例的容量与HashMap中键值对的数量之比，即：<strong>Node数量&#x2F;容量</strong>。</p>
+<p>当HashMap中的键值对的数量大于负载因子乘以容量时，HashMap的容量就会扩大两倍。</p>
+<p>例如，此时HashMap容量为16，负载因子为0.75，则当HashMap中键值对数量大于12时就会进行扩容。</p>
+<p>负载因子越高，HashMap中键值对的映射数量就越多，但是会出现可能的冲突。</p>
+<p>负载因子越低，HashMap中键值对的映射数量就越少，但可以减少冲突的可能性。</p>
+<h5 id="负载因子为什么默认为0-75"><a href="#负载因子为什么默认为0-75" class="headerlink" title="负载因子为什么默认为0.75"></a>负载因子为什么默认为0.75</h5><p><a href="####%E9%98%88%E5%80%BC(threshold)">阈值(threshold)</a>&#x3D;负载因子(loadFactor)x容量(capacity)。根据HashMap的扩容机制，他会保证容量(capacity)的值永远都是2的幂 为了保证负载因子x容量的结果是一个整数，这个值是0.75(3&#x2F;4)比较合理，因为这个数和任何2的次幂乘积结果都是整数。</p>
+<p>同时，<strong>0.75是一个经验值</strong>，它在时间和空间成本上提供了很好的折中。</p>
+<p>JDK文档：</p>
+<blockquote>
+<p>As a general rule, the default load factor (.75) offers a good tradeoff between time and space costs. Higher values decrease the space overhead but increase the lookup cost (reflected in most of the operations of the HashMap class, including get and put).</p>
+<p>作为一般规则，默认负载因子（0.75）在时间和空间成本上提供了很好的折中。较高的值会降低空间开销，但提高查找成本（体现在大多数的HashMap类的操作，包括get和put）。</p>
+</blockquote>
+<h4 id="初始化容量大小"><a href="#初始化容量大小" class="headerlink" title="初始化容量大小"></a>初始化容量大小</h4><p>请注意：容量(capacity)是HashMap<strong>能够容纳的最大元素数量</strong>，而元素个数(size)是表示该HashMap已经拥有了多少个元素。</p>
+<pre><code class="java">public HashMap(int initialCapacity, float loadFactor) &#123;
+    if (initialCapacity &lt; 0)
+        throw new IllegalArgumentException(&quot;Illegal initial capacity: &quot; +
+                                           initialCapacity);
+    if (initialCapacity &gt; MAXIMUM_CAPACITY)
+        initialCapacity = MAXIMUM_CAPACITY;
+    if (loadFactor &lt;= 0 || Float.isNaN(loadFactor))
+        throw new IllegalArgumentException(&quot;Illegal load factor: &quot; +
+                                           loadFactor);
+    this.loadFactor = loadFactor;
+    this.threshold = tableSizeFor(initialCapacity);
+&#125;
+</code></pre>
+<p>这段代码中<strong>initialCapacity</strong>即为HashMap的初始大小，默认值为16.</p>
+<pre><code class="java">static final int DEFAULT_INITIAL_CAPACITY = 1 &lt;&lt; 4; // aka 16
+</code></pre>
+<p>在定义时采用<strong>位运算</strong>，2的四次方，即16。</p>
+<pre><code class="java">static final int MAXIMUM_CAPACITY = 1 &lt;&lt; 30;
+</code></pre>
+<p>同时在源码中也定义了HashMap的<strong>最大容量</strong>，2的三十次方，即10,7374,1824。</p>
+<h5 id="初始化容量大小为什么默认是16"><a href="#初始化容量大小为什么默认是16" class="headerlink" title="初始化容量大小为什么默认是16"></a>初始化容量大小为什么默认是16</h5><p>与负载因子相同，16也是一个<strong>经验值</strong>。</p>
+<p> 在HashMap的扩容机制中，每次扩容都是<strong>容量*2</strong>。</p>
+<pre><code class="java">newThr = oldThr &lt;&lt; 1;
+</code></pre>
+<p>16是2的整数次幂，可以保证在哈希计算时<strong>只需要进行位运算而不需要乘除法</strong>，提高计算效率。</p>
+<p>其次，16的二进制为10000，在进行哈希计算时可以将哈希值的高四位作为数组下标，可以保证哈希值分布更加均匀，<strong>减少哈希冲突</strong>。</p>
+<p>当然，8、4也是2的整数次幂，但考虑到默认负载因子0.75的值，8与4在分别插入第7对和第4对数据时就会发生扩容操作，反而会影响效率。</p>
+<h4 id="JDK1-7和1-8初始化容量的时机不同"><a href="#JDK1-7和1-8初始化容量的时机不同" class="headerlink" title="JDK1.7和1.8初始化容量的时机不同"></a>JDK1.7和1.8初始化容量的时机不同</h4><p>在JDK 1.7和JDK 1.8中，HashMap初始化这个容量的时机不同。JDK 1.7中，在调用HashMap的构造函数<strong>定义HashMap的时候，就会进行容量的设定</strong>。而在JDK 1.8中，<strong>在第一次put操作时才进行这一操作</strong>。</p>
+<h4 id="阈值-threshold"><a href="#阈值-threshold" class="headerlink" title="阈值(threshold)"></a>阈值(threshold)</h4><p>阈值表示HashMap在自动扩容之前可以容纳的键值对数量，阈值&#x3D;<strong>负载因子*容量</strong>。当HashMap存储的键值对数量超过阈值时，HashMap就会自动扩容。</p>
+<h3 id="HashMap存储流程"><a href="#HashMap存储流程" class="headerlink" title="HashMap存储流程"></a>HashMap存储流程</h3><p><img src="/2023/07/11/HashMap%E4%BB%8E%E5%85%A5%E9%97%A8%E5%88%B0%E5%85%A5%E7%9D%A1/13.png" alt="13"></p>
+<h2 id="HashMap问题"><a href="#HashMap问题" class="headerlink" title="HashMap问题"></a>HashMap问题</h2><h3 id="为什么要用红黑树？"><a href="#为什么要用红黑树？" class="headerlink" title="为什么要用红黑树？"></a>为什么要用红黑树？</h3><p>为了<strong>解决JDK1.8以前hash冲突所导致的链化严重的问题</strong>。因为链表结构的查询效率是非常低的，链表不可以使用下标访问，只能遍历，当链表过长时遍历效率极低，会导致性能退化到O(N)。所以采用红黑树，本质是一颗特殊的二叉排序树，可以将查询效率优化至O(logN)。</p>
+<h3 id="为什么还要使用链表？"><a href="#为什么还要使用链表？" class="headerlink" title="为什么还要使用链表？"></a>为什么还要使用链表？</h3><p><strong>为了避免红黑树的额外空间开销和时间开销</strong>。红黑树需要左旋，右旋，变色这些操作来保持平衡，在链表长度较小时，红黑树的额外空间开销和时间开销可能会超过链表的查询时间复杂度，因此在链表较短时使用链表可以减少不必要的开销。</p>
+<h3 id="为什么链表长度大于8转换为红黑树，小于6退化，而不是大于8转换，小于8退化？"><a href="#为什么链表长度大于8转换为红黑树，小于6退化，而不是大于8转换，小于8退化？" class="headerlink" title="为什么链表长度大于8转换为红黑树，小于6退化，而不是大于8转换，小于8退化？"></a>为什么链表长度大于8转换为红黑树，小于6退化，而不是大于8转换，小于8退化？</h3><p>防止频繁转换造成性能损失。</p>
+<h3 id="为什么HashMap是无序的？"><a href="#为什么HashMap是无序的？" class="headerlink" title="为什么HashMap是无序的？"></a>为什么HashMap是无序的？</h3><p>HashMap实现基于哈希表，哈希表的特点是无序，而链表&#x2F;红黑树的顺序是根据哈希值和插入顺序决定，所以HashMap没有顺序。</p>
+<p>从理论上说，HashMap是按照数组Entry[] (Node[])进行遍历，并且遍历所有的链表。HashMap遍历时是有序的，但插入与遍历的顺序没有相关性，所以导致HashMap无序。</p>
+<h3 id="HashMap的底层数组长度为何总是2的n次幂？"><a href="#HashMap的底层数组长度为何总是2的n次幂？" class="headerlink" title="HashMap的底层数组长度为何总是2的n次幂？"></a>HashMap的底层数组长度为何总是2的n次幂？</h3><ul>
+<li>使数据分布均匀，减少碰撞</li>
+<li>当length为2的N次方的时候，索引计算：<code>h &amp; (length-1) = h % length</code>，直接使用位运算效率更高。</li>
+</ul>
+<h3 id="null是如何处理的？"><a href="#null是如何处理的？" class="headerlink" title="null是如何处理的？"></a>null是如何处理的？</h3><p>HashMap对于键为null的情况，<strong>会将null的hash值设置为0</strong>，所以hash值为0的情况下，<strong>会被映射到数组的第0个索引位置</strong>。</p>
+<p>在put()方法下：</p>
+<pre><code class="java">if (key == null)
+        return putForNullKey(value);
+</code></pre>
+<p>putForNullkey()方法：</p>
+<pre><code class="java">private V putForNullKey(V value) &#123;
+    for (Entry&lt;K,V&gt; e = table[0]; e != null; e = e.next) &#123;
+        if (e.key == null) &#123;
+            V oldValue = e.value;
+            e.value = value;
+            e.recordAccess(this);
+            return oldValue;
+        &#125;
+    &#125;
+    modCount++;
+    addEntry(0, null, value, 0);
+    return null;
+&#125;
+</code></pre>
+<p>由此可知，在null为键的情况下，该Entry会插入到数组第0个索引位置。</p>
+<h3 id="HashMap计算Hash时为什么要右移16位"><a href="#HashMap计算Hash时为什么要右移16位" class="headerlink" title="HashMap计算Hash时为什么要右移16位"></a>HashMap计算Hash时为什么要右移16位</h3><p>详见<a href="##HashMap%E6%98%AF%E5%A6%82%E4%BD%95%E8%AE%A1%E7%AE%97Hash%E7%9A%84%EF%BC%9F">此处</a>。</p>
+<h3 id="HashMap为什么使用红黑树而不是B-树"><a href="#HashMap为什么使用红黑树而不是B-树" class="headerlink" title="HashMap为什么使用红黑树而不是B+树"></a>HashMap为什么使用红黑树而不是B+树</h3><p>红黑树在插入、删除和查找等操作的时间复杂度都是O(log n)，而B+树的时间复杂度是O(logd n)，其中d是B+树的阶数，通常d比较大，因此<strong>B+树的操作速度相对较慢</strong>。其次，红黑树节点结构相对简单，<strong>占用内存空间小</strong>。</p>
+<h2 id="HashMap的线程安全问题"><a href="#HashMap的线程安全问题" class="headerlink" title="HashMap的线程安全问题"></a>HashMap的线程安全问题</h2><h3 id="JDK1-7-2"><a href="#JDK1-7-2" class="headerlink" title="JDK1.7"></a>JDK1.7</h3><h4 id="1-7的头插法死循环-环状链-问题"><a href="#1-7的头插法死循环-环状链-问题" class="headerlink" title="1.7的头插法死循环(环状链)问题"></a>1.7的头插法死循环(环状链)问题</h4><p>JDK1.7采用头插法，在并发执行扩容环境的情况下会造成<strong>环状链(死循环)<strong>和</strong>数据丢失</strong>的问题。</p>
+<p>发生线程安全主要是在扩容方法中，根源在**transfer()**方法中，其源码如下：</p>
+<pre><code class="java">void transfer(Entry[] newTable, boolean rehash) &#123;
+        int newCapacity = newTable.length;
+        for (Entry&lt;K,V&gt; e : table) &#123;
+            while(null != e) &#123;
+                Entry&lt;K,V&gt; next = e.next;
+                if (rehash) &#123;
+                    e.hash = null == e.key ? 0 : hash(e.key);
+                &#125;
+                int i = indexFor(e.hash, newCapacity);
+                e.next = newTable[i];
+                newTable[i] = e;
+                e = next;
+            &#125;
+        &#125;
+    &#125;
+</code></pre>
+<p>简单来说，死循环的发生主要是因为<strong>线程间对HashMap的更改不同步导致</strong>。</p>
+<p>现有如下例子：</p>
+<p><img src="/2023/07/11/HashMap%E4%BB%8E%E5%85%A5%E9%97%A8%E5%88%B0%E5%85%A5%E7%9D%A1/13.jpg" alt="13"></p>
+<p>此时线程A(红色)、线程B(蓝色)对该HashMap进行扩容操作。</p>
+<p>此时线程A与B的下一节点(A.next&#x2F;B.next)都指向2。</p>
+<p><img src="/2023/07/11/HashMap%E4%BB%8E%E5%85%A5%E9%97%A8%E5%88%B0%E5%85%A5%E7%9D%A1/14.jpg" alt="14"></p>
+<p>假设此时线程B时间片耗尽，进入休眠状态，线程A进行扩容，因为头插法的原因，所以导致最后的结果是这样的。(此时A已修改完成)</p>
+<p><img src="/2023/07/11/HashMap%E4%BB%8E%E5%85%A5%E9%97%A8%E5%88%B0%E5%85%A5%E7%9D%A1/15.jpg"></p>
+<p>线程A已改变链表结构，但线程B不知道。此时线程B苏醒开始进行扩容。</p>
+<p>此时死循环发生，线程B认为1是首节点，所以将1的next指向2，但实际上此时1已经是末节点。</p>
+<p><img src="/2023/07/11/HashMap%E4%BB%8E%E5%85%A5%E9%97%A8%E5%88%B0%E5%85%A5%E7%9D%A1/16.jpg"></p>
+<p>在这种结构下，get()方法访问到这个链表时，它会依次遍历3-&gt;2-&gt;1-&gt;2-&gt;1-&gt;2-&gt;…….此时死循环发生。</p>
+<h3 id="JDK1-8-2"><a href="#JDK1-8-2" class="headerlink" title="JDK1.8"></a>JDK1.8</h3><p>JDK1.8直接在resize函数中完成了数据迁移，并且使用尾插法以保证链表顺序的一致性，完全修复了死循环问题。</p>
+<h4 id="插入数据时数据丢失-覆盖插入-问题"><a href="#插入数据时数据丢失-覆盖插入-问题" class="headerlink" title="插入数据时数据丢失(覆盖插入)问题"></a>插入数据时数据丢失(覆盖插入)问题</h4><p>当多线程操作HashMap时，可能会出现数据丢失的问题。</p>
+<p>首先从putVal()方法源代码入手：</p>
+<pre><code class="java">final V putVal(int hash, K key, V value, boolean onlyIfAbsent,
+               boolean evict) &#123;
+    Node&lt;K,V&gt;[] tab; Node&lt;K,V&gt; p; int n, i;
+    if ((tab = table) == null || (n = tab.length) == 0)
+        n = (tab = resize()).length;
+    if ((p = tab[i = (n - 1) &amp; hash]) == null) //判断哈希碰撞，如果没有碰撞就插入
+        tab[i] = newNode(hash, key, value, null);
+    else &#123;
+        Node&lt;K,V&gt; e; K k;
+        if (p.hash == hash &amp;&amp;
+            ((k = p.key) == key || (key != null &amp;&amp; key.equals(k))))
+            e = p;
+        else if (p instanceof TreeNode)
+            e = ((TreeNode&lt;K,V&gt;)p).putTreeVal(this, tab, hash, key, value);
+        else &#123;
+            for (int binCount = 0; ; ++binCount) &#123;
+                if ((e = p.next) == null) &#123;
+                    p.next = newNode(hash, key, value, null);
+                    if (binCount &gt;= TREEIFY_THRESHOLD - 1) // -1 for 1st
+                        treeifyBin(tab, hash);
+                    break;
+                &#125;
+                if (e.hash == hash &amp;&amp;
+                    ((k = e.key) == key || (key != null &amp;&amp; key.equals(k))))
+                    break;
+                p = e;
+            &#125;
+        &#125;
+        if (e != null) &#123;
+            V oldValue = e.value;
+            if (!onlyIfAbsent || oldValue == null)
+                e.value = value;
+            afterNodeAccess(e);
+            return oldValue;
+        &#125;
+    &#125;
+    ++modCount;
+    if (++size &gt; threshold)
+        resize();
+    afterNodeInsertion(evict);
+    return null;
+&#125;
+</code></pre>
+<p>注释行代码是先判断哈希碰撞，现有线程A、B。若A在第六行判断结束时间片耗尽进入休眠状态，此时线程B插入同一位置数据。当A结束休眠继续运行时，不会再判断是否发生哈希碰撞，直接插入。这样就会导致线程B插入的数据被覆盖，造成数据丢失。</p>
+<h4 id="1-8也存在死循环问题"><a href="#1-8也存在死循环问题" class="headerlink" title="1.8也存在死循环问题"></a>1.8也存在死循环问题</h4><h5 id="真的存在吗？？"><a href="#真的存在吗？？" class="headerlink" title="真的存在吗？？"></a>真的存在吗？？</h5><pre><code class="java">public static void main(String[] args) &#123;
+    HashMap&lt;String, String&gt; map = new HashMap&lt;&gt;();
+    new Thread(()-&gt;&#123;
+        for (int i = 0; i &lt; 1000000; i+=2) &#123;
+            map.put(Integer.toString(i), Integer.toBinaryString(i));
+            if (i &gt; 50000 &amp;&amp; i % 10000 == 0)&#123;
+                System.out.println(&quot;put&quot;);
+            &#125;
+        &#125;
+    &#125;, &quot;A&quot;).start();
+
+    new Thread(()-&gt;&#123;
+        for (int i = 1; i &lt; 1000000; i+=2) &#123;
+            map.put(Integer.toString(i), Integer.toBinaryString(i));
+            if (i &gt; 50000 &amp;&amp; i % 10000 == 0)&#123;
+                System.out.println(&quot;put&quot;);
+            &#125;
+        &#125;
+    &#125;, &quot;B&quot;).start();
+    while (Thread.activeCount() &gt; 2)&#123;
+        Thread.yield();
+    &#125;
+    System.out.println(map.size());
+&#125;
+</code></pre>
+<p>在这段代码中，我们以两个线程分别向map中加入10万条数据，并且如果插入次数超过5万，则每1万次报告一次插入以确认未进入死循环。</p>
+<p>经过几次尝试后，程序无法正常结束。</p>
+<p>使用<code>jps和jstack</code>查看线程运行状态。</p>
+<p><img src="/2023/07/11/HashMap%E4%BB%8E%E5%85%A5%E9%97%A8%E5%88%B0%E5%85%A5%E7%9D%A1/19.jpg"></p>
+<p> 可以发现，线程AB都在执行，而main线程在为这两个线程礼让，即</p>
+<pre><code class="java"> while (Thread.activeCount() &gt; 2)&#123;
+        Thread.yield();
+    &#125;
+</code></pre>
+<p>所以，<strong>1.8的HashMap也存在死循环问题</strong>。</p>
+<h5 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h5><p>在A线程中，线程A对链表进行树化，线程B已经开始设置根节点。此时两条线程并发，数据结构被破坏。一个线程(B)进行树化将链表转为了红黑树，由于另一条线程(A)没有知晓数据结构改变，继续试图将链表转化为红黑树，但此时数据结构改变，所以A操作失败。但A已经改变了数据结构，父节点已不正确，所以线程B也修改失败。线程A和B不断尝试树化数据，但无法成功，此时形成死循环。</p>
+<h2 id="线程安全问题的解决"><a href="#线程安全问题的解决" class="headerlink" title="线程安全问题的解决"></a>线程安全问题的解决</h2><h3 id="Collections-synchronizedMap转换"><a href="#Collections-synchronizedMap转换" class="headerlink" title="Collections.synchronizedMap转换"></a>Collections.synchronizedMap转换</h3><pre><code class="java">Map&lt;String, String&gt; map = new HashMap&lt;&gt;();
+map = Collections.synchronizedMap(map);
+</code></pre>
+<p>Collections.synchronizedMap()会生成一个同步的Map。</p>
+<pre><code class="java">public static &lt;K,V&gt; Map&lt;K,V&gt; synchronizedMap(Map&lt;K,V&gt; m) &#123;
+    return new SynchronizedMap&lt;&gt;(m);
+&#125;
+</code></pre>
+<pre><code class="java">final Object      mutex;        // Object on which to synchronize
+
+SynchronizedMap(Map&lt;K,V&gt; m) &#123;
+    this.m = Objects.requireNonNull(m);
+    mutex = this;
+&#125;
+</code></pre>
+<p>本质上，其<strong>维护了一个普通的map和一个对象排斥锁mutex</strong>。</p>
+<p>其各种不安全方法都会先加锁再访问，例如：</p>
+<pre><code class="java">public V get(Object key) &#123;
+    synchronized (mutex) &#123;return m.get(key);&#125;
+&#125;
+
+public V put(K key, V value) &#123;
+    synchronized (mutex) &#123;return m.put(key, value);&#125;
+&#125;
+
+public V remove(Object key) &#123;
+    synchronized (mutex) &#123;return m.remove(key);&#125;
+&#125;
+</code></pre>
+<h3 id="ConcurrentHashMap构造"><a href="#ConcurrentHashMap构造" class="headerlink" title="ConcurrentHashMap构造"></a>ConcurrentHashMap构造</h3><pre><code class="java">ConcurrentHashMap&lt;String, String&gt; map = new ConcurrentHashMap&lt;&gt;();
+</code></pre>
+<p>具体实现原理请见<a href="">此处</a>。</p>
+<p>啊我还没写呢。。。。</p>
+<h3 id="使用HashTable"><a href="#使用HashTable" class="headerlink" title="使用HashTable"></a>使用HashTable</h3><pre><code class="java">Hashtable&lt;String, String&gt; map = new Hashtable&lt;&gt;();
+</code></pre>
+<p>具体实现原理请见<a href="#HashTable">此处</a>。</p>
+<h1 id="LinkedHashMap"><a href="#LinkedHashMap" class="headerlink" title="LinkedHashMap"></a>LinkedHashMap</h1><h2 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h2><pre><code class="java">HashMap&lt;String, String&gt; hmap = new HashMap&lt;&gt;();
+hmap.put(&quot;nihao1&quot;, &quot;hello&quot;);
+hmap.put(&quot;nihao2&quot;, &quot;hello&quot;);
+hmap.put(&quot;nihao3&quot;, &quot;hello&quot;);
+System.out.println(hmap); // -&gt; &#123;nihao3=hello, nihao2=hello, nihao1=hello&#125;
+LinkedHashMap&lt;String, String&gt; lhmap = new LinkedHashMap&lt;&gt;();
+lhmap.put(&quot;nihao1&quot;, &quot;hello&quot;);
+lhmap.put(&quot;nihao2&quot;, &quot;hello&quot;);
+lhmap.put(&quot;nihao3&quot;, &quot;hello&quot;);
+lhmap.get(&quot;nihao1&quot;);
+System.out.println(lhmap); // -&gt; &#123;nihao1=hello, nihao2=hello, nihao3=hello&#125;
+lhmap.forEach((key, value) -&gt; &#123;
+    System.out.println(key + &quot;-&gt;&quot; + value);
+    /*
+    nihao1-&gt;hello
+    nihao2-&gt;hello
+    nihao3-&gt;hello
+    */
+ &#125;);
+</code></pre>
+<h2 id="插入顺序与访问顺序"><a href="#插入顺序与访问顺序" class="headerlink" title="插入顺序与访问顺序"></a>插入顺序与访问顺序</h2><p><strong>插入顺序即先插入先被遍历</strong>。</p>
+<p>而访问顺序简单来说，即：<strong>被get()方法访问的数据放在最后</strong>。</p>
+<p>LinkedHashMap有五个构造方法，只有最后一个构造方法可以传入排序规则，<strong>false为插入顺序，true为访问顺序</strong>。</p>
+<pre><code class="java">public LinkedHashMap(int initialCapacity, float loadFactor) &#123;
+    super(initialCapacity, loadFactor);
+    accessOrder = false;
+&#125;
+public LinkedHashMap(int initialCapacity) &#123;
+        super(initialCapacity);
+        accessOrder = false;
+&#125;
+public LinkedHashMap() &#123;
+        super();
+        accessOrder = false;
+&#125;
+public LinkedHashMap(Map&lt;? extends K, ? extends V&gt; m) &#123;
+        super();
+        accessOrder = false;
+        putMapEntries(m, false);
+&#125;
+public LinkedHashMap(int initialCapacity, //容量
+                     float loadFactor,//负载因子
+                     boolean accessOrder//排列规则) &#123;
+        super(initialCapacity, loadFactor);
+        this.accessOrder = accessOrder;
+&#125;
+</code></pre>
+<p>示例：</p>
+<pre><code class="java">LinkedHashMap&lt;String, String&gt; lhmap = new LinkedHashMap&lt;&gt;(16, 0.75f, true);
+lhmap.put(&quot;nihao1&quot;, &quot;hello&quot;);
+lhmap.put(&quot;nihao2&quot;, &quot;hello&quot;);
+lhmap.put(&quot;nihao3&quot;, &quot;hello&quot;);
+lhmap.get(&quot;nihao1&quot;);
+lhmap.forEach((key, value) -&gt; &#123;
+    System.out.println(key + &quot;-&gt;&quot; + value);
+    /*
+    nihao2-&gt;hello
+    nihao3-&gt;hello
+    nihao1-&gt;hello
+   */
+&#125;);
+</code></pre>
+<p>可以看到，被访问的键<code>nihao1</code>被放在了最后。</p>
+<h2 id="实现原理"><a href="#实现原理" class="headerlink" title="实现原理"></a>实现原理</h2><pre><code class="java">public class LinkedHashMap&lt;K,V&gt;
+    extends HashMap&lt;K,V&gt;
+    implements Map&lt;K,V&gt;
+</code></pre>
+<p>LinkedHashMap继承了HashMap，实现了Map。</p>
+<p><strong>其维护了一个运行于所有条目的双向链表，保证了迭代顺序。</strong></p>
+<p><img src="/2023/07/11/HashMap%E4%BB%8E%E5%85%A5%E9%97%A8%E5%88%B0%E5%85%A5%E7%9D%A1/17.jpg"></p>
+<p>由于LinkedHashMap继承自HashMap，所以其也采用<strong>尾插法</strong>。</p>
+<p>当1插入时，head链表指向1。</p>
+<p>当2插入时，head链表顺序为1-&gt;2(红色箭头)；而tail链表顺序为2-&gt;1(蓝色箭头)。</p>
+<p>以此类推得到上图。</p>
+<p>请注意：请将head和tail两条链表与<a href="####1.7%E7%9A%84%E5%A4%B4%E6%8F%92%E6%B3%95%E6%AD%BB%E5%BE%AA%E7%8E%AF%E9%97%AE%E9%A2%98">死循环</a>分隔开，这是两条链表，而不是环状链表。</p>
+<p>当为访问顺序时，tail链表的头部会指向访问的位置，head链表会指向访问位置的下一位。</p>
+<p>例如，此时访问2，数据结构会变为：</p>
+<p><img src="/2023/07/11/HashMap%E4%BB%8E%E5%85%A5%E9%97%A8%E5%88%B0%E5%85%A5%E7%9D%A1/18.jpg"></p>
+<h2 id="synchronizedMap"><a href="#synchronizedMap" class="headerlink" title="synchronizedMap"></a>synchronizedMap</h2><p>当然，既然是HashMap家族衍生而来的，就会有多线程插入数据丢失的问题。</p>
+<p>解决方法为synchronizedMap。</p>
+<pre><code class="java">Map&lt;String, String&gt; lhmap = new LinkedHashMap&lt;&gt;();
+        lhmap =  Collections.synchronizedMap(lhmap);
+
+        lhmap.put(&quot;nihao1&quot;, &quot;hello&quot;);
+        lhmap.put(&quot;nihao2&quot;, &quot;hello&quot;);
+        lhmap.put(&quot;nihao3&quot;, &quot;hello&quot;);
+        lhmap.forEach((key, value) -&gt; &#123;
+            System.out.println(key + &quot;-&gt;&quot; + value);
+            /*
+            nihao2-&gt;hello
+            nihao3-&gt;hello
+            nihao1-&gt;hello
+           */
+        &#125;);
+</code></pre>
+<p>原理详见<a href="###Collections.synchronizedMap%E8%BD%AC%E6%8D%A2">此处</a>。</p>
+<h1 id="HashTable"><a href="#HashTable" class="headerlink" title="HashTable"></a>HashTable</h1><h2 id="与HashMap的区别"><a href="#与HashMap的区别" class="headerlink" title="与HashMap的区别"></a>与HashMap的区别</h2><ul>
+<li><p>Hashtable在底层仍使用数组+链表的数据结构。</p>
+</li>
+<li><p>Hashtable则<strong>不允许</strong>null作为key。</p>
+<pre><code class="java">if (value == null) &#123;
+    throw new NullPointerException();
+&#125; // put()方法
+</code></pre>
+</li>
+<li><p>Hashtable<strong>初始容量为11</strong>，每次扩容时是容量翻倍并且+1。</p>
+<pre><code class="java">int newCapacity = (oldCapacity &lt;&lt; 1) + 1;
+</code></pre>
+</li>
+<li><p>Hashtable计算hash是直接使用key的hashcode对table数组的长度直接进行取模。(HashMap是对key的hashcode进行了二次hash，以获得更好的散列值，然后对table数组长度取模)</p>
+</li>
+<li><p>HashTable产生于JDK 1.1，而HashMap产生于JDK 1.2。</p>
+</li>
+<li><p><strong>Hashtable是线程安全的</strong>。</p>
+</li>
+</ul>
+<h3 id="Hashtable为什么线程安全？"><a href="#Hashtable为什么线程安全？" class="headerlink" title="Hashtable为什么线程安全？"></a>Hashtable为什么线程安全？</h3><p>synchronized加锁。</p>
+<pre><code class="java">public synchronized V put(K key, V value) &#123;
+    // Make sure the value is not null
+    if (value == null) &#123;
+        throw new NullPointerException();
+    &#125;
+    ...
+&#125;
+
+public synchronized V get(Object key) &#123;
+        Entry&lt;?,?&gt; tab[] = table;
+        ...
+        return null;
+&#125;
+
+public synchronized boolean containsKey(Object key) &#123;
+        Entry&lt;?,?&gt; tab[] = table;
+        ...
+&#125;
+
+......
+</code></pre>
+<h3 id="不要在正式代码中使用Hashtable"><a href="#不要在正式代码中使用Hashtable" class="headerlink" title="不要在正式代码中使用Hashtable"></a>不要在正式代码中使用Hashtable</h3><p>节选自JDK1.8中Hashtable类注释。</p>
+<blockquote>
+<p>If a thread-safe implementation is not needed, it is recommended to use HashMap in place of Hashtable. If a thread-safe highly-concurrent implementation is desired, then it is recommended to use java.util.concurrent.ConcurrentHashMap in place of Hashtable.</p>
+</blockquote>
+<blockquote>
+<p>如果不需要线程安全实现，建议使用HashMap代替Hashtable。如果需要线程安全的高并发实现，那么建议使用java.util.concurrent.ConcurrentHashMap来代替Hashtable。</p>
+</blockquote>
+<h1 id="HashSet"><a href="#HashSet" class="headerlink" title="HashSet"></a>HashSet</h1><p>HashSet是HashMap的衍生类。它储存一个<strong>无序、不重复的集合</strong>，底层由HashMap实现。</p>
+<h2 id="数据结构"><a href="#数据结构" class="headerlink" title="数据结构"></a>数据结构</h2><p>HashSet在内部维护了一个HashMap：</p>
+<pre><code class="java">private transient HashMap&lt;E,Object&gt; map;
+
+public HashSet() &#123;
+        map = new HashMap&lt;&gt;();
+&#125;
+</code></pre>
+<p>并且<strong>许多方法直接调用HashMap</strong>：</p>
+<pre><code class="java">public Iterator&lt;E&gt; iterator() &#123;
+    return map.keySet().iterator();
+&#125;
+
+public boolean isEmpty() &#123;
+        return map.isEmpty();
+&#125;
+
+public boolean add(E e) &#123;
+        return map.put(e, PRESENT)==null;
+&#125;
+</code></pre>
+<p>其中，HashSet存储的值即为HashMap的key。</p>
+<h2 id="HashSet问题"><a href="#HashSet问题" class="headerlink" title="HashSet问题"></a>HashSet问题</h2><h3 id="底层HashMap中的V为什么有且是一个Object对象常量，为什么不用null？"><a href="#底层HashMap中的V为什么有且是一个Object对象常量，为什么不用null？" class="headerlink" title="底层HashMap中的V为什么有且是一个Object对象常量，为什么不用null？"></a>底层HashMap中的V为什么有且是一个Object对象常量，为什么不用null？</h3><p>首先要解释为什么V需要一个对象。</p>
+<p>在HashMap的put源码中，最后插入成功会返回null：</p>
+<pre><code class="java">// HashMap插入
+final V putVal(int hash, K key, V value, boolean onlyIfAbsent,
+               boolean evict) &#123;
+    ...
+    ++modCount;
+    if (++size &gt; threshold)
+        resize();
+    afterNodeInsertion(evict);
+    return null;
+&#125;
+
+// HashSet
+public boolean add(E e) &#123;
+        return map.put(e, PRESENT)==null;
+&#125;
+</code></pre>
+<p>由此，如果有一个<strong>新</strong>数据成功插入，则会返回true，反之则会返回false。</p>
+<p>之后，我们要看为什么不直接使用null。</p>
+<pre><code class="java">// HashMap删除
+public V remove(Object key) &#123;
+        Node&lt;K,V&gt; e;
+        return (e = removeNode(hash(key), key, null, false, true)) == null ?
+            null : e.value; // 如果removeNode()结果为null，则返回null，否则返回value。
+&#125;
+
+final Node&lt;K,V&gt; removeNode(int hash, Object key, Object value,
+                           boolean matchValue, boolean movable) &#123;
+    ...
+            ...
+                return node; // 正常删除返回node，否则返回null。
+            &#125;
+        &#125;
+        return null;
+&#125;
+
+// HashSet
+public boolean remove(Object o) &#123;
+        return map.remove(o)==PRESENT;
+&#125;
+</code></pre>
+<p>可知，如果以null作为值，则删除时无论是否成功都为null，造成了歧义，这是不被允许的。所以不应该使用null作为值。</p>
+<h2 id="HashSet线程不安全"><a href="#HashSet线程不安全" class="headerlink" title="HashSet线程不安全"></a>HashSet线程不安全</h2><p>HashSet底层由HashMap实现，所以HashMap的线程不安全同样会表现在HashSet上。</p>
+<h3 id="解决方法"><a href="#解决方法" class="headerlink" title="解决方法"></a>解决方法</h3><h4 id="Collections-synchronizedSet"><a href="#Collections-synchronizedSet" class="headerlink" title="Collections.synchronizedSet()"></a>Collections.synchronizedSet()</h4><pre><code class="java">Set&lt;Object&gt; set = Collections.synchronizedSet(new HashSet&lt;&gt;());
+</code></pre>
+<p>原理与<a href="###Collections.synchronizedMap%E8%BD%AC%E6%8D%A2">synchronizedMap</a>相同。</p>
+<h4 id="CopyOnWriteArraySet"><a href="#CopyOnWriteArraySet" class="headerlink" title="CopyOnWriteArraySet"></a>CopyOnWriteArraySet</h4><pre><code class="java">Set&lt;Object&gt; set = new CopyOnWriteArraySet&lt;&gt;();
+</code></pre>
+<p>CopyOnWriteArraySet内部维护了<code>CopyOnWriteArrayList</code>，多数方法由其实现：</p>
+<pre><code class="java">private final CopyOnWriteArrayList&lt;E&gt; al;
+
+public boolean add(E e) &#123;
+        return al.addIfAbsent(e);
+&#125;
+
+public int size() &#123;
+        return al.size();
+&#125;
+
+public boolean isEmpty() &#123;
+        return al.isEmpty();
+&#125;
+
+public boolean contains(Object o) &#123;
+    return al.contains(o);
+&#125;
+</code></pre>
+<p>其中CopyOnWriteArrayList原理为在写入时加锁。</p>
+<pre><code class="java">public E set(int index, E element) &#123;
+    final ReentrantLock lock = this.lock;
+    lock.lock();
+    try &#123;
+        ...
+    &#125; finally &#123;
+        lock.unlock();
+    &#125;
+&#125;
+</code></pre>
+
+    </div>
+    
+    
+    
+    
+    <div id="comment">
+        <div id="giscus-container" class="giscus"></div>
+    </div>
+    
+    
+    
+    
+</div>
+
+                    <footer id="footer">
+    <div id="footer-wrap">
+        <div>
+            &copy;
+            2023 - 2023 ErickRen
+            <span id="footer-icon">
+                <i class="fa-solid fa-font-awesome fa-fw"></i>
+            </span>
+            &commat;Erick Ren
+        </div>
+        <div>
+            Based on the <a target="_blank" rel="noopener" href="https://hexo.io">Hexo Engine</a> &amp;
+            <a target="_blank" rel="noopener" href="https://github.com/theme-particlex/hexo-theme-particlex">ParticleX Theme</a>
+        </div>
+        
+    </div>
+</footer>
+
+                </div>
+            </transition>
+            
+            <transition name="fade">
+                <div id="preview" ref="preview" v-show="previewShow">
+                    <img id="preview-content" ref="previewContent" />
+                </div>
+            </transition>
+            
+        </div>
+        <script src="/js/main.js"></script>
+        
+        
+<script
+    src="https://giscus.app/client.js"
+    data-repo="ErickRen2023/erickren2023.github.io"
+    data-repo-id="R_kgDOJuubrg"
+    data-category="Announcements"
+    data-category-id="DIC_kwDOJuubrs4CXLJO"
+    data-mapping="pathname"
+    data-strict="0"
+    data-reactions-enabled="1"
+    data-emit-metadata="0"
+    data-input-position="top"
+    data-theme="light_high_contrast"
+    data-lang="en"
+    crossorigin
+    async
+></script>
+
+
+
+
+
+        
+    </body>
+</html>
