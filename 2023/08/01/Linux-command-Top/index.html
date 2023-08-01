@@ -1,0 +1,392 @@
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>Linux command: Top | ErickRen</title>
+        <meta name="author" content="Erick Ren" />
+        <meta name="description" content="Dream chaser never give up." />
+        <meta name="keywords" content="ErickRen" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+        <link rel="icon" href="https://q1.qlogo.cn/g?b=qq&nk=2969044006&s=5" />
+        <script src="https://cdn.staticfile.org/vue/3.2.47/vue.global.prod.min.js"></script>
+<link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/6.3.0/css/all.min.css" />
+<link rel="stylesheet" href="/css/fonts.min.css" />
+<script> const mixins = {}; </script>
+
+<script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
+
+
+<script src="https://cdn.staticfile.org/highlight.js/11.7.0/highlight.min.js"></script>
+<link
+    rel="stylesheet"
+    href="https://cdn.staticfile.org/highlight.js/11.7.0/styles/github.min.css"
+/>
+<script src="/js/lib/highlight.js"></script>
+
+
+
+<script src="/js/lib/preview.js"></script>
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/css/main.css" />
+
+    <meta name="generator" content="Hexo 6.3.0"></head>
+    <body>
+        <div id="layout">
+            <transition name="fade">
+                <div id="loading" v-show="loading">
+                    <div id="loading-circle">
+                        <h2>LOADING</h2>
+                        <p>Enable the browser cache if loading is slow</p>                        </p>
+                        <img src="/images/loading.gif" />
+                    </div>
+                </div>
+            </transition>
+            <nav id="menu" :class="{ hidden: hiddenMenu, 'menu-color': menuColor}">
+    <div id="desktop-menu">
+        <a class="title" href="/">
+            <span>ERICKREN</span>
+        </a>
+        
+        <a href="/">
+            <i class="fa-solid fa-house fa-fw"></i>
+            <span>&ensp;Home</span>
+        </a>
+        
+        <a href="/about">
+            <i class="fa-solid fa-id-card fa-fw"></i>
+            <span>&ensp;About</span>
+        </a>
+        
+        <a href="/archives">
+            <i class="fa-solid fa-box-archive fa-fw"></i>
+            <span>&ensp;Archives</span>
+        </a>
+        
+        <a href="/categories">
+            <i class="fa-solid fa-bookmark fa-fw"></i>
+            <span>&ensp;Categories</span>
+        </a>
+        
+        <a href="/tags">
+            <i class="fa-solid fa-tags fa-fw"></i>
+            <span>&ensp;Tags</span>
+        </a>
+        
+    </div>
+    <div id="mobile-menu">
+        <div class="title" @click="showMenuItems = !showMenuItems">
+            <i class="fa-solid fa-bars fa-fw"></i>
+            <span>&emsp;ERICKREN</span>
+        </div>
+        <transition name="slide">
+            <div class="items" v-show="showMenuItems">
+                
+                <a href="/">
+                    <div class="item">
+                        <div style="min-width: 20px; max-width: 50px; width: 10%">
+                            <i class="fa-solid fa-house fa-fw"></i>
+                        </div>
+                        <div style="min-width: 100px; max-width: 150%; width: 20%">Home</div>
+                    </div>
+                </a>
+                
+                <a href="/about">
+                    <div class="item">
+                        <div style="min-width: 20px; max-width: 50px; width: 10%">
+                            <i class="fa-solid fa-id-card fa-fw"></i>
+                        </div>
+                        <div style="min-width: 100px; max-width: 150%; width: 20%">About</div>
+                    </div>
+                </a>
+                
+                <a href="/archives">
+                    <div class="item">
+                        <div style="min-width: 20px; max-width: 50px; width: 10%">
+                            <i class="fa-solid fa-box-archive fa-fw"></i>
+                        </div>
+                        <div style="min-width: 100px; max-width: 150%; width: 20%">Archives</div>
+                    </div>
+                </a>
+                
+                <a href="/categories">
+                    <div class="item">
+                        <div style="min-width: 20px; max-width: 50px; width: 10%">
+                            <i class="fa-solid fa-bookmark fa-fw"></i>
+                        </div>
+                        <div style="min-width: 100px; max-width: 150%; width: 20%">Categories</div>
+                    </div>
+                </a>
+                
+                <a href="/tags">
+                    <div class="item">
+                        <div style="min-width: 20px; max-width: 50px; width: 10%">
+                            <i class="fa-solid fa-tags fa-fw"></i>
+                        </div>
+                        <div style="min-width: 100px; max-width: 150%; width: 20%">Tags</div>
+                    </div>
+                </a>
+                
+            </div>
+        </transition>
+    </div>
+</nav>
+<transition name="fade">
+    <div id="menu-curtain" @click="showMenuItems = !showMenuItems" v-show="showMenuItems"></div>
+</transition>
+
+            <transition name="into">
+                <div id="main" v-show="!loading">
+                    <div class="article">
+    <div>
+        <h1>Linux command: Top</h1>
+    </div>
+    <div class="info">
+        <span class="date">
+            <span class="icon">
+                <i class="fa-solid fa-calendar fa-fw"></i>
+            </span>
+            2023/8/1
+        </span>
+        
+        <span class="category">
+            <a href="/categories/tech/">
+                <span class="icon">
+                    <i class="fa-solid fa-bookmark fa-fw"></i>
+                </span>
+                tech
+            </a>
+        </span>
+        
+        
+        <span class="tags">
+            <span class="icon">
+                <i class="fa-solid fa-tags fa-fw"></i>
+            </span>
+            
+            <span class="tag">
+                
+                <a href="/tags/tech/" style="color: #03a9f4">tech</a>
+            </span>
+            
+            <span class="tag">
+                
+                <a href="/tags/linux/" style="color: #00bcd4">linux</a>
+            </span>
+            
+            <span class="tag">
+                
+                <a href="/tags/bash/" style="color: #ff7d73">bash</a>
+            </span>
+            
+        </span>
+        
+    </div>
+    
+    <div class="content" v-pre>
+        <p><code>Top</code> command is used to show the Linux process. It provides a dynamic real-time view of the system status.</p>
+<p>Usually, the command shows the summary information of the system and the running processes or threads.</p>
+<p>Here, I will explain how to use the command and interpret the information.</p>
+ <span id="more"></span>
+
+<p>Explain the command with a picture in Windows:</p>
+<p><img src="/2023/08/01/Linux-command-Top/1.png" alt="1"></p>
+<p>It will open interactive command mode as soon as you run this command.</p>
+<p><img src="/2023/08/01/Linux-command-Top/2.png"></p>
+<p>And press <code>q</code> to exit.</p>
+<p>Here is an example:</p>
+<pre><code>top - 09:25:41 up 1 min,  3 users,  load average: 0.27, 0.11, 0.04
+Tasks: 127 total,   1 running, 126 sleeping,   0 stopped,   0 zombie
+%Cpu(s):  0.0 us,  0.0 sy,  0.0 ni,100.0 id,  0.0 wa,  0.0 hi,  0.0 si,  0.0 st
+KiB Mem :   995488 total,   465908 free,   360852 used,   168728 buff/cache
+KiB Swap:  2097148 total,  2097148 free,        0 used.   488308 avail Mem 
+
+   PID USER      PR  NI    VIRT    RES    SHR S  %CPU %MEM     TIME+ COMMAND                                                                                                                                                                           
+     1 root      20   0  193552   6664   4160 S   0.0  0.7   0:01.78 systemd                                                                                                                                                         
+     2 root      20   0       0      0      0 S   0.0  0.0   0:00.00 kthreadd                                                                                                                                                                          
+     3 root      20   0       0      0      0 S   0.0  0.0   0:00.00 kworker/0:0                                                                                                                                                                       
+     4 root       0 -20       0      0      0 S   0.0  0.0   0:00.00 kworker/0:0H                                                                                                                                                                      
+     5 root      20   0       0      0      0 S   0.0  0.0   0:00.02 kworker/u256:0                                                                                                                                                                    
+     6 root      20   0       0      0      0 S   0.0  0.0   0:00.04 ksoftirqd/0                                                                                                                                                                       
+     7 root      rt   0       0      0      0 S   0.0  0.0   0:00.04 migration/0                                                                                                                                                                       
+     8 root      20   0       0      0      0 S   0.0  0.0   0:00.00 rcu_bh                                                                                                                                                                            
+     9 root      20   0       0      0      0 S   0.0  0.0   0:00.17 rcu_sched                                                                                                                                                                         
+    10 root       0 -20       0      0      0 S   0.0  0.0   0:00.00 lru-add-drain                                                                                                                                                                     
+    11 root      rt   0       0      0      0 S   0.0  0.0   0:00.00 watchdog/0                                                                                                                                                                        
+    12 root      rt   0       0      0      0 S   0.0  0.0   0:00.00 watchdog/1                                                                                                                                                                        
+    13 root      rt   0       0      0      0 S   0.0  0.0   0:00.01 migration/1                                                                                                                                                                       
+    14 root      20   0       0      0      0 S   0.0  0.0   0:00.01 ksoftirqd/1                                                                                                                                                                       
+    15 root      20   0       0      0      0 S   0.0  0.0   0:00.00 kworker/1:0                                                                                                                                                                       
+    16 root       0 -20       0      0      0 S   0.0  0.0   0:00.00 kworker/1:0H                                                                                                                                                                      
+    18 root      20   0       0      0      0 S   0.0  0.0   0:00.01 kdevtmpfs                                                                                                                                                                         
+    19 root       0 -20       0      0      0 S   0.0  0.0   0:00.00 netns                                                                                                                                                                             
+    20 root      20   0       0      0      0 S   0.0  0.0   0:00.00 khungtaskd                                                                                                                                                                        
+    21 root       0 -20       0      0      0 S   0.0  0.0   0:00.00 writeback                                                                                                                                                                         
+    22 root       0 -20       0      0      0 S   0.0  0.0   0:00.00 kintegrityd                                                                                                                                                                       
+    23 root       0 -20       0      0      0 S   0.0  0.0   0:00.00 bioset                                                                                                                                                                            
+    24 root       0 -20       0      0      0 S   0.0  0.0   0:00.00 bioset                                                                                                                                                                            
+    25 root       0 -20       0      0      0 S   0.0  0.0   0:00.00 bioset                                                                                                                                                                            
+    26 root       0 -20       0      0      0 S   0.0  0.0   0:00.00 kblockd                                                                                                                                                                           
+    27 root       0 -20       0      0      0 S   0.0  0.0   0:00.00 md  
+</code></pre>
+<p>The first five lines of the display are the system status and the other are the status monitoring of every process.</p>
+<h2 id="System-status"><a href="#System-status" class="headerlink" title="System status"></a>System status</h2><pre><code>top - 09:25:41 up 1 min,  3 users,  load average: 0.27, 0.11, 0.04
+Tasks: 127 total,   1 running, 126 sleeping,   0 stopped,   0 zombie
+%Cpu(s):  0.0 us,  0.0 sy,  0.0 ni,100.0 id,  0.0 wa,  0.0 hi,  0.0 si,  0.0 st
+KiB Mem :   995488 total,   465908 free,   360852 used,   168728 buff/cache
+KiB Swap:  2097148 total,  2097148 free,        0 used.   488308 avail Mem 
+</code></pre>
+<h3 id="First-line"><a href="#First-line" class="headerlink" title="First line"></a>First line</h3><pre><code>top - 09:25:41 up 1 min,  3 users,  load average: 0.27, 0.11, 0.04
+</code></pre>
+<p><code>09:25:41</code> : The system time.</p>
+<p><code>up 1 min</code> : The system runs for less than a minute.</p>
+<blockquote>
+<p><code>up 70 days, 16:44</code> : The system runs for 70 days,16 hours and 44 minutes.</p>
+</blockquote>
+<p><code>3 users</code> : 3 users has login in the system.</p>
+<p><code>load average: 0.27, 0.11, 0.04</code> : Load condition of the system(1min, 5min, 15min).</p>
+<p>If the load average value are bigger than <code>5</code>, the system may be overloaded.</p>
+<h3 id="Second-line"><a href="#Second-line" class="headerlink" title="Second line"></a>Second line</h3><pre><code>Tasks: 127 total,   1 running, 126 sleeping,   0 stopped,   0 zombie
+</code></pre>
+<p>Literally.</p>
+<h3 id="Third-line"><a href="#Third-line" class="headerlink" title="Third line"></a>Third line</h3><pre><code>%Cpu(s):  0.0 us,  0.0 sy,  0.0 ni,100.0 id,  0.0 wa,  0.0 hi,  0.0 si,  0.0 st
+</code></pre>
+<p><code>0.0 us</code> : Percent of CPU used by user space.</p>
+<p><code>0.0 sy</code> : Percent of CPU used by system space.</p>
+<p><code>0.0ni</code> : Percent of time spent running processes with manually configured Nice Value.</p>
+<p><a target="_blank" rel="noopener" href="https://www.redhat.com/sysadmin/manipulate-process-priority">What’s is Nice Value</a>?</p>
+<p><code>100.0 id</code> : Time idle (if high, CPU may be overworked).</p>
+<p>My Time idle is high cuz I haven’t run any compute-Intensive tasks</p>
+<p><code>0.0 wa</code> : Wait time(if high, CPU is waiting for I&#x2F;O access).</p>
+<p><code>0.0 hi</code> : Percent of time managing hardware interrupts.</p>
+<p><code>0.0 si</code> : Percent of time managing software interrupts.</p>
+<p><code>0.0 st</code> : Percent of virtual CPU time waiting for access to physical CPU.</p>
+<h3 id="The-last-two-lines"><a href="#The-last-two-lines" class="headerlink" title="The last two lines"></a>The last two lines</h3><pre><code>KiB Mem :   995488 total,   465908 free,   360852 used,   168728 buff/cache
+KiB Swap:  2097148 total,  2097148 free,        0 used.   488308 avail Mem
+</code></pre>
+<h4 id="KiB-Mem"><a href="#KiB-Mem" class="headerlink" title="KiB Mem"></a>KiB Mem</h4><p><code>995488 total</code> : Consumed memory.</p>
+<p><code>465908 free</code> : Available memory.</p>
+<p><code>360852 used</code> : Consumed memory.</p>
+<p><code>168728 buff/cache</code> : The amount of information buffered to be written.</p>
+<h4 id="KiB-Swap"><a href="#KiB-Swap" class="headerlink" title="KiB Swap"></a>KiB Swap</h4><p><code>2097148 total</code> : Total swap memory.</p>
+<p><code>2097148 free</code> : Available swap space.</p>
+<p><code>0 used</code> : Consumed swap space.</p>
+<p>We need to pay extra attention to the Used memory of Swap space.</p>
+<p>If this value keeps changing, it proves that the kernel and swap space are constantly exchanging memory, which proves that the memory is not enough.</p>
+<p>It should also be noted that the <code>free</code> memory in <code>KiB Mem</code> refers to the amount of memory managed by the kernel. It’s not the amount of remaining  <code>&quot;Free&quot; memory</code>.</p>
+<h2 id="Tasks-monitoring"><a href="#Tasks-monitoring" class="headerlink" title="Tasks monitoring"></a>Tasks monitoring</h2><pre><code>   PID USER      PR  NI    VIRT    RES    SHR S  %CPU %MEM     TIME+ COMMAND                                                                                                                                                                           
+     1 root      20   0  193552   6664   4160 S   0.0  0.7   0:01.78 systemd                                                                                                                                                         
+     2 root      20   0       0      0      0 S   0.0  0.0   0:00.00 kthreadd                                                                                                                                                                          
+     3 root      20   0       0      0      0 S   0.0  0.0   0:00.00 kworker/0:0                                                                                                                                    
+     4 root       0 -20       0      0      0 S   0.0  0.0   0:00.00 kworker/0:0H
+     
+     ......
+</code></pre>
+<p><code>PID</code> : Process id.</p>
+<p><code>USER</code> : Process user.</p>
+<p><code>PR</code> : Process priority.</p>
+<p><code>NI</code> :  Nice Value.</p>
+<p><code>VIRT</code> : Virtual memory process used(KiB).</p>
+<p>VIRT&#x3D;SWAP+RES</p>
+<p><code>RES</code> : The physical memory size used by the process and not swapped out(KiB).</p>
+<p>RES&#x3D;CODE+DATA</p>
+<p><code>SHR</code> :  Shared memory(KiB).</p>
+<p><code>S </code> : Process Status.</p>
+<p>D : Indestructible sleeping.</p>
+<p>R : Running.</p>
+<p>S : Sleeping.</p>
+<p>T : Stopped.</p>
+<p>Z : Zombie.</p>
+<p><code>%CPU</code> : Percent of CPU used.</p>
+<p><code>%MEM</code> : Percent of Memory process used.</p>
+<p><code>TIME+</code> : CPU time process used(unit 0.01second).</p>
+<p><code>COMMAND</code> : Process name.</p>
+<h2 id="Option"><a href="#Option" class="headerlink" title="Option"></a>Option</h2><pre><code class="bash">top -d 3
+</code></pre>
+<p>Set the update time to 3 seconds. </p>
+<p>The default value is 5.</p>
+<pre><code class="bash">top -n 2
+</code></pre>
+<p>Set the number of information updates to 2 times.</p>
+<pre><code class="bash">top -S
+</code></pre>
+<p>Reverses the last remembered <strong><code>S</code></strong> state. When the cumulative time toggle is ON, each process is listed with the CPU time it has used.</p>
+<p><a target="_blank" rel="noopener" href="https://phoenixnap.com/kb/top-command-in-linux">Here for more information</a>.</p>
+
+    </div>
+    
+    
+    
+    
+    <div id="comment">
+        <div id="giscus-container" class="giscus"></div>
+    </div>
+    
+    
+    
+    
+</div>
+
+                    <footer id="footer">
+    <div id="footer-wrap">
+        <div>
+            &copy;
+            2023 - 2023 ErickRen
+            <span id="footer-icon">
+                <i class="fa-solid fa-font-awesome fa-fw"></i>
+            </span>
+            &commat;Erick Ren
+        </div>
+        <div>
+            Based on the <a target="_blank" rel="noopener" href="https://hexo.io">Hexo Engine</a> &amp;
+            <a target="_blank" rel="noopener" href="https://github.com/theme-particlex/hexo-theme-particlex">ParticleX Theme</a>
+        </div>
+        
+    </div>
+</footer>
+
+                </div>
+            </transition>
+            
+            <transition name="fade">
+                <div id="preview" ref="preview" v-show="previewShow">
+                    <img id="preview-content" ref="previewContent" />
+                </div>
+            </transition>
+            
+        </div>
+        <script src="/js/main.js"></script>
+        
+        
+<script
+    src="https://giscus.app/client.js"
+    data-repo="ErickRen2023/erickren2023.github.io"
+    data-repo-id="R_kgDOJuubrg"
+    data-category="Announcements"
+    data-category-id="DIC_kwDOJuubrs4CXLJO"
+    data-mapping="pathname"
+    data-strict="0"
+    data-reactions-enabled="1"
+    data-emit-metadata="0"
+    data-input-position="top"
+    data-theme="light_high_contrast"
+    data-lang="en"
+    crossorigin
+    async
+></script>
+
+
+
+
+
+        
+    </body>
+</html>
