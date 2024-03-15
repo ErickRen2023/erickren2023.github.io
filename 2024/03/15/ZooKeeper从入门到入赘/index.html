@@ -1,0 +1,440 @@
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>ZooKeeper从入门到入赘 | ErickRen</title>
+        <meta name="author" content="Erick Ren" />
+        <meta name="description" content="Dream chaser never give up." />
+        <meta name="keywords" content="ErickRen" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+        <link rel="icon" href="https://q1.qlogo.cn/g?b=qq&nk=2969044006&s=5" />
+        <script src="https://cdn.staticfile.org/vue/3.2.47/vue.global.prod.min.js"></script>
+<link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/6.3.0/css/all.min.css" />
+<link rel="stylesheet" href="/css/fonts.min.css" />
+<script> const mixins = {}; </script>
+
+<script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
+
+
+<script src="https://cdn.staticfile.org/highlight.js/11.7.0/highlight.min.js"></script>
+<link
+    rel="stylesheet"
+    href="https://cdn.staticfile.org/highlight.js/11.7.0/styles/github.min.css"
+/>
+<script src="/js/lib/highlight.js"></script>
+
+
+
+<script src="/js/lib/preview.js"></script>
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/css/main.css" />
+
+    <meta name="generator" content="Hexo 6.3.0"></head>
+    <body>
+        <div id="layout">
+            <transition name="fade">
+                <div id="loading" v-show="loading">
+                    <div id="loading-circle">
+                        <h2>LOADING</h2>
+                        <p>Enable the browser cache if loading is slow</p>                        </p>
+                        <img src="/images/loading.gif" />
+                    </div>
+                </div>
+            </transition>
+            <nav id="menu" :class="{ hidden: hiddenMenu, 'menu-color': menuColor}">
+    <div id="desktop-menu">
+        <a class="title" href="/">
+            <span>ERICKREN</span>
+        </a>
+        
+        <a href="/">
+            <i class="fa-solid fa-house fa-fw"></i>
+            <span>&ensp;Home</span>
+        </a>
+        
+        <a href="/about">
+            <i class="fa-solid fa-id-card fa-fw"></i>
+            <span>&ensp;About</span>
+        </a>
+        
+        <a href="/archives">
+            <i class="fa-solid fa-box-archive fa-fw"></i>
+            <span>&ensp;Archives</span>
+        </a>
+        
+        <a href="/categories">
+            <i class="fa-solid fa-bookmark fa-fw"></i>
+            <span>&ensp;Categories</span>
+        </a>
+        
+        <a href="/tags">
+            <i class="fa-solid fa-tags fa-fw"></i>
+            <span>&ensp;Tags</span>
+        </a>
+        
+    </div>
+    <div id="mobile-menu">
+        <div class="title" @click="showMenuItems = !showMenuItems">
+            <i class="fa-solid fa-bars fa-fw"></i>
+            <span>&emsp;ERICKREN</span>
+        </div>
+        <transition name="slide">
+            <div class="items" v-show="showMenuItems">
+                
+                <a href="/">
+                    <div class="item">
+                        <div style="min-width: 20px; max-width: 50px; width: 10%">
+                            <i class="fa-solid fa-house fa-fw"></i>
+                        </div>
+                        <div style="min-width: 100px; max-width: 150%; width: 20%">Home</div>
+                    </div>
+                </a>
+                
+                <a href="/about">
+                    <div class="item">
+                        <div style="min-width: 20px; max-width: 50px; width: 10%">
+                            <i class="fa-solid fa-id-card fa-fw"></i>
+                        </div>
+                        <div style="min-width: 100px; max-width: 150%; width: 20%">About</div>
+                    </div>
+                </a>
+                
+                <a href="/archives">
+                    <div class="item">
+                        <div style="min-width: 20px; max-width: 50px; width: 10%">
+                            <i class="fa-solid fa-box-archive fa-fw"></i>
+                        </div>
+                        <div style="min-width: 100px; max-width: 150%; width: 20%">Archives</div>
+                    </div>
+                </a>
+                
+                <a href="/categories">
+                    <div class="item">
+                        <div style="min-width: 20px; max-width: 50px; width: 10%">
+                            <i class="fa-solid fa-bookmark fa-fw"></i>
+                        </div>
+                        <div style="min-width: 100px; max-width: 150%; width: 20%">Categories</div>
+                    </div>
+                </a>
+                
+                <a href="/tags">
+                    <div class="item">
+                        <div style="min-width: 20px; max-width: 50px; width: 10%">
+                            <i class="fa-solid fa-tags fa-fw"></i>
+                        </div>
+                        <div style="min-width: 100px; max-width: 150%; width: 20%">Tags</div>
+                    </div>
+                </a>
+                
+            </div>
+        </transition>
+    </div>
+</nav>
+<transition name="fade">
+    <div id="menu-curtain" @click="showMenuItems = !showMenuItems" v-show="showMenuItems"></div>
+</transition>
+
+            <transition name="into">
+                <div id="main" v-show="!loading">
+                    <div class="article">
+    <div>
+        <h1>ZooKeeper从入门到入赘</h1>
+    </div>
+    <div class="info">
+        <span class="date">
+            <span class="icon">
+                <i class="fa-solid fa-calendar fa-fw"></i>
+            </span>
+            2024/3/15
+        </span>
+        
+        <span class="category">
+            <a href="/categories/tech/">
+                <span class="icon">
+                    <i class="fa-solid fa-bookmark fa-fw"></i>
+                </span>
+                tech
+            </a>
+        </span>
+        
+        
+        <span class="tags">
+            <span class="icon">
+                <i class="fa-solid fa-tags fa-fw"></i>
+            </span>
+            
+            <span class="tag">
+                
+                <a href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F/" style="color: #00a596">分布式系统</a>
+            </span>
+            
+            <span class="tag">
+                
+                <a href="/tags/ZooKeeper/" style="color: #ff7d73">ZooKeeper</a>
+            </span>
+            
+        </span>
+        
+    </div>
+    
+    <div class="content" v-pre>
+        <blockquote>
+<p>ZooKeeper 是一个<strong>基于观察者模式设计分布式协调系统</strong>，起源于雅虎团队，名字源于内部项目大多由动物命名(Pig，Hive)，所以分布式协调服务命名为 ZooKeeper(动物园管理者)。Zookeeper是一种解决分布式数据一致性的工具，它有 集群管理、主备选举、配置管理、分布式同步、分布式锁和分布式队列 等功能，是微服务协调管理举足轻重的中间件。本文将讲解 ZooKeeper 的设计哲学与理论基础。</p>
+ <span id="more"></span>
+
+<p>请注意，本文不讲解 ZooKeeper 的应用。</p>
+</blockquote>
+<h1 id="ZooKeeper-的结构"><a href="#ZooKeeper-的结构" class="headerlink" title="ZooKeeper 的结构"></a>ZooKeeper 的结构</h1><blockquote>
+<p>注：这里的结构是指内存中的活跃结构，不包括持久化到磁盘中。</p>
+</blockquote>
+<p>ZooKeeper 的结构可以抽象为一个树状结构。</p>
+<p><img src="/2024/03/15/ZooKeeper%E4%BB%8E%E5%85%A5%E9%97%A8%E5%88%B0%E5%85%A5%E8%B5%98/1.png"></p>
+<h2 id="ZooKeeper-的节点类型"><a href="#ZooKeeper-的节点类型" class="headerlink" title="ZooKeeper 的节点类型"></a>ZooKeeper 的节点类型</h2><p>ZooKeeper 中的结点称为<code>znode</code>，每个 znode 都有两种状态：<code>是否持久</code>，<code>是否有序</code>。</p>
+<p>根据两种状态作笛卡尔积，可以得到 znode 的四种类型：</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>有序</th>
+<th>无序</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>持久</td>
+<td>持久顺序节点(PERSISTENT_SEQUENTIAL)</td>
+<td>持久节点(PERSISTENT)</td>
+</tr>
+<tr>
+<td>临时</td>
+<td>临时顺序节点(EPHEMERAL_SEQUENTIAL)</td>
+<td>临时节点(EPHEMERAL)</td>
+</tr>
+</tbody></table>
+<p>对于临时节点，会在<strong>当前会话</strong>结束后删除，同时其只允许作为叶子结点，不可以创建子节点。</p>
+<p>对于有序节点，创建时会被分配一个唯一的单调递增的整数，追加在节点的路径之后。</p>
+<h2 id="Znode-组成"><a href="#Znode-组成" class="headerlink" title="Znode 组成"></a>Znode 组成</h2><p>每个 Znode 由 Stat (状态信息) 和 Data (节点数据)组成。</p>
+<p>通过<code>get</code>命令可以获取某个节点信息</p>
+<pre><code class="bash">[zk: 127.0.0.1:2181(CONNECTED) 6] get /app
+# data
+the_data
+# stat
+cZxid = 0x2
+ctime = Tue Nov 27 11:05:34 CST 2018
+mZxid = 0x2
+mtime = Tue Nov 27 11:05:34 CST 2018
+pZxid = 0x3
+cversion = 1
+dataVersion = 0
+aclVersion = 0
+ephemeralOwner = 0x0
+dataLength = 0
+numChildren = 1
+</code></pre>
+<p>字段解释：</p>
+<ul>
+<li>cZxid：该节点被创建时的 ID。</li>
+<li>ctime：该节点的创建时间。</li>
+<li>mZxid：该节点最后一次更新时的事务 ID。</li>
+<li>mtime：该节点最后一次更新时的时间。</li>
+<li>pZxid：该节点的子节点列表最后一次修改时的事务 ID，只有子节点被增删时才会更新，子节点的数据更改不会更新。</li>
+<li>cversion：该节点的版本号，每次变化时数值 + 1。</li>
+<li>dataVersion：该节点数据的版本号，每次更新(无论是否有变化)都会在数值上 + 1；</li>
+<li>aclVersion：该节点的 ACL 版本号，表示该节点 ACL 信息变更次数。</li>
+<li>ephemeralOwner：创建该节点的会话的 SessionID，如果该节点为持久节点，则为 0。</li>
+<li>dataLength：节点数据长度。</li>
+<li>numChildren：节点的子节点个数。</li>
+</ul>
+<h2 id="Zxid-的二段组成"><a href="#Zxid-的二段组成" class="headerlink" title="Zxid 的二段组成"></a>Zxid 的二段组成</h2><p>ZooKeeper 的每次操作都会生成一个 Zxid。</p>
+<p>Zxid 是一个 64 位的数字两段组成，前 32 位是 epoch 信息，后 32 位为自增计数。</p>
+<p>每次 Leader 重新选举后，epoch 都会加一。</p>
+<blockquote>
+<p>请注意：zxid 中的 epoch 仅代表 zxid 的分代信息，与上文 Leader 选举中的 epoch不完全一致。</p>
+</blockquote>
+<h1 id="Watcher-事件监听器"><a href="#Watcher-事件监听器" class="headerlink" title="Watcher 事件监听器"></a>Watcher 事件监听器</h1><p>Watcher 机制是 ZooKeeper 中的重要特性，基于 ZooKeeper 创建节点时，可以对节点绑定监听事件，监听节点的变更。</p>
+<p>当节点发生变化时，ZooKeeper 将生成一个 Watcher 事件，并发送到客户端。</p>
+<p>客户端只会收到一次事件，收到事件后节点再次发生变化则客户端不会再收到消息，即：Watcher 是一次性操作。在开发中可以通过循环监听的方式达到永久监听的效果。</p>
+<p>Watcher 的全流程主要有三步：**客户端注册 Watcher ** -&gt; <strong>服务端处理 Watcher</strong> -&gt; <strong>客户端回调 Watcher</strong>。</p>
+<p>其中，客户端注册 Watcher 主要有三种方式：<code>getData</code>,<code>exists</code>和<code>getChildren</code>。</p>
+<p>监视需要设置监视点，监视点代表<strong>监视的对象类型</strong>。</p>
+<p>监视点有两种类型：<strong>数据监视点</strong>和<strong>子节点监视点</strong>。创建、删除或者设置 znode 都会触发这些监视点。exists 和 getData 可以设置数据监视点。getChildren 可以设置子节点变化。</p>
+<p>监视事件是监视的主体，监视事件主要有：<strong>None,NodeCreated, NodeDataChanged, NodeDeleted, NodeChildrenChanged</strong>，名如其意。</p>
+<h1 id="集群"><a href="#集群" class="headerlink" title="集群"></a>集群</h1><h2 id="集群角色"><a href="#集群角色" class="headerlink" title="集群角色"></a>集群角色</h2><p>在 ZooKeeper 集群中，每个服务称为 Server，扮演不同角色。</p>
+<h3 id="Leader"><a href="#Leader" class="headerlink" title="Leader"></a>Leader</h3><p>为客户端提供读和写的服务，负责投票的发起和决议，更新系统状态。</p>
+<h3 id="Follower"><a href="#Follower" class="headerlink" title="Follower"></a>Follower</h3><p>为客户端提供读服务。如果为写操作，则转发给 Leader。参与选举过程中的投票。</p>
+<h3 id="Observer"><a href="#Observer" class="headerlink" title="Observer"></a>Observer</h3><p>为客户端提供读服务，如果是写服务则转发给 Leader。不参与<code>Leader选举</code>，也不参与<code>过半写成功策略</code>。</p>
+<p>在下文中，Leader、Follower 和 Observer 都代指具体角色，而 Server 则是它们的统称。</p>
+<h2 id="Server-状态"><a href="#Server-状态" class="headerlink" title="Server 状态"></a>Server 状态</h2><ul>
+<li>LOOKING：寻找 Leader 状态,当前 Server 不没有 Leader 信息。</li>
+<li>LEADING：领导者状态，表明当前 Server 的角色是 Leader。</li>
+<li>FOLLOWING：跟随者状态，Leader 已经选举，当前 Server 正在跟随 Leader 同步。</li>
+<li>OBSERVING：观察者状态，表示当前 Server 的角色是 Observer。</li>
+</ul>
+<h2 id="过半写成功"><a href="#过半写成功" class="headerlink" title="过半写成功"></a>过半写成功</h2><p>当写操作发送到集群，Follower 会将写操作转发到 Leader，Leader 接到写操作后会将该写操作信息封装为一个 proposal(提案) <strong>广播给所有 Follower</strong>。各 Follower 收到广播后将 proposal 放入提案FIFO(先进先出)队列，并向 Leader 通知，当 Leader 收到超过一半的通知后，则再次广播允许各 Follower 执行写操作，将缓存队列中的信息写入。</p>
+<p>前文提到，Observer 不参与过半写沟通过程，也不计入有效通知。</p>
+<h2 id="心跳检测"><a href="#心跳检测" class="headerlink" title="心跳检测"></a>心跳检测</h2><p>集群中每个 Server 会定期向集群中的其他 Server 发送心跳包以确认自己在线。如果有半数以上的 Follower 检测不到 Leader 心跳包，则认为 Leader 已经离线，开启选举流程。</p>
+<h2 id="Leader-选举"><a href="#Leader-选举" class="headerlink" title="Leader  选举"></a>Leader  选举</h2><h3 id="运行选举"><a href="#运行选举" class="headerlink" title="运行选举"></a>运行选举</h3><p>集群中的所有节点都会定期向  Leader 发送心跳检测，如果检测到 Leader 离线，则开启 Leader 选举。</p>
+<p>当某 Server 获得半数以上选票则当选。</p>
+<p>选举中，每个选票以（Zxid, ServerID, epoch）封装，第一票都会投给自己。</p>
+<p>投票要将发送给整个集群，当收到其他 Server 的选票后，首先要检查 epoch，是否为本轮投票。</p>
+<p>因为 Server 都将票投给了自己，所以第一轮选举无人当选，开启下一轮选举。</p>
+<p>在第二轮选举中，所有 Server 都已经收到了若干个 （Zxid, ServerID, epoch） 三元组。各Server 先比较 Zxid，将选票投给更大者(Zxid 更大，该 Server 数据越新)；当 Zxid 相等时，比较 ServerID，将自己的选票投给 ServerID 更大者。</p>
+<h3 id="选举后的数据同步问题"><a href="#选举后的数据同步问题" class="headerlink" title="选举后的数据同步问题"></a>选举后的数据同步问题</h3><p>选举结束后，Leader 向 Follower 进行状态同步，以保证整个集群的数据一致性。</p>
+<p>ZooKeeper 的数据同步主要有四类：</p>
+<ul>
+<li>DIFF：差异同步</li>
+<li>TRUNC：回滚同步</li>
+<li>SNAP：全量同步</li>
+<li>TRUNC+DIFF：回滚 + 差异同步。</li>
+</ul>
+<p>在 ZooKeeper 数据同步中，有三个参数指导整个工作：</p>
+<ul>
+<li>peerLastZxid：Follower、Observer 最后处理的 zxid。当新 Leader 就任，其他服务器要向新 Leader 发送ACKEPOCH 进行注册。</li>
+<li>minCommittedLog：新 Leader 的提案队列中最小的 zxid。</li>
+<li>maxCommittedLog：新 Leader 的提案队列中最大的 zxid。</li>
+</ul>
+<p>当<code>minCommittedLog &lt; peerLastZxid &lt; maxCommittedLog</code>时，此时 <strong>Follower&#x2F;Observer 没有同步 Leader 存于提案缓存队列的请求</strong>。则进行差异化同步。</p>
+<p>当 <code>peerLastZxid &gt; maxCommittedLog</code> 时，截取多余的部分事务记录即可。</p>
+<p>当 <code>peerLastZxid &lt; minCommittedLog</code> 或 <code>Leader 服务器没有提案队列，peerLastZxid 不等于最后处理的 zxid</code>。这种情况下，事务有不重叠的情况，或者无法使用提议缓存队列，只能使用全量同步。</p>
+<p>当 集群中出现一个 Follower 有上一个 Epoch、整个集群未曾有过的 zxid 时，可能是<strong>宕机后被新 Leader 替代的老 Leader</strong>。该情况发生在<strong>老 Leader 收到写操作，放入自己的提案队列后宕机，未同步给其他 Follower 和 Observer，集群重新选举出新的 Leader，所以老 Leader 有着整个集群都没有的、上一代的 zxid</strong>。此时需要将老 Leader 的数据回滚，并且与新 Leader 同步。</p>
+<h3 id="集群分裂"><a href="#集群分裂" class="headerlink" title="集群分裂"></a>集群分裂</h3><p>对生产环境来说，集群通常部署在不同机房，甚至不同区域。当一个机房的机器全部离线，此时集群会分列为若干个小集群。这时候子集群各自选主导致的情况。会导致一个集群出现多个 Leader，出现数据一致性问题。</p>
+<p>ZooKeeper 对于这种问题采用了<strong>过半通过</strong>机制，任何事项都需要集群中的超半数 Server 支持，以此来规避集群分裂。</p>
+<h2 id="集群共识算法"><a href="#集群共识算法" class="headerlink" title="集群共识算法"></a>集群共识算法</h2><p>集群共识算法是为了解决分布式系统集群设计中面临的<code>一致性问题</code>。</p>
+<p>本文将讲解两种集群共识算法的顶层应用设计。</p>
+<h2 id="Paxos-算法"><a href="#Paxos-算法" class="headerlink" title="Paxos 算法"></a>Paxos 算法</h2><p>Paxos 算法是一种用于解决分布式系统中共识(Consensus)问题的算法，被认为是分布式领域中非常重要的算法之一。它由Leslie Lamport 于1990年提出，并以希腊岛屿 Paxos 的名字命名。</p>
+<p>用朴素的观点理解，Paxos 遵循<code>少数服从多数</code>的理念。</p>
+<p>共识算法的作用是让分布式系统重多个节点对某个提案(proposal)达成一致的看法。提案的意义非常宽泛，可以是任何问题，例如：是否执行某操作、选取哪个节点作为 Leader，事件的执行顺序。</p>
+<p>在 Paxos 算法中，存在三个主要角色：</p>
+<ul>
+<li>提议者(Proposer)：也可以叫<code>协调者(Coordinator)</code>，负责接收客户端的请求并发起提案。</li>
+<li>接受者(Acceptor)：也可以叫<code>投票者(Voter)</code>，负责对提议者的提案进行投票，同时保留自己的投票历史。</li>
+<li>学习者(Leaner)：如果有超过半数接受者就某个提议达成共识，那么学习者就接受提案并就该提案作计算，将最后的结果返回给客户端。</li>
+</ul>
+<p>为了减少该算法所需的硬件资源，一个节点可以身兼多职。</p>
+<h2 id="ZAB协议"><a href="#ZAB协议" class="headerlink" title="ZAB协议"></a>ZAB协议</h2><p>ZooKeeper 并没有完全采用 Paxos 算法，而是使用了 ZAB(ZooKeeper Atomic Broadcast 原子广播) 协议。ZAB 协议并不是通用的分布式一致性算法，而是专为 ZooKeeper 设计的崩溃可恢复的原子消息广播算法。</p>
+<p>ZAB 协议的核心上文其实已经提到，分别是：</p>
+<h3 id="崩溃恢复"><a href="#崩溃恢复" class="headerlink" title="崩溃恢复"></a>崩溃恢复</h3><p>当集群正在启动过程中，或者当 Leader 离线，ZAB 协议便会进入恢复模式并选举产生新的 Leader。ZAB 中崩溃恢复分为两步走： Leader 选举 与 数据恢复。</p>
+<p>这点在上文已经详细解释，在此不再赘述。</p>
+<h3 id="消息广播"><a href="#消息广播" class="headerlink" title="消息广播"></a>消息广播</h3><p>上文提到，ZooKeeper 写入操作都需要集群一半以上 Server 执行，所以 ZAB 消息广播的核心是：通过广播通知所有 Server， 只要半数以上的 Follower 成功反馈即可，不需要收到全部 Follower 反馈。</p>
+<h2 id="集群节点数量选择"><a href="#集群节点数量选择" class="headerlink" title="集群节点数量选择"></a>集群节点数量选择</h2><p>ZooKeeper 的集群最好为 <code>2n - 1</code>台。</p>
+<p>本质上是因为：<code>2n - 1</code>台的抗风险能力与<code>2n</code>是一致的。即都为 <code>n - 1</code>。</p>
+<p>前文提到，ZooKeeper 集群中所有事务都需要 <strong>过半通过</strong>。所以对于一个<code>2n</code>台 Server 的集群，能承载的最高离线数量为 <code>n - 1</code>，当集群中 <code>n</code>个 Server 离线时，整个集群无法过半通过，则集群事实上已经无法提供服务。</p>
+<p>综上，ZooKeeper 集群数量最好选择奇数台。</p>
+<h1 id="权限与并发控制"><a href="#权限与并发控制" class="headerlink" title="权限与并发控制"></a>权限与并发控制</h1><p>ZooKeeper 为节点引入了版本号的概念，以三个概念指导并发控制：</p>
+<ul>
+<li><strong>version</strong>：当前数据节点数据内容的版本号，无论是否有修改，version 都会 + 1；</li>
+<li><strong>cversion</strong>：当前数据节点子节点的版本号；新增、删除子节点都会使得 cversion + 1，但如果子节点数据被修改，则不会变动。</li>
+<li><strong>aversion</strong>：当前数据节点 ACL（Access Control List）权限的版本号。</li>
+</ul>
+<p>ZooKeeper 本质上采用 CAS 乐观锁进行并发控制。在处理写请求中，会获取当前请求的<code>期望版本(ExpectedVersion)</code>与节点中的<code>当前版本(CurrentVersion)</code>，如果请求的期望版本为 -1，则可以直接将数据写入，否则将两个版本对比，如果相同则将其递增的值后写入数据节点。</p>
+<pre><code class="java">private static int checkAndIncVersion(int currentVersion, int expectedVersion, String path) 
+throws KeeperException.BadVersionException &#123;
+    if (expectedVersion != -1 &amp;&amp; expectedVersion != currentVersion) &#123;
+            throw new KeeperException.BadVersionException(path);
+    &#125;
+    return currentVersion + 1;
+&#125;
+</code></pre>
+<h1 id="存储"><a href="#存储" class="headerlink" title="存储"></a>存储</h1><p>ZooKeeper 的存储分为两部分：<code>磁盘存储</code>和<code>内存存储</code>。其中磁盘访问最慢，而内存较快。通过将数据存储在内存中，通过各种手段将数据<strong>持久化</strong>到磁盘上，可以提高性能。</p>
+<h2 id="磁盘存储"><a href="#磁盘存储" class="headerlink" title="磁盘存储"></a>磁盘存储</h2><p>ZooKeeper 通过<code>操作日志</code>记录客户端的变更，每个日志文件大小为 64 MB。当日志文件创建时，ZooKeeper 即向操作系统申请同等大小的空间，当文件的剩余内存不</p>
+<p>足 4 KB 时再次申请。每个操作日志<strong>第一条记录的 ZXID 作为文件名后缀</strong>。</p>
+<h2 id="内存存储"><a href="#内存存储" class="headerlink" title="内存存储"></a>内存存储</h2><p>ZooKeeper 的内存模型是一棵树，前文已详细讲过。</p>
+<h1 id="会话"><a href="#会话" class="headerlink" title="会话"></a>会话</h1><p>会话(Session)是客户端与服务端保持连接的概念。</p>
+<p>客户端启动时，会尝试与集群中的一个节点建立连接，失败则寻找下一个，直到成功或全部失败。一般来说，会话都要通过 TCP 协议，利用 Socket 建立 TCP 长连接。</p>
+<p>Session 中包含四个属性：</p>
+<ul>
+<li>会话ID(Session ID)：会话ID主要由时间戳，和机器 id控制。</li>
+<li>超时时间(TimeOut)：超时时间是一个时间长度。</li>
+<li>过期时间(ExpirationTime)：过期时间是一个时间点，超过该时间点则会话过期。</li>
+<li>是否被关闭(isClosing)</li>
+</ul>
+<p>会话 ID 生成算法：</p>
+<pre><code class="java">// id 为机器 ID
+public static long initializeNextSession(long id) &#123;
+        long nextSid = 0;
+        nextSid = (System.currentTimeMillis() &lt;&lt; 24) &gt;&gt;&gt; 8;
+        nextSid =  nextSid | (id &lt;&lt;56);
+        return nextSid;
+&#125;
+</code></pre>
+<h2 id="分桶机制"><a href="#分桶机制" class="headerlink" title="分桶机制"></a>分桶机制</h2><p>Session 由 ZooKeeper 的服务端进行管理。服务端会维护多个桶，将 Session 分配到一个个桶里。</p>
+<p>在 ZooKeeper 的实现中，一般将过期时间相近的会话放入同一个桶中，每次会话活跃(get&#x2F;put&#x2F;ping等操作)时将当前会话移动到下一个过期桶之中。每隔一段时间将到期桶的所有会话关闭。</p>
+<p>所以对于 Session 来说，过期时间并不是严格准确的，通常因其他桶的关闭而一同关闭。</p>
+
+    </div>
+    
+    
+    
+    
+    <div id="comment">
+        <div id="giscus-container" class="giscus"></div>
+    </div>
+    
+    
+    
+    
+</div>
+
+                    <footer id="footer">
+    <div id="footer-wrap">
+        <div>
+            &copy;
+            2023 - 2024 ErickRen
+            <span id="footer-icon">
+                <i class="fa-solid fa-font-awesome fa-fw"></i>
+            </span>
+            &commat;Erick Ren
+        </div>
+        <div>
+            Based on the <a target="_blank" rel="noopener" href="https://hexo.io">Hexo Engine</a> &amp;
+            <a target="_blank" rel="noopener" href="https://github.com/theme-particlex/hexo-theme-particlex">ParticleX Theme</a>
+        </div>
+        
+    </div>
+</footer>
+
+                </div>
+            </transition>
+            
+            <transition name="fade">
+                <div id="preview" ref="preview" v-show="previewShow">
+                    <img id="preview-content" ref="previewContent" />
+                </div>
+            </transition>
+            
+        </div>
+        <script src="/js/main.js"></script>
+        
+        
+<script
+    src="https://giscus.app/client.js"
+    data-repo="ErickRen2023/erickren2023.github.io"
+    data-repo-id="R_kgDOJuubrg"
+    data-category="Announcements"
+    data-category-id="DIC_kwDOJuubrs4CXLJO"
+    data-mapping="pathname"
+    data-strict="0"
+    data-reactions-enabled="1"
+    data-emit-metadata="0"
+    data-input-position="top"
+    data-theme="light_high_contrast"
+    data-lang="en"
+    crossorigin
+    async
+></script>
+
+
+
+
+
+        
+    </body>
+</html>
