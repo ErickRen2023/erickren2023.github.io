@@ -3,7 +3,7 @@
 <html lang="en">
     <head>
         <meta charset="utf-8" />
-        <title>ErickRen</title>
+        <title>Redis：底层数据结构介绍与分析 | ErickRen</title>
         <meta name="author" content="Erick Ren" />
         <meta name="description" content="Dream chaser never give up." />
         <meta name="keywords" content="ErickRen" />
@@ -32,7 +32,9 @@
 
 
 
-<script src="/js/lib/home.js"></script>
+
+
+
 
 <link rel="stylesheet" href="/css/main.css" />
 
@@ -143,31 +145,17 @@
 
             <transition name="into">
                 <div id="main" v-show="!loading">
-                    <div id="home-head">
-    <div id="home-background" ref="homeBackground" data-images="/images/background1.jpg"></div>
-    <div id="home-info" @click="homeClick">
-        <span class="loop"></span>
-        <span class="loop"></span>
-        <span class="loop"></span>
-        <span class="loop"></span>
-        <span class="info">
-            <div class="wrap">
-                <h1>ErickRen</h1>
-                <h3></h3>
-                <h5>Dream chaser never give up.</h5>
-            </div>
-        </span>
+                    <div class="article">
+    <div>
+        <h1>Redis：底层数据结构介绍与分析</h1>
     </div>
-</div>
-<div id="home-posts-wrap"  ref="homePostsWrap">
-    <div id="home-posts">
-        
-
-<div class="post">
-    <a href="/2024/03/16/Redis%EF%BC%9A%E5%BA%95%E5%B1%82%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%BB%8B%E7%BB%8D%E4%B8%8E%E5%88%86%E6%9E%90/">
-        <h2 class="post-title">Redis：底层数据结构介绍与分析</h2>
-    </a>
-    <div class="category-and-date">
+    <div class="info">
+        <span class="date">
+            <span class="icon">
+                <i class="fa-solid fa-calendar fa-fw"></i>
+            </span>
+            2024/3/16
+        </span>
         
         <span class="category">
             <a href="/categories/tech/">
@@ -178,19 +166,28 @@
             </a>
         </span>
         
-        <span class="date">
+        
+        <span class="tags">
             <span class="icon">
-                <i class="fa-solid fa-calendar fa-fw"></i>
+                <i class="fa-solid fa-tags fa-fw"></i>
             </span>
-            2024/3/16
+            
+            <span class="tag">
+                
+                <a href="/tags/Redis/" style="color: #03a9f4">Redis</a>
+            </span>
+            
+            <span class="tag">
+                
+                <a href="/tags/NoSQL/" style="color: #00a596">NoSQL</a>
+            </span>
+            
         </span>
         
-        
     </div>
-    <div class="description">
-        <div class="content" v-pre>
-            
-            <blockquote>
+    
+    <div class="content" v-pre>
+        <blockquote>
 <p>Redis 是著名的跨平台 NoSQL 数据库，以其极高的性能和强大的数据结构支持闻名。本文将介绍支撑 Redis 高性能的原因之一：底层数据结构。一览数据结构之美。</p>
 <p>本篇将涉及C语言，请确保您拥有C语言相关基础与计算机底层知识</p>
 </blockquote>
@@ -634,348 +631,17 @@ typedef struct quicklistNode &#123;
 <li><strong>当负载因子大于等于 5 时，此时说明哈希冲突非常严重了，不管有没有有在执行 RDB 快照或 AOF 重写，都会强制进行 rehash 操作。</strong></li>
 </ul>
 
-            
-        </div>
-    </div>
-    <div class="post-tags">
-        
-        <span class="icon">
-            <i class="fa-solid fa-tags fa-fw"></i>
-        </span>
-        
-        
-        <span class="tag">
-            
-            <a href="/tags/Redis/" style="color: #ff7d73">Redis</a>
-        </span>
-        
-        <span class="tag">
-            
-            <a href="/tags/NoSQL/" style="color: #ffa2c4">NoSQL</a>
-        </span>
-        
-    </div>
-    <a href="/2024/03/16/Redis%EF%BC%9A%E5%BA%95%E5%B1%82%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%BB%8B%E7%BB%8D%E4%B8%8E%E5%88%86%E6%9E%90/" class="go-post">More</a>
-</div>
-
-<div class="post">
-    <a href="/2024/03/15/ZooKeeper%E4%BB%8E%E5%85%A5%E9%97%A8%E5%88%B0%E5%85%A5%E8%B5%98/">
-        <h2 class="post-title">ZooKeeper从入门到入赘</h2>
-    </a>
-    <div class="category-and-date">
-        
-        <span class="category">
-            <a href="/categories/tech/">
-                <span class="icon">
-                    <i class="fa-solid fa-bookmark fa-fw"></i>
-                </span>
-                tech
-            </a>
-        </span>
-        
-        <span class="date">
-            <span class="icon">
-                <i class="fa-solid fa-calendar fa-fw"></i>
-            </span>
-            2024/3/15
-        </span>
-        
-        
-    </div>
-    <div class="description">
-        <div class="content" v-pre>
-            
-            <blockquote>
-<p>ZooKeeper 是一个<strong>基于观察者模式设计分布式协调系统</strong>，起源于雅虎团队，名字源于内部项目大多由动物命名(Pig，Hive)，所以分布式协调服务命名为 ZooKeeper(动物园管理者)。Zookeeper是一种解决分布式数据一致性的工具，它有 集群管理、主备选举、配置管理、分布式同步、分布式锁和分布式队列 等功能，是微服务协调管理举足轻重的中间件。本文将讲解 ZooKeeper 的设计哲学与理论基础。</p>
-            
-        </div>
-    </div>
-    <div class="post-tags">
-        
-        <span class="icon">
-            <i class="fa-solid fa-tags fa-fw"></i>
-        </span>
-        
-        
-        <span class="tag">
-            
-            <a href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F/" style="color: #ff7d73">分布式系统</a>
-        </span>
-        
-        <span class="tag">
-            
-            <a href="/tags/ZooKeeper/" style="color: #00bcd4">ZooKeeper</a>
-        </span>
-        
-    </div>
-    <a href="/2024/03/15/ZooKeeper%E4%BB%8E%E5%85%A5%E9%97%A8%E5%88%B0%E5%85%A5%E8%B5%98/" class="go-post">More</a>
-</div>
-
-<div class="post">
-    <a href="/2023/08/01/Linux-command-Top/">
-        <h2 class="post-title">Linux command: Top</h2>
-    </a>
-    <div class="category-and-date">
-        
-        <span class="category">
-            <a href="/categories/tech/">
-                <span class="icon">
-                    <i class="fa-solid fa-bookmark fa-fw"></i>
-                </span>
-                tech
-            </a>
-        </span>
-        
-        <span class="date">
-            <span class="icon">
-                <i class="fa-solid fa-calendar fa-fw"></i>
-            </span>
-            2023/8/1
-        </span>
-        
-        
-    </div>
-    <div class="description">
-        <div class="content" v-pre>
-            
-            <p><code>Top</code> command is used to show the Linux process. It provides a dynamic real-time view of the system status.</p>
-<p>Usually, the command shows the summary information of the system and the running processes or threads.</p>
-<p>Here, I will explain how to use the command and interpret the information.</p>
-            
-        </div>
-    </div>
-    <div class="post-tags">
-        
-        <span class="icon">
-            <i class="fa-solid fa-tags fa-fw"></i>
-        </span>
-        
-        
-        <span class="tag">
-            
-            <a href="/tags/tech/" style="color: #00bcd4">tech</a>
-        </span>
-        
-        <span class="tag">
-            
-            <a href="/tags/linux/" style="color: #ff7d73">linux</a>
-        </span>
-        
-        <span class="tag">
-            
-            <a href="/tags/bash/" style="color: #ffa2c4">bash</a>
-        </span>
-        
-    </div>
-    <a href="/2023/08/01/Linux-command-Top/" class="go-post">More</a>
-</div>
-
-<div class="post">
-    <a href="/2023/07/11/HashMap%E4%BB%8E%E5%85%A5%E9%97%A8%E5%88%B0%E5%85%A5%E7%9D%A1/">
-        <h2 class="post-title">HashMap从入门到入睡</h2>
-    </a>
-    <div class="category-and-date">
-        
-        <span class="category">
-            <a href="/categories/tech/">
-                <span class="icon">
-                    <i class="fa-solid fa-bookmark fa-fw"></i>
-                </span>
-                tech
-            </a>
-        </span>
-        
-        <span class="date">
-            <span class="icon">
-                <i class="fa-solid fa-calendar fa-fw"></i>
-            </span>
-            2023/7/11
-        </span>
-        
-        
-    </div>
-    <div class="description">
-        <div class="content" v-pre>
-            
-            <blockquote>
-<p> 谨以此文献给在HashMap家族中迷失的岁月。。。。。</p>
-</blockquote>
-            
-        </div>
-    </div>
-    <div class="post-tags">
-        
-        <span class="icon">
-            <i class="fa-solid fa-tags fa-fw"></i>
-        </span>
-        
-        
-        <span class="tag">
-            
-            <a href="/tags/Java/" style="color: #ffa2c4">Java</a>
-        </span>
-        
-        <span class="tag">
-            
-            <a href="/tags/HashMap/" style="color: #03a9f4">HashMap</a>
-        </span>
-        
-    </div>
-    <a href="/2023/07/11/HashMap%E4%BB%8E%E5%85%A5%E9%97%A8%E5%88%B0%E5%85%A5%E7%9D%A1/" class="go-post">More</a>
-</div>
-
-<div class="post">
-    <a href="/2023/06/17/Leopard2%20was%20easily%20destroyed%20by%20the%20Russian%20army%20in%20Ukraine/">
-        <h2 class="post-title">Leopard2 was easily destroyed by the Russian army in Ukraine</h2>
-    </a>
-    <div class="category-and-date">
-        
-        <span class="category">
-            <a href="/categories/Military/">
-                <span class="icon">
-                    <i class="fa-solid fa-bookmark fa-fw"></i>
-                </span>
-                Military
-            </a>
-        </span>
-        
-        <span class="date">
-            <span class="icon">
-                <i class="fa-solid fa-calendar fa-fw"></i>
-            </span>
-            2023/6/17
-        </span>
-        
-        
-    </div>
-    <div class="description">
-        <div class="content" v-pre>
-            
-            <h1 id="The-myth-of-Leopard-2"><a href="#The-myth-of-Leopard-2" class="headerlink" title="The myth of Leopard 2"></a>The myth of Leopard 2</h1><p>In Chinese Internet,the Ukrainian Supporters think the leopard will completely turning the situation of the War In Ukraine,allowing Ukraine to regain its territory.</p>
-<p>“Everything will be fine if Leopard 2 launches the counterattack,” they said.</p>
-<p>In addition to this,the “Challenger 2”, the “M1 Abrams” even the “Ariete” can be deified the weights that can be deified to determine balance.</p>
-<p>After Leopard was destroyed, F16 took its place.</p>
-<p>Hahahaha,that’s very ironic.</p>
-            
-        </div>
-    </div>
-    <div class="post-tags">
-        
-        <span class="icon">
-            <i class="fa-solid fa-tags fa-fw"></i>
-        </span>
-        
-        
-        <span class="tag">
-            
-            <a href="/tags/Military/" style="color: #03a9f4">Military</a>
-        </span>
-        
-        <span class="tag">
-            
-            <a href="/tags/War-In-Ukraine/" style="color: #00a596">War In Ukraine</a>
-        </span>
-        
-        <span class="tag">
-            
-            <a href="/tags/Leopard2/" style="color: #03a9f4">Leopard2</a>
-        </span>
-        
-    </div>
-    <a href="/2023/06/17/Leopard2%20was%20easily%20destroyed%20by%20the%20Russian%20army%20in%20Ukraine/" class="go-post">More</a>
-</div>
-
-<div class="post">
-    <a href="/2023/06/13/Hello-World/">
-        <h2 class="post-title">Hello World!</h2>
-    </a>
-    <div class="category-and-date">
-        
-        <span class="category">
-            <a href="/categories/talk/">
-                <span class="icon">
-                    <i class="fa-solid fa-bookmark fa-fw"></i>
-                </span>
-                talk
-            </a>
-        </span>
-        
-        <span class="date">
-            <span class="icon">
-                <i class="fa-solid fa-calendar fa-fw"></i>
-            </span>
-            2023/6/13
-        </span>
-        
-        
-    </div>
-    <div class="description">
-        <div class="content" v-pre>
-            
-            <h1 id="Hello-World"><a href="#Hello-World" class="headerlink" title="Hello World!"></a>Hello World!</h1><p>This is my first post in hexo.</p>
-<p>I think it’s unnecessary for me to create a site to express my viewpoints.</p>
-<p>But I change my viewpoint recently days…….</p>
-            
-        </div>
-    </div>
-    <div class="post-tags">
-        
-        <span class="icon">
-            <i class="fa-solid fa-tags fa-fw"></i>
-        </span>
-        
-        
-        <span class="tag">
-            
-            <a href="/tags/talk/" style="color: #03a9f4">talk</a>
-        </span>
-        
-    </div>
-    <a href="/2023/06/13/Hello-World/" class="go-post">More</a>
-</div>
-
-
-        <div class="page-current">
-    <div class="prev">
-        
-    </div>
-    <div class="page-index">
-        
-        <span class="current">1</span>
-        
-    </div>
-    <div class="next">
-        
-    </div>
-</div>
-
     </div>
     
-    <div id="home-card">
-        <div id="card-div">
-    <div class="card-style">
-        <div class="avatar">
-            <img src="https://q1.qlogo.cn/g?b=qq&nk=2969044006&s=5" alt="avatar" />
-        </div>
-        <div class="name">Erick Ren</div>
-        <div class="description">
-            <p>Dream chaser never give up.</p>
-
-        </div>
-        
-        
-        <div class="friend-links">
-            
-            <div class="friend-link">
-                <a target="_blank" rel="noopener" href="https://blog.jixiaob.cn/">xiaoB</a>
-            </div>
-            
-        </div>
-        
+    
+    
+    
+    <div id="comment">
+        <div id="giscus-container" class="giscus"></div>
     </div>
-</div>
-
-    </div>
+    
+    
+    
     
 </div>
 
@@ -1008,6 +674,29 @@ typedef struct quicklistNode &#123;
             
         </div>
         <script src="/js/main.js"></script>
+        
+        
+<script
+    src="https://giscus.app/client.js"
+    data-repo="ErickRen2023/erickren2023.github.io"
+    data-repo-id="R_kgDOJuubrg"
+    data-category="Announcements"
+    data-category-id="DIC_kwDOJuubrs4CXLJO"
+    data-mapping="pathname"
+    data-strict="0"
+    data-reactions-enabled="1"
+    data-emit-metadata="0"
+    data-input-position="top"
+    data-theme="light_high_contrast"
+    data-lang="en"
+    crossorigin
+    async
+></script>
+
+
+
+
+
         
     </body>
 </html>
