@@ -38,7 +38,11 @@
 
 <link rel="stylesheet" href="/css/main.css" />
 
-    <meta name="generator" content="Hexo 6.3.0"></head>
+    <!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.3.0"></head>
     <body>
         <div id="layout">
             <transition name="fade">
@@ -174,17 +178,17 @@
             
             <span class="tag">
                 
-                <a href="/tags/tech/" style="color: #03a9f4">tech</a>
+                <a href="/tags/tech/" style="color: #ffa2c4">tech</a>
             </span>
             
             <span class="tag">
                 
-                <a href="/tags/linux/" style="color: #ffa2c4">linux</a>
+                <a href="/tags/linux/" style="color: #00bcd4">linux</a>
             </span>
             
             <span class="tag">
                 
-                <a href="/tags/bash/" style="color: #03a9f4">bash</a>
+                <a href="/tags/bash/" style="color: #ffa2c4">bash</a>
             </span>
             
         </span>
@@ -196,14 +200,13 @@
 <p>Usually, the command shows the summary information of the system and the running processes or threads.</p>
 <p>Here, I will explain how to use the command and interpret the information.</p>
  <span id="more"></span>
-
 <p>Explain the command with a picture in Windows:</p>
-<p><img src="/2023/08/01/Linux-command-Top/1.png" alt="1"></p>
+<p><img src="1.png" alt="1" /></p>
 <p>It will open interactive command mode as soon as you run this command.</p>
-<p><img src="/2023/08/01/Linux-command-Top/2.png"></p>
+<p><img src="2.png" alt="" /></p>
 <p>And press <code>q</code> to exit.</p>
 <p>Here is an example:</p>
-<pre><code>top - 09:25:41 up 1 min,  3 users,  load average: 0.27, 0.11, 0.04
+<pre class="highlight"><code class="">top - 09:25:41 up 1 min,  3 users,  load average: 0.27, 0.11, 0.04
 Tasks: 127 total,   1 running, 126 sleeping,   0 stopped,   0 zombie
 %Cpu(s):  0.0 us,  0.0 sy,  0.0 ni,100.0 id,  0.0 wa,  0.0 hi,  0.0 si,  0.0 st
 KiB Mem :   995488 total,   465908 free,   360852 used,   168728 buff/cache
@@ -238,13 +241,15 @@ KiB Swap:  2097148 total,  2097148 free,        0 used.   488308 avail Mem
     27 root       0 -20       0      0      0 S   0.0  0.0   0:00.00 md  
 </code></pre>
 <p>The first five lines of the display are the system status and the other are the status monitoring of every process.</p>
-<h2 id="System-status"><a href="#System-status" class="headerlink" title="System status"></a>System status</h2><pre><code>top - 09:25:41 up 1 min,  3 users,  load average: 0.27, 0.11, 0.04
+<h2 id="system-status"><a class="markdownIt-Anchor" href="#system-status"></a> System status</h2>
+<pre class="highlight"><code class="">top - 09:25:41 up 1 min,  3 users,  load average: 0.27, 0.11, 0.04
 Tasks: 127 total,   1 running, 126 sleeping,   0 stopped,   0 zombie
 %Cpu(s):  0.0 us,  0.0 sy,  0.0 ni,100.0 id,  0.0 wa,  0.0 hi,  0.0 si,  0.0 st
 KiB Mem :   995488 total,   465908 free,   360852 used,   168728 buff/cache
 KiB Swap:  2097148 total,  2097148 free,        0 used.   488308 avail Mem 
 </code></pre>
-<h3 id="First-line"><a href="#First-line" class="headerlink" title="First line"></a>First line</h3><pre><code>top - 09:25:41 up 1 min,  3 users,  load average: 0.27, 0.11, 0.04
+<h3 id="first-line"><a class="markdownIt-Anchor" href="#first-line"></a> First line</h3>
+<pre class="highlight"><code class="">top - 09:25:41 up 1 min,  3 users,  load average: 0.27, 0.11, 0.04
 </code></pre>
 <p><code>09:25:41</code> : The system time.</p>
 <p><code>up 1 min</code> : The system runs for less than a minute.</p>
@@ -254,10 +259,12 @@ KiB Swap:  2097148 total,  2097148 free,        0 used.   488308 avail Mem
 <p><code>3 users</code> : 3 users has login in the system.</p>
 <p><code>load average: 0.27, 0.11, 0.04</code> : Load condition of the system(1min, 5min, 15min).</p>
 <p>If the load average value are bigger than <code>5</code>, the system may be overloaded.</p>
-<h3 id="Second-line"><a href="#Second-line" class="headerlink" title="Second line"></a>Second line</h3><pre><code>Tasks: 127 total,   1 running, 126 sleeping,   0 stopped,   0 zombie
+<h3 id="second-line"><a class="markdownIt-Anchor" href="#second-line"></a> Second line</h3>
+<pre class="highlight"><code class="">Tasks: 127 total,   1 running, 126 sleeping,   0 stopped,   0 zombie
 </code></pre>
 <p>Literally.</p>
-<h3 id="Third-line"><a href="#Third-line" class="headerlink" title="Third line"></a>Third line</h3><pre><code>%Cpu(s):  0.0 us,  0.0 sy,  0.0 ni,100.0 id,  0.0 wa,  0.0 hi,  0.0 si,  0.0 st
+<h3 id="third-line"><a class="markdownIt-Anchor" href="#third-line"></a> Third line</h3>
+<pre class="highlight"><code class="">%Cpu(s):  0.0 us,  0.0 sy,  0.0 ni,100.0 id,  0.0 wa,  0.0 hi,  0.0 si,  0.0 st
 </code></pre>
 <p><code>0.0 us</code> : Percent of CPU used by user space.</p>
 <p><code>0.0 sy</code> : Percent of CPU used by system space.</p>
@@ -265,24 +272,28 @@ KiB Swap:  2097148 total,  2097148 free,        0 used.   488308 avail Mem
 <p><a target="_blank" rel="noopener" href="https://www.redhat.com/sysadmin/manipulate-process-priority">What’s is Nice Value</a>?</p>
 <p><code>100.0 id</code> : Time idle (if high, CPU may be overworked).</p>
 <p>My Time idle is high cuz I haven’t run any compute-Intensive tasks</p>
-<p><code>0.0 wa</code> : Wait time(if high, CPU is waiting for I&#x2F;O access).</p>
+<p><code>0.0 wa</code> : Wait time(if high, CPU is waiting for I/O access).</p>
 <p><code>0.0 hi</code> : Percent of time managing hardware interrupts.</p>
 <p><code>0.0 si</code> : Percent of time managing software interrupts.</p>
 <p><code>0.0 st</code> : Percent of virtual CPU time waiting for access to physical CPU.</p>
-<h3 id="The-last-two-lines"><a href="#The-last-two-lines" class="headerlink" title="The last two lines"></a>The last two lines</h3><pre><code>KiB Mem :   995488 total,   465908 free,   360852 used,   168728 buff/cache
+<h3 id="the-last-two-lines"><a class="markdownIt-Anchor" href="#the-last-two-lines"></a> The last two lines</h3>
+<pre class="highlight"><code class="">KiB Mem :   995488 total,   465908 free,   360852 used,   168728 buff/cache
 KiB Swap:  2097148 total,  2097148 free,        0 used.   488308 avail Mem
 </code></pre>
-<h4 id="KiB-Mem"><a href="#KiB-Mem" class="headerlink" title="KiB Mem"></a>KiB Mem</h4><p><code>995488 total</code> : Consumed memory.</p>
+<h4 id="kib-mem"><a class="markdownIt-Anchor" href="#kib-mem"></a> KiB Mem</h4>
+<p><code>995488 total</code> : Consumed memory.</p>
 <p><code>465908 free</code> : Available memory.</p>
 <p><code>360852 used</code> : Consumed memory.</p>
 <p><code>168728 buff/cache</code> : The amount of information buffered to be written.</p>
-<h4 id="KiB-Swap"><a href="#KiB-Swap" class="headerlink" title="KiB Swap"></a>KiB Swap</h4><p><code>2097148 total</code> : Total swap memory.</p>
+<h4 id="kib-swap"><a class="markdownIt-Anchor" href="#kib-swap"></a> KiB Swap</h4>
+<p><code>2097148 total</code> : Total swap memory.</p>
 <p><code>2097148 free</code> : Available swap space.</p>
 <p><code>0 used</code> : Consumed swap space.</p>
 <p>We need to pay extra attention to the Used memory of Swap space.</p>
 <p>If this value keeps changing, it proves that the kernel and swap space are constantly exchanging memory, which proves that the memory is not enough.</p>
 <p>It should also be noted that the <code>free</code> memory in <code>KiB Mem</code> refers to the amount of memory managed by the kernel. It’s not the amount of remaining  <code>&quot;Free&quot; memory</code>.</p>
-<h2 id="Tasks-monitoring"><a href="#Tasks-monitoring" class="headerlink" title="Tasks monitoring"></a>Tasks monitoring</h2><pre><code>   PID USER      PR  NI    VIRT    RES    SHR S  %CPU %MEM     TIME+ COMMAND                                                                                                                                                                           
+<h2 id="tasks-monitoring"><a class="markdownIt-Anchor" href="#tasks-monitoring"></a> Tasks monitoring</h2>
+<pre class="highlight"><code class="">   PID USER      PR  NI    VIRT    RES    SHR S  %CPU %MEM     TIME+ COMMAND                                                                                                                                                                           
      1 root      20   0  193552   6664   4160 S   0.0  0.7   0:01.78 systemd                                                                                                                                                         
      2 root      20   0       0      0      0 S   0.0  0.0   0:00.00 kthreadd                                                                                                                                                                          
      3 root      20   0       0      0      0 S   0.0  0.0   0:00.00 kworker/0:0                                                                                                                                    
@@ -295,11 +306,11 @@ KiB Swap:  2097148 total,  2097148 free,        0 used.   488308 avail Mem
 <p><code>PR</code> : Process priority.</p>
 <p><code>NI</code> :  Nice Value.</p>
 <p><code>VIRT</code> : Virtual memory process used(KiB).</p>
-<p>VIRT&#x3D;SWAP+RES</p>
+<p>VIRT=SWAP+RES</p>
 <p><code>RES</code> : The physical memory size used by the process and not swapped out(KiB).</p>
-<p>RES&#x3D;CODE+DATA</p>
+<p>RES=CODE+DATA</p>
 <p><code>SHR</code> :  Shared memory(KiB).</p>
-<p><code>S </code> : Process Status.</p>
+<p><code>S</code> : Process Status.</p>
 <p>D : Indestructible sleeping.</p>
 <p>R : Running.</p>
 <p>S : Sleeping.</p>
@@ -309,14 +320,15 @@ KiB Swap:  2097148 total,  2097148 free,        0 used.   488308 avail Mem
 <p><code>%MEM</code> : Percent of Memory process used.</p>
 <p><code>TIME+</code> : CPU time process used(unit 0.01second).</p>
 <p><code>COMMAND</code> : Process name.</p>
-<h2 id="Option"><a href="#Option" class="headerlink" title="Option"></a>Option</h2><pre><code class="bash">top -d 3
+<h2 id="option"><a class="markdownIt-Anchor" href="#option"></a> Option</h2>
+<pre class="highlight"><code class="bash">top -d 3
 </code></pre>
-<p>Set the update time to 3 seconds. </p>
+<p>Set the update time to 3 seconds.</p>
 <p>The default value is 5.</p>
-<pre><code class="bash">top -n 2
+<pre class="highlight"><code class="bash">top -n 2
 </code></pre>
 <p>Set the number of information updates to 2 times.</p>
-<pre><code class="bash">top -S
+<pre class="highlight"><code class="bash">top -S
 </code></pre>
 <p>Reverses the last remembered <strong><code>S</code></strong> state. When the cumulative time toggle is ON, each process is listed with the CPU time it has used.</p>
 <p><a target="_blank" rel="noopener" href="https://phoenixnap.com/kb/top-command-in-linux">Here for more information</a>.</p>

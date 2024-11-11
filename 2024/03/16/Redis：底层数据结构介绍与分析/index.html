@@ -38,7 +38,11 @@
 
 <link rel="stylesheet" href="/css/main.css" />
 
-    <meta name="generator" content="Hexo 6.3.0"></head>
+    <!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.3.0"></head>
     <body>
         <div id="layout">
             <transition name="fade">
@@ -174,7 +178,7 @@
             
             <span class="tag">
                 
-                <a href="/tags/Redis/" style="color: #00bcd4">Redis</a>
+                <a href="/tags/Redis/" style="color: #ffa2c4">Redis</a>
             </span>
             
             <span class="tag">
@@ -192,178 +196,205 @@
 <p>本篇将涉及C语言，请确保您拥有C语言相关基础与计算机底层知识</p>
  <span id="more"></span>
 </blockquote>
-<h1 id="RedisObject-robj"><a href="#RedisObject-robj" class="headerlink" title="RedisObject (robj)"></a>RedisObject (robj)</h1><p>robj 是 Redis 对象的起点，所有的数据结构都封装到了 robj 之中。</p>
+<h1 id="redisobject-robj"><a class="markdownIt-Anchor" href="#redisobject-robj"></a> RedisObject (robj)</h1>
+<p>robj 是 Redis 对象的起点，所有的数据结构都封装到了 robj 之中。</p>
 <p>其源码如下：</p>
-<pre><code class="C">struct redisObject &#123;
-    unsigned type:4;
-    unsigned encoding:4;
-    unsigned lru:LRU_BITS;
-    int refcount;
-    void *ptr;
+<pre class="highlight"><code class="C"><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">redisObject</span> &#123;</span>
+    <span class="hljs-keyword">unsigned</span> type:<span class="hljs-number">4</span>;
+    <span class="hljs-keyword">unsigned</span> encoding:<span class="hljs-number">4</span>;
+    <span class="hljs-keyword">unsigned</span> lru:LRU_BITS;
+    <span class="hljs-keyword">int</span> refcount;
+    <span class="hljs-keyword">void</span> *ptr;
 &#125;;
 </code></pre>
-<h2 id="结构分析"><a href="#结构分析" class="headerlink" title="结构分析"></a>结构分析</h2><h3 id="type"><a href="#type" class="headerlink" title="type"></a>type</h3><p>type 表示对象的类型，占用4bit存储空间。目前包含：REDIS_STRING(字符串)、REDIS_LIST (列表)、REDIS_HASH(哈希)、REDIS_SET(无序集合) 和 REDIS_ZSET(有序集合)。</p>
-<h3 id="encoding"><a href="#encoding" class="headerlink" title="encoding"></a>encoding</h3><p>encoding 表示对象的内部编码，占用4bit存储空间。</p>
+<h2 id="结构分析"><a class="markdownIt-Anchor" href="#结构分析"></a> 结构分析</h2>
+<h3 id="type"><a class="markdownIt-Anchor" href="#type"></a> type</h3>
+<p>type 表示对象的类型，占用4bit存储空间。目前包含：REDIS_STRING(字符串)、REDIS_LIST (列表)、REDIS_HASH(哈希)、REDIS_SET(无序集合) 和 REDIS_ZSET(有序集合)。</p>
+<h3 id="encoding"><a class="markdownIt-Anchor" href="#encoding"></a> encoding</h3>
+<p>encoding 表示对象的内部编码，占用4bit存储空间。</p>
 <p>Redis 的每种数据类型都至少有两种编码格式。</p>
 <p>例如，对于 REDIS_STRING，有 INT, EMBSTR ,RAW 三种编码格式。</p>
 <p>通过将 encoding 封装在 robj 中，Redis 可以根据不同场景快速获取编码格式，并针对该场景决定是否优化编码。</p>
-<h3 id="lru"><a href="#lru" class="headerlink" title="lru"></a>lru</h3><p>lru 全称 Least Recently Used(最近最少使用)，记录对象最后一次被访问的时间。</p>
+<h3 id="lru"><a class="markdownIt-Anchor" href="#lru"></a> lru</h3>
+<p>lru 全称 Least Recently Used(最近最少使用)，记录对象最后一次被访问的时间。</p>
 <p>其占用的内存空间不定，4.0 版本占用 24bit，2.6 版本占用 22bit。</p>
 <p>该值主要是用于配合 LRU 算法对内存进行优化。</p>
 <p>当 Redis占用内存达到 maxmemory 配置后，会根据LRU删除最近最少使用的对象。</p>
-<h3 id="refcount"><a href="#refcount" class="headerlink" title="refcount"></a>refcount</h3><p>refcount 全称 Reference Count(引用计数)，主要用于记录当前对象被引用的次数，以判断该对象何时可以回收。</p>
+<h3 id="refcount"><a class="markdownIt-Anchor" href="#refcount"></a> refcount</h3>
+<p>refcount 全称 Reference Count(引用计数)，主要用于记录当前对象被引用的次数，以判断该对象何时可以回收。</p>
 <p>当 refcount 为0时，代表对象未被引用，可安全回收。</p>
-<h3 id="ptr"><a href="#ptr" class="headerlink" title="ptr"></a>ptr</h3><p>ptr 全称 Pointer (指针)，这里是 robj 封装的数据结构的指针。</p>
+<h3 id="ptr"><a class="markdownIt-Anchor" href="#ptr"></a> ptr</h3>
+<p>ptr 全称 Pointer (指针)，这里是 robj 封装的数据结构的指针。</p>
 <p>如果这里的数据是数字，则直接存储数字，其他对象则正常存储。</p>
 <p>综上计算，robj 的大小一般为 4bit + 4bit + 24bit + 4Byte + 8Byte，即：16字节。</p>
-<h1 id="REDIS-STRING-SDS"><a href="#REDIS-STRING-SDS" class="headerlink" title="REDIS_STRING(SDS)"></a>REDIS_STRING(SDS)</h1><p>SDS 全称 Simple Dynamic String(简单动态字符串)，是专为 Redis 设计的简易字符串实现。</p>
+<h1 id="redis_stringsds"><a class="markdownIt-Anchor" href="#redis_stringsds"></a> REDIS_STRING(SDS)</h1>
+<p>SDS 全称 Simple Dynamic String(简单动态字符串)，是专为 Redis 设计的简易字符串实现。</p>
 <p>Redis 并未采用 C 语言传统字符串 char*，而是自己设计了一套字符串实现标准。</p>
-<h2 id="传统字符串的缺陷"><a href="#传统字符串的缺陷" class="headerlink" title="传统字符串的缺陷"></a>传统字符串的缺陷</h2><p>C 语言字符串实际上就是一个以<code>&#39;\0&#39;</code>结尾的字符数组。</p>
+<h2 id="传统字符串的缺陷"><a class="markdownIt-Anchor" href="#传统字符串的缺陷"></a> 传统字符串的缺陷</h2>
+<p>C 语言字符串实际上就是一个以<code>'\0'</code>结尾的字符数组。</p>
 <p>例如：</p>
-<pre><code class="C">char* myName = &quot;ErickRen&quot;;
+<pre class="highlight"><code class="C"><span class="hljs-keyword">char</span>* myName = <span class="hljs-string">"ErickRen"</span>;
 </code></pre>
 <p>的结构即为：</p>
-<p><img src="/2024/03/16/Redis%EF%BC%9A%E5%BA%95%E5%B1%82%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%BB%8B%E7%BB%8D%E4%B8%8E%E5%88%86%E6%9E%90/1.png"></p>
-<p>该结构有个弊端，如果字符串内部有<code>&#39;\0&#39;</code>，则C语言会误认为该字符串结束。</p>
+<p><img src="1.png" alt="" /></p>
+<p>该结构有个弊端，如果字符串内部有<code>'\0'</code>，则C语言会误认为该字符串结束。</p>
 <p>这个限制使得传统C语言字符串只能保存文本数据，<strong>不能保存图片、音频、视频等的二进制数据</strong>。</p>
 <p>此外，C语言标准库中字符串操作函数<strong>非常不安全</strong>，一不小心就会缓冲区溢出。</p>
 <p>例如，当使用<code>strcat(&quot;Erick&quot;, &quot;Ren&quot;)</code>函数拼接字符串时，C语言并不会检查该字符串是否有足够的空间，而是会直接操作。</p>
-<p>而当C语言每次使用<code>strlen()</code>函数时，实际上是将字符串从头至尾遍历一遍，遇到<code>&#39;\0&#39;</code>为止，每次获取字符串长度的时间复杂度都是<code>O(n)</code>。</p>
+<p>而当C语言每次使用<code>strlen()</code>函数时，实际上是将字符串从头至尾遍历一遍，遇到<code>'\0'</code>为止，每次获取字符串长度的时间复杂度都是<code>O(n)</code>。</p>
 <p>C语言的确实现了大部分的字符串函数，但这些函数<strong>风险太高，并不适合用来构建业务</strong>。</p>
-<h3 id="SDS"><a href="#SDS" class="headerlink" title="SDS"></a>SDS</h3><p>而为了业务开发，Redis 作者构建了一套新的字符串标准，简称为 SDS。</p>
+<h3 id="sds"><a class="markdownIt-Anchor" href="#sds"></a> SDS</h3>
+<p>而为了业务开发，Redis 作者构建了一套新的字符串标准，简称为 SDS。</p>
 <p>SDS一共有 5 个实现，都为 sdshdr (Simple Dynamic Strings Header) 系列，分别为<code>sdshdr5</code>, <code>sdshdr8</code>, <code>sdshdr16</code>, <code>sdshdr32</code>, <code>sdshdr64</code>：</p>
-<pre><code class="C">/* Note: sdshdr5 is never used, we just access the flags byte directly.
- * However is here to document the layout of type 5 SDS strings. */
-struct __attribute__ ((__packed__)) sdshdr5 &#123;
-    unsigned char flags; /* 3 lsb of type, and 5 msb of string length */
-    char buf[];
+<pre class="highlight"><code class="C"><span class="hljs-comment">/* Note: sdshdr5 is never used, we just access the flags byte directly.
+ * However is here to document the layout of type 5 SDS strings. */</span>
+<span class="hljs-class"><span class="hljs-keyword">struct</span> __<span class="hljs-title">attribute__</span> ((__<span class="hljs-title">packed__</span>)) <span class="hljs-title">sdshdr5</span> &#123;</span>
+    <span class="hljs-keyword">unsigned</span> <span class="hljs-keyword">char</span> flags; <span class="hljs-comment">/* 3 lsb of type, and 5 msb of string length */</span>
+    <span class="hljs-keyword">char</span> buf[];
 &#125;;
-struct __attribute__ ((__packed__)) sdshdr8 &#123;
-    uint8_t len; /* used */
-    uint8_t alloc; /* excluding the header and null terminator */
-    unsigned char flags; /* 3 lsb of type, 5 unused bits */
-    char buf[];
+<span class="hljs-class"><span class="hljs-keyword">struct</span> __<span class="hljs-title">attribute__</span> ((__<span class="hljs-title">packed__</span>)) <span class="hljs-title">sdshdr8</span> &#123;</span>
+    <span class="hljs-keyword">uint8_t</span> len; <span class="hljs-comment">/* used */</span>
+    <span class="hljs-keyword">uint8_t</span> alloc; <span class="hljs-comment">/* excluding the header and null terminator */</span>
+    <span class="hljs-keyword">unsigned</span> <span class="hljs-keyword">char</span> flags; <span class="hljs-comment">/* 3 lsb of type, 5 unused bits */</span>
+    <span class="hljs-keyword">char</span> buf[];
 &#125;;
-struct __attribute__ ((__packed__)) sdshdr16 &#123;
-    uint16_t len; /* used */
-    uint16_t alloc; /* excluding the header and null terminator */
-    unsigned char flags; /* 3 lsb of type, 5 unused bits */
-    char buf[];
+<span class="hljs-class"><span class="hljs-keyword">struct</span> __<span class="hljs-title">attribute__</span> ((__<span class="hljs-title">packed__</span>)) <span class="hljs-title">sdshdr16</span> &#123;</span>
+    <span class="hljs-keyword">uint16_t</span> len; <span class="hljs-comment">/* used */</span>
+    <span class="hljs-keyword">uint16_t</span> alloc; <span class="hljs-comment">/* excluding the header and null terminator */</span>
+    <span class="hljs-keyword">unsigned</span> <span class="hljs-keyword">char</span> flags; <span class="hljs-comment">/* 3 lsb of type, 5 unused bits */</span>
+    <span class="hljs-keyword">char</span> buf[];
 &#125;;
-struct __attribute__ ((__packed__)) sdshdr32 &#123;
-    uint32_t len; /* used */
-    uint32_t alloc; /* excluding the header and null terminator */
-    unsigned char flags; /* 3 lsb of type, 5 unused bits */
-    char buf[];
+<span class="hljs-class"><span class="hljs-keyword">struct</span> __<span class="hljs-title">attribute__</span> ((__<span class="hljs-title">packed__</span>)) <span class="hljs-title">sdshdr32</span> &#123;</span>
+    <span class="hljs-keyword">uint32_t</span> len; <span class="hljs-comment">/* used */</span>
+    <span class="hljs-keyword">uint32_t</span> alloc; <span class="hljs-comment">/* excluding the header and null terminator */</span>
+    <span class="hljs-keyword">unsigned</span> <span class="hljs-keyword">char</span> flags; <span class="hljs-comment">/* 3 lsb of type, 5 unused bits */</span>
+    <span class="hljs-keyword">char</span> buf[];
 &#125;;
-struct __attribute__ ((__packed__)) sdshdr64 &#123;
-    uint64_t len; /* used */
-    uint64_t alloc; /* excluding the header and null terminator */
-    unsigned char flags; /* 3 lsb of type, 5 unused bits */
-    char buf[];
+<span class="hljs-class"><span class="hljs-keyword">struct</span> __<span class="hljs-title">attribute__</span> ((__<span class="hljs-title">packed__</span>)) <span class="hljs-title">sdshdr64</span> &#123;</span>
+    <span class="hljs-keyword">uint64_t</span> len; <span class="hljs-comment">/* used */</span>
+    <span class="hljs-keyword">uint64_t</span> alloc; <span class="hljs-comment">/* excluding the header and null terminator */</span>
+    <span class="hljs-keyword">unsigned</span> <span class="hljs-keyword">char</span> flags; <span class="hljs-comment">/* 3 lsb of type, 5 unused bits */</span>
+    <span class="hljs-keyword">char</span> buf[];
 &#125;;
 </code></pre>
 <p>从注释信息来看，<strong>sdshdr5 从未使用过</strong>，但**<a target="_blank" rel="noopener" href="https://cloud.tencent.com/developer/article/1837860">存疑</a>**。不在本文讨论范围内。</p>
 <p>除了 sdshdr5 之外，其他的结构都有四个共同结构：<code>len</code>, <code>alloc</code>, <code>flags</code>和<code>buf[]</code>。</p>
-<h3 id="结构分析-1"><a href="#结构分析-1" class="headerlink" title="结构分析"></a>结构分析</h3><h4 id="len"><a href="#len" class="headerlink" title="len"></a>len</h4><p>len 存储了该 SDS 长度，在通过函数获取字符串长度时，可以直接返回该值，将时间复杂度优化到了<code>O(1)</code>。</p>
-<h4 id="alloc"><a href="#alloc" class="headerlink" title="alloc"></a>alloc</h4><p>alloc 是分配给字符数组的空间长度，该变量是为了在修改字符串时，通过<code>alloc - len</code>来推导出剩余的空间大小，以判断是否需要扩容操作。<strong>alloc 和通过 alloc 推导剩余空间大小是解决缓冲区溢出的根本</strong>。</p>
-<h4 id="flags"><a href="#flags" class="headerlink" title="flags"></a>flags</h4><p>flags 主要用来表示不同类型的 SDS 实现。即表明该字符串是上述五种实现的何种。</p>
-<h4 id="buf"><a href="#buf" class="headerlink" title="buf[]"></a>buf[]</h4><p>buf[] 是一个字符数组，用来保存实际数据。</p>
+<h3 id="结构分析-2"><a class="markdownIt-Anchor" href="#结构分析-2"></a> 结构分析</h3>
+<h4 id="len"><a class="markdownIt-Anchor" href="#len"></a> len</h4>
+<p>len 存储了该 SDS 长度，在通过函数获取字符串长度时，可以直接返回该值，将时间复杂度优化到了<code>O(1)</code>。</p>
+<h4 id="alloc"><a class="markdownIt-Anchor" href="#alloc"></a> alloc</h4>
+<p>alloc 是分配给字符数组的空间长度，该变量是为了在修改字符串时，通过<code>alloc - len</code>来推导出剩余的空间大小，以判断是否需要扩容操作。<strong>alloc 和通过 alloc 推导剩余空间大小是解决缓冲区溢出的根本</strong>。</p>
+<h4 id="flags"><a class="markdownIt-Anchor" href="#flags"></a> flags</h4>
+<p>flags 主要用来表示不同类型的 SDS 实现。即表明该字符串是上述五种实现的何种。</p>
+<h4 id="buf"><a class="markdownIt-Anchor" href="#buf"></a> buf[]</h4>
+<p>buf[] 是一个字符数组，用来保存实际数据。</p>
 <p>用 SDS 标准实现的字符串，不会存在上述的缓冲区溢出问题，可以存储任意二进制数据并且获取字符串长度的时间复杂度为 O(1)。</p>
-<h2 id="扩容机制"><a href="#扩容机制" class="headerlink" title="扩容机制"></a>扩容机制</h2><p>上面提到 SDS 不存在缓冲区溢出问题，这是因为 SDS 在数据量不足时会进行<strong>自动扩容</strong>。</p>
+<h2 id="扩容机制"><a class="markdownIt-Anchor" href="#扩容机制"></a> 扩容机制</h2>
+<p>上面提到 SDS 不存在缓冲区溢出问题，这是因为 SDS 在数据量不足时会进行<strong>自动扩容</strong>。</p>
 <p>当操作字符串时，通过公式<code>alloc - len</code>即可获取当前剩余空间，以判断是否要进行扩容。</p>
-<pre><code class="C">hisds hi_sdsMakeRoomFor(hisds s, size_t addlen) &#123;
+<pre class="highlight"><code class="C"><span class="hljs-function">hisds <span class="hljs-title">hi_sdsMakeRoomFor</span><span class="hljs-params">(hisds s, <span class="hljs-keyword">size_t</span> addlen)</span> </span>&#123;
     ... ...
-    // s目前的剩余空间已足够，无需扩展，直接返回
-    if (avail &gt;= addlen)
-        return s;
-    //获取目前s的长度
+    <span class="hljs-comment">// s目前的剩余空间已足够，无需扩展，直接返回</span>
+    <span class="hljs-keyword">if</span> (avail &gt;= addlen)
+        <span class="hljs-keyword">return</span> s;
+    <span class="hljs-comment">//获取目前s的长度</span>
     len = hi_sdslen(s);
-    sh = (char *)s - hi_sdsHdrSize(oldtype);
-    //扩展之后 s 至少需要的长度
+    sh = (<span class="hljs-keyword">char</span> *)s - hi_sdsHdrSize(oldtype);
+    <span class="hljs-comment">//扩展之后 s 至少需要的长度</span>
     newlen = (len + addlen);
-    //根据新长度，为s分配新空间所需要的大小
-    if (newlen &lt; HI_SDS_MAX_PREALLOC)
-        //新长度&lt;HI_SDS_MAX_PREALLOC 则分配所需空间*2的空间
-        newlen *= 2;
-    else
-        //否则，分配长度为目前长度 + 1MB
+    <span class="hljs-comment">//根据新长度，为s分配新空间所需要的大小</span>
+    <span class="hljs-keyword">if</span> (newlen &lt; HI_SDS_MAX_PREALLOC)
+        <span class="hljs-comment">//新长度&lt;HI_SDS_MAX_PREALLOC 则分配所需空间*2的空间</span>
+        newlen *= <span class="hljs-number">2</span>;
+    <span class="hljs-keyword">else</span>
+        <span class="hljs-comment">//否则，分配长度为目前长度 + 1MB</span>
         newlen += HI_SDS_MAX_PREALLOC;
        ...
 &#125;
 </code></pre>
 <p>如果该 SDS 小于 1MB，那么就将它的容量翻倍。</p>
 <p>如果该 SDS 大于 1MB，那么每次扩容就为它的容量加上1MB。</p>
-<h2 id="不同实现的差异"><a href="#不同实现的差异" class="headerlink" title="不同实现的差异"></a>不同实现的差异</h2><p>前文提到，sdshdr 中有 flags 存储 sds 的实现。</p>
+<h2 id="不同实现的差异"><a class="markdownIt-Anchor" href="#不同实现的差异"></a> 不同实现的差异</h2>
+<p>前文提到，sdshdr 中有 flags 存储 sds 的实现。</p>
 <p>这五种实现的主要差异在<code>len</code>和<code>alloc</code>的数据类型。</p>
 <p>例如 sdshdr16 和 sdshdr32：</p>
-<pre><code class="C">struct __attribute__ ((__packed__)) sdshdr16 &#123;
-    uint16_t len;
-    uint16_t alloc; 
-    unsigned char flags; 
-    char buf[];
+<pre class="highlight"><code class="C"><span class="hljs-class"><span class="hljs-keyword">struct</span> __<span class="hljs-title">attribute__</span> ((__<span class="hljs-title">packed__</span>)) <span class="hljs-title">sdshdr16</span> &#123;</span>
+    <span class="hljs-keyword">uint16_t</span> len;
+    <span class="hljs-keyword">uint16_t</span> alloc; 
+    <span class="hljs-keyword">unsigned</span> <span class="hljs-keyword">char</span> flags; 
+    <span class="hljs-keyword">char</span> buf[];
 &#125;;
 
 
-struct __attribute__ ((__packed__)) sdshdr32 &#123;
-    uint32_t len;
-    uint32_t alloc; 
-    unsigned char flags;
-    char buf[];
+<span class="hljs-class"><span class="hljs-keyword">struct</span> __<span class="hljs-title">attribute__</span> ((__<span class="hljs-title">packed__</span>)) <span class="hljs-title">sdshdr32</span> &#123;</span>
+    <span class="hljs-keyword">uint32_t</span> len;
+    <span class="hljs-keyword">uint32_t</span> alloc; 
+    <span class="hljs-keyword">unsigned</span> <span class="hljs-keyword">char</span> flags;
+    <span class="hljs-keyword">char</span> buf[];
 &#125;;
 </code></pre>
 <p>sdshdr16 中的 len 和 alloc 都是<code>uint16_t</code>，长度和分配空间最多只有 2<sup>16</sup>。</p>
 <p>而 sdshdr32 为<code>uint32_t</code>，可以存储更多数据。</p>
 <p>此举<strong>是为了能灵活保存不同大小的字符串，从而有效节省内存空间</strong>。比如，在保存小型字符串时，结构头占用空间会更少。</p>
-<h2 id="编译优化"><a href="#编译优化" class="headerlink" title="编译优化"></a>编译优化</h2><p>sdshdr 声明了 <code>__attribute__ ((packed))</code> ，它是为了告诉编译器<strong>取消结构体在编译过程中的优化对齐，按照实际占用字节数进行对齐</strong>。</p>
+<h2 id="编译优化"><a class="markdownIt-Anchor" href="#编译优化"></a> 编译优化</h2>
+<p>sdshdr 声明了 <code>__attribute__ ((packed))</code> ，它是为了告诉编译器<strong>取消结构体在编译过程中的优化对齐，按照实际占用字节数进行对齐</strong>。</p>
 <p>以 sdshdr8 举例，如果不进行此优化，则实际的结构体大小为：</p>
-<p><img src="/2024/03/16/Redis%EF%BC%9A%E5%BA%95%E5%B1%82%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%BB%8B%E7%BB%8D%E4%B8%8E%E5%88%86%E6%9E%90/2.png"></p>
+<p><img src="2.png" alt="" /></p>
 <p>而进行了优化后，占用的内存即为：</p>
-<p><img src="/2024/03/16/Redis%EF%BC%9A%E5%BA%95%E5%B1%82%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%BB%8B%E7%BB%8D%E4%B8%8E%E5%88%86%E6%9E%90/3.png" alt="3"></p>
+<p><img src="3.png" alt="3" /></p>
 <p>节省了一部分内存空间。</p>
-<h1 id="REDIS-LISTNODE"><a href="#REDIS-LISTNODE" class="headerlink" title="REDIS_LISTNODE"></a>REDIS_LISTNODE</h1><p>REDIS_LISTNODE 本质上与 Java 的 LinkedList 一致，为链表，是基本的线性结构。C 语言原生没有对链表的支持，Redis 对链表进行了实现。</p>
-<h2 id="listNode"><a href="#listNode" class="headerlink" title="listNode"></a>listNode</h2><pre><code class="C">typedef struct listNode &#123;
-    struct listNode *prev;
-    struct listNode *next;
-    void *value;
+<h1 id="redis_listnode"><a class="markdownIt-Anchor" href="#redis_listnode"></a> REDIS_LISTNODE</h1>
+<p>REDIS_LISTNODE 本质上与 Java 的 LinkedList 一致，为链表，是基本的线性结构。C 语言原生没有对链表的支持，Redis 对链表进行了实现。</p>
+<h2 id="listnode"><a class="markdownIt-Anchor" href="#listnode"></a> listNode</h2>
+<pre class="highlight"><code class="C"><span class="hljs-keyword">typedef</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">listNode</span> &#123;</span>
+    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">listNode</span> *<span class="hljs-title">prev</span>;</span>
+    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">listNode</span> *<span class="hljs-title">next</span>;</span>
+    <span class="hljs-keyword">void</span> *value;
 &#125; listNode;
 </code></pre>
 <p>listNode 的结构较为简单，本质上只有三部分：<code>prev(前节点)</code>，<code>nex(后节点)</code>，<code>value(值)</code>。</p>
 <p>其中前后节点分别为一个新的 listNode。</p>
-<p><img src="/2024/03/16/Redis%EF%BC%9A%E5%BA%95%E5%B1%82%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%BB%8B%E7%BB%8D%E4%B8%8E%E5%88%86%E6%9E%90/4.png" alt="4"></p>
-<h2 id="list"><a href="#list" class="headerlink" title="list"></a>list</h2><pre><code class="C">typedef struct list &#123;
+<p><img src="4.png" alt="4" /></p>
+<h2 id="list"><a class="markdownIt-Anchor" href="#list"></a> list</h2>
+<pre class="highlight"><code class="C"><span class="hljs-keyword">typedef</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">list</span> &#123;</span>
     listNode *head;
     listNode *tail;
-    void *(*dup)(void *ptr);
-    void (*free)(void *ptr);
-    int (*match)(void *ptr, void *key);
-    unsigned long len;
-&#125; list;
+    <span class="hljs-keyword">void</span> *(*dup)(<span class="hljs-keyword">void</span> *ptr);
+    <span class="hljs-keyword">void</span> (*<span class="hljs-built_in">free</span>)(<span class="hljs-keyword">void</span> *ptr);
+    <span class="hljs-keyword">int</span> (*match)(<span class="hljs-keyword">void</span> *ptr, <span class="hljs-keyword">void</span> *key);
+    <span class="hljs-keyword">unsigned</span> <span class="hljs-keyword">long</span> len;
+&#125; <span class="hljs-built_in">list</span>;
 </code></pre>
 <p>list 是对 listNode 的一个封装。提供了链表头指针<code>head</code>、链表尾节点<code>tail</code>、链表节点数量<code>len</code>、以及可以自定义实现的 dup、free、match 函数。</p>
-<p><img src="/2024/03/16/Redis%EF%BC%9A%E5%BA%95%E5%B1%82%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%BB%8B%E7%BB%8D%E4%B8%8E%E5%88%86%E6%9E%90/5.png" alt="5"></p>
-<h2 id="REDIS-LISTNODE的优势与缺陷"><a href="#REDIS-LISTNODE的优势与缺陷" class="headerlink" title="REDIS_LISTNODE的优势与缺陷"></a>REDIS_LISTNODE的优势与缺陷</h2><h3 id="优势"><a href="#优势" class="headerlink" title="优势"></a>优势</h3><ul>
+<p><img src="5.png" alt="5" /></p>
+<h2 id="redis_listnode的优势与缺陷"><a class="markdownIt-Anchor" href="#redis_listnode的优势与缺陷"></a> REDIS_LISTNODE的优势与缺陷</h2>
+<h3 id="优势"><a class="markdownIt-Anchor" href="#优势"></a> 优势</h3>
+<ul>
 <li>listNode 中有两个指向前后节点的指针，这意味着 listNode <strong>不需要连续的内存空间</strong>。</li>
 <li>listNode 中用 len 存储了链表长度，这样获取链表长度的时间复杂度为<code>O(1)</code>。</li>
 <li>listNode 链表节使用<code>void*</code>指针保存节点值，并且可以通过 list 结构的<code>dup</code>、<code>free</code>和<code>match</code>函数指针为节点设置该节点类型特定的函数，因此<strong>链表节点可以保存各种不同类型的值</strong>。</li>
 </ul>
-<h3 id="缺点"><a href="#缺点" class="headerlink" title="缺点"></a>缺点</h3><ul>
+<h3 id="缺点"><a class="markdownIt-Anchor" href="#缺点"></a> 缺点</h3>
+<ul>
 <li>链表每个节点之间的内存都是不连续的，导致其<strong>无法很好利用 CPU 缓存</strong>。能很好利用 CPU 缓存的数据结构就是数组，因为数组的内存是连续的，这样就可以充分利用 CPU 缓存来加速访问。</li>
 <li>保存一个链表节点的值都需要一个链表节点结构头的分配，<strong>内存开销较大</strong>，<strong>无法随机读取</strong>。数组只需要下标访问即可。</li>
 </ul>
 <p>正因如此，Redis 3.0 的 List 对象在数据量比较少的情况下，会采用<code>zipList</code>作为底层数据结构的实现，它的优势是节省内存空间，并且是内存紧凑型的数据结构。</p>
 <p>Redis 5.0 设计了新的数据结构 listpack，沿用了压缩列表紧凑型的内存布局。在最新的 Redis 版本，将 Hash 对象和 Zset 对象的底层数据结构替换成由 listpack 实现。</p>
-<h1 id="REDIS-ZIPLIST"><a href="#REDIS-ZIPLIST" class="headerlink" title="REDIS_ZIPLIST"></a>REDIS_ZIPLIST</h1><p>zipList(压缩列表) 是一种紧凑型的数据结构，占用一片连续的内存，本质上是一个<strong>字节数组</strong>。能提高 CPU 缓存的利用效率，并且针对不同数据结构进行不同编码，节省内存开销。</p>
-<h2 id="编码结构"><a href="#编码结构" class="headerlink" title="编码结构"></a>编码结构</h2><p>zipList 的字节数组主要由5个部分组成：<code>zlbytes</code>、<code>zltail</code>、<code>zllen</code>、<code>zltail</code>和<code>entry</code>。</p>
-<p><img src="/2024/03/16/Redis%EF%BC%9A%E5%BA%95%E5%B1%82%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%BB%8B%E7%BB%8D%E4%B8%8E%E5%88%86%E6%9E%90/6.png" alt="6"></p>
+<h1 id="redis_ziplist"><a class="markdownIt-Anchor" href="#redis_ziplist"></a> REDIS_ZIPLIST</h1>
+<p>zipList(压缩列表) 是一种紧凑型的数据结构，占用一片连续的内存，本质上是一个<strong>字节数组</strong>。能提高 CPU 缓存的利用效率，并且针对不同数据结构进行不同编码，节省内存开销。</p>
+<h2 id="编码结构"><a class="markdownIt-Anchor" href="#编码结构"></a> 编码结构</h2>
+<p>zipList 的字节数组主要由5个部分组成：<code>zlbytes</code>、<code>zltail</code>、<code>zllen</code>、<code>zltail</code>和<code>entry</code>。</p>
+<p><img src="6.png" alt="6" /></p>
 <ul>
 <li>zlbytes 记录了整个zipList占用的内存大小。</li>
 <li>zltail 记录了整个zipList尾结点距离起始地址的字节数，也可认为是列表尾的offset(偏移量)。</li>
 <li>zllen 记录了压缩列表的<code>entry数量</code>。</li>
 <li>zlend 记录了 zipList 的结束点，固定值为 0xFF(十进制下的255)。</li>
 </ul>
-<h3 id="entry"><a href="#entry" class="headerlink" title="entry"></a>entry</h3><p>entry 是 zipList 的有效存储模块，其中 entry 又分为三部分：<code>prevlen</code>、<code>encoding</code>和<code>data</code>。</p>
-<p><img src="/2024/03/16/Redis%EF%BC%9A%E5%BA%95%E5%B1%82%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%BB%8B%E7%BB%8D%E4%B8%8E%E5%88%86%E6%9E%90/7.png" alt="7"></p>
+<h3 id="entry"><a class="markdownIt-Anchor" href="#entry"></a> entry</h3>
+<p>entry 是 zipList 的有效存储模块，其中 entry 又分为三部分：<code>prevlen</code>、<code>encoding</code>和<code>data</code>。</p>
+<p><img src="7.png" alt="7" /></p>
 <ul>
 <li>prevlen 记录了<strong>前一个 entry</strong> 的长度，目的是为了实现<strong>从后向前遍历</strong>。</li>
 <li>encoding 记录了当前节点实际数据的<strong>类型和长度</strong>，类型主要有两种：字符串和整数。</li>
@@ -374,12 +405,13 @@ struct __attribute__ ((__packed__)) sdshdr32 &#123;
 <p>如果前一个 entry 的长度大于 254，<code>prelen</code>就采用 5 个字节：第一个字节会被设置为 0xFE(十进制的254），之后的四个字节则用于保存前一个节点的长度。</p>
 <p>对于 encoding 来说：</p>
 <p>encoding 的空间大小跟数据是字符串还是整数，以及字符串的长度有关。</p>
-<p><img src="/2024/03/16/Redis%EF%BC%9A%E5%BA%95%E5%B1%82%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%BB%8B%E7%BB%8D%E4%B8%8E%E5%88%86%E6%9E%90/8.png" alt="8"></p>
+<p><img src="8.png" alt="8" /></p>
 <ul>
 <li>如果<strong>当前节点的数据是整数</strong>，则 encoding 会使用 <strong>1 字节的空间</strong>进行编码，也就是 encoding 长度为 1 字节。通过 encoding 确认了整数类型，就可以确认整数数据的实际大小了，比如如果 encoding 编码确认了数据是 int16 整数，那么 data 的长度就是 int16 的大小。</li>
-<li>如果<strong>当前节点的数据是字符串，根据字符串的长度大小</strong>，encoding 会使用 <strong>1 字节&#x2F;2字节&#x2F;5字节的空间</strong>进行编码，encoding 编码的前两个 bit 表示数据的类型，后续的其他 bit 标识字符串数据的实际长度，即 data 的长度。</li>
+<li>如果<strong>当前节点的数据是字符串，根据字符串的长度大小</strong>，encoding 会使用 <strong>1 字节/2字节/5字节的空间</strong>进行编码，encoding 编码的前两个 bit 表示数据的类型，后续的其他 bit 标识字符串数据的实际长度，即 data 的长度。</li>
 </ul>
-<h2 id="连锁更新问题"><a href="#连锁更新问题" class="headerlink" title="连锁更新问题"></a>连锁更新问题</h2><p>连锁更新问题是指：在极端情况下，在修改 entry 的 data 时，data 过长，zipList 需要重新分配内存空间。</p>
+<h2 id="连锁更新问题"><a class="markdownIt-Anchor" href="#连锁更新问题"></a> 连锁更新问题</h2>
+<p>连锁更新问题是指：在极端情况下，在修改 entry 的 data 时，data 过长，zipList 需要重新分配内存空间。</p>
 <p>当新插入的元素较大时，可能会导致后续元素的 prevlen 占用空间都发生变化，从而引起<strong>连锁更新</strong>问题，导致每个元素的空间都要重新分配，造成访问压缩列表性能的下降。</p>
 <p>该问题<strong>主要是因为 <code>prevlen</code> 会根据前一个节点的长度进行不同的空间大小分配</strong>。</p>
 <p>如果前一个<strong>节点的长度小于 254 字节</strong>，那么 prevlen 属性需要用 <strong>1 字节的空间</strong>来保存这个长度值；如果前一个<strong>节点的长度大于等于 254 字节</strong>，那么 prevlen 属性需要用 <strong>5 字节的空间</strong>来保存这个长度值。</p>
@@ -390,83 +422,91 @@ struct __attribute__ ((__packed__)) sdshdr32 &#123;
 <p>因为连锁更新在最坏情况下需要对压缩列表执行 N 次空间重分配操作，而每次空间重分配的最坏复杂度为 O(N)，所以连锁更新的最坏复杂度为 O(N^2)。</p>
 <p>但因为大规模连锁更新的情况过于极端，且小规模连锁更新并不影响性能，所以不必过于担心。</p>
 <p>Redis 也并未在 zipList 中对此情况提出相应解决方案。</p>
-<h2 id="为什么要加入-prelen"><a href="#为什么要加入-prelen" class="headerlink" title="为什么要加入 prelen"></a>为什么要加入 prelen</h2><p>zipList的 entry 保存 prevlen 主要是为了实现节点从后往前遍历，知道前一个节点的长度，就可以计算前一个节点的偏移量。</p>
+<h2 id="为什么要加入-prelen"><a class="markdownIt-Anchor" href="#为什么要加入-prelen"></a> 为什么要加入 prelen</h2>
+<p>zipList的 entry 保存 prevlen 主要是为了实现节点从后往前遍历，知道前一个节点的长度，就可以计算前一个节点的偏移量。</p>
 <p>如果直接保存len，也可以从后往前遍历，不过实现起来较为复杂。</p>
 <p>Redis 针对连锁更新问题，提出了<code>listPack</code>作为解决方案。</p>
 <p>在 listPack中，不再保存 prelen，而是自身长度 len。listPack 从当前列表项起始位置的指针开始，向左逐个字节解析，得到前一项的 entry-len 值。</p>
-<h1 id="REDIS-SKIPLIST"><a href="#REDIS-SKIPLIST" class="headerlink" title="REDIS_SKIPLIST"></a>REDIS_SKIPLIST</h1><p>skipList，即：<strong>跳表</strong>，或者叫<strong>跳跃表</strong>。skiplist 的优势是能支持平均 O(logN) 复杂度的节点查找。</p>
+<h1 id="redis_skiplist"><a class="markdownIt-Anchor" href="#redis_skiplist"></a> REDIS_SKIPLIST</h1>
+<p>skipList，即：<strong>跳表</strong>，或者叫<strong>跳跃表</strong>。skiplist 的优势是能支持平均 O(logN) 复杂度的节点查找。</p>
 <p>用一句话来说：skiplist 就是一个有着索引的 list。</p>
-<h2 id="编码结构-1"><a href="#编码结构-1" class="headerlink" title="编码结构"></a>编码结构</h2><h3 id="简单理解"><a href="#简单理解" class="headerlink" title="简单理解"></a>简单理解</h3><p>简单来说，skipList 有多层“索引”以加快查找速度：</p>
-<p><img src="/2024/03/16/Redis%EF%BC%9A%E5%BA%95%E5%B1%82%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%BB%8B%E7%BB%8D%E4%B8%8E%E5%88%86%E6%9E%90/9.png" alt="9"></p>
+<h2 id="编码结构-2"><a class="markdownIt-Anchor" href="#编码结构-2"></a> 编码结构</h2>
+<h3 id="简单理解"><a class="markdownIt-Anchor" href="#简单理解"></a> 简单理解</h3>
+<p>简单来说，skipList 有多层“索引”以加快查找速度：</p>
+<p><img src="9.png" alt="9" /></p>
 <p>其中 L1、L2 和 L3 都是一个 list。</p>
 <p>当查找<code>8</code>时，从 L3 查找到 5，再从 L2 从 5 开始查找，查找到 7，再 L3 中从 7 开始查找，最终查找到 8。</p>
 <p>这样，原本需要 8 次查找的操作直接简化到了 4 次。</p>
-<h3 id="从源码理解"><a href="#从源码理解" class="headerlink" title="从源码理解"></a>从源码理解</h3><pre><code class="C">typedef struct zskiplist &#123;
-    struct zskiplistNode *header, *tail;
-    unsigned long length;
-    int level;
+<h3 id="从源码理解"><a class="markdownIt-Anchor" href="#从源码理解"></a> 从源码理解</h3>
+<pre class="highlight"><code class="C"><span class="hljs-keyword">typedef</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">zskiplist</span> &#123;</span>
+    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">zskiplistNode</span> *<span class="hljs-title">header</span>, *<span class="hljs-title">tail</span>;</span>
+    <span class="hljs-keyword">unsigned</span> <span class="hljs-keyword">long</span> length;
+    <span class="hljs-keyword">int</span> level;
 &#125; zskiplist;
 </code></pre>
-<pre><code class="C">typedef struct zskiplistNode &#123;
+<pre class="highlight"><code class="C"><span class="hljs-keyword">typedef</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">zskiplistNode</span> &#123;</span>
     sds ele;
-    double score;
-    struct zskiplistNode *backward;
-    struct zskiplistLevel &#123;
-        struct zskiplistNode *forward;
-        unsigned long span;
+    <span class="hljs-keyword">double</span> score;
+    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">zskiplistNode</span> *<span class="hljs-title">backward</span>;</span>
+    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">zskiplistLevel</span> &#123;</span>
+        <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">zskiplistNode</span> *<span class="hljs-title">forward</span>;</span>
+        <span class="hljs-keyword">unsigned</span> <span class="hljs-keyword">long</span> span;
     &#125; level[];
 &#125; zskiplistNode;
 </code></pre>
 <p>Redis 只有 Zset 对象的底层实现用到了跳表。</p>
 <p>Zset 需要你填入<strong>元素和权重</strong>，其中权重就是跳表用于排序的根源，即 <strong>listNode 中的 score</strong>。</p>
 <p>zskipList 中的 level 即为跳表的层级， Zset 的元素存储在 listNode 中的 ele 中，以 sds 形式存储。</p>
-<h2 id="SkipList-的层级设计"><a href="#SkipList-的层级设计" class="headerlink" title="SkipList 的层级设计"></a>SkipList 的层级设计</h2><p>前文提到，SkipList 相邻两层的节点数量的比例会影响跳表的查询性能。</p>
+<h2 id="skiplist-的层级设计"><a class="markdownIt-Anchor" href="#skiplist-的层级设计"></a> SkipList 的层级设计</h2>
+<p>前文提到，SkipList 相邻两层的节点数量的比例会影响跳表的查询性能。</p>
 <p>当设计不合理时，跳表的查询性能可能会降低到 <code>O(n)</code>。</p>
-<p>**跳表的相邻两层的节点数量最理想的比例是 2:1，查找复杂度可以降低到 O(logN)**。</p>
+<p><strong>跳表的相邻两层的节点数量最理想的比例是 2:1，查找复杂度可以降低到 O(logN)</strong>。</p>
 <p>但Redis所提出的解决方案是：<strong>跳表在创建节点的时候，随机生成每个节点的层数</strong>，并没有严格维持相邻两层的节点数量比例为 2 : 1 的情况。</p>
 <p><strong>skipList 在创建节点时候，会生成范围为 [0-1] 的一个随机数，如果这个随机数小于 0.25（相当于概率 25%），那么层数就增加 1 层，然后继续生成下一个随机数，直到随机数的结果大于 0.25 结束，最终确定该节点的层数</strong>。</p>
-<pre><code class="C">// 创建一个空表头的跳表
-zskiplist *zslCreate(void) &#123;
-    int j;
+<pre class="highlight"><code class="C"><span class="hljs-comment">// 创建一个空表头的跳表</span>
+<span class="hljs-function">zskiplist *<span class="hljs-title">zslCreate</span><span class="hljs-params">(<span class="hljs-keyword">void</span>)</span> </span>&#123;
+    <span class="hljs-keyword">int</span> j;
     zskiplist *zsl;
-    // 尝试分配内存空间
-    zsl = zmalloc(sizeof(*zsl));
-    // 初始化level和length
-    zsl-&gt;level = 1;
-    zsl-&gt;length = 0;
-    // 调用下面的方法zslCreateNode, 传入的参数有数组长度。
-    // 分数0，对象值NuLL
-    // 这一步就是创建管理所有节点的数组
-    // 并且设置表头的头头指针为此对象的地址
-    zsl-&gt;header = zslCreateNode(ZSKIPLIST_MAXLEVEL,0,NULL);
-    // 为这32个数组赋值前指针forward和跨度span
-    for (j = 0; j &lt; ZSKIPLIST_MAXLEVEL; j++) &#123;
-        zsl-&gt;header-&gt;level[j].forward = NULL;
-        zsl-&gt;header-&gt;level[j].span = 0;
+    <span class="hljs-comment">// 尝试分配内存空间</span>
+    zsl = zmalloc(<span class="hljs-keyword">sizeof</span>(*zsl));
+    <span class="hljs-comment">// 初始化level和length</span>
+    zsl-&gt;level = <span class="hljs-number">1</span>;
+    zsl-&gt;length = <span class="hljs-number">0</span>;
+    <span class="hljs-comment">// 调用下面的方法zslCreateNode, 传入的参数有数组长度。</span>
+    <span class="hljs-comment">// 分数0，对象值NuLL</span>
+    <span class="hljs-comment">// 这一步就是创建管理所有节点的数组</span>
+    <span class="hljs-comment">// 并且设置表头的头头指针为此对象的地址</span>
+    zsl-&gt;header = zslCreateNode(ZSKIPLIST_MAXLEVEL,<span class="hljs-number">0</span>,<span class="hljs-literal">NULL</span>);
+    <span class="hljs-comment">// 为这32个数组赋值前指针forward和跨度span</span>
+    <span class="hljs-keyword">for</span> (j = <span class="hljs-number">0</span>; j &lt; ZSKIPLIST_MAXLEVEL; j++) &#123;
+        zsl-&gt;header-&gt;level[j].forward = <span class="hljs-literal">NULL</span>;
+        zsl-&gt;header-&gt;level[j].span = <span class="hljs-number">0</span>;
     &#125;
-    // 设置尾指针
-    zsl-&gt;header-&gt;backward = NULL;
-    zsl-&gt;tail = NULL;
-    // 返回对象
-    return zsl;
+    <span class="hljs-comment">// 设置尾指针</span>
+    zsl-&gt;header-&gt;backward = <span class="hljs-literal">NULL</span>;
+    zsl-&gt;tail = <span class="hljs-literal">NULL</span>;
+    <span class="hljs-comment">// 返回对象</span>
+    <span class="hljs-keyword">return</span> zsl;
 &#125;
 
-zskiplistNode *zslCreateNode(int level, double score, sds ele) &#123;
+<span class="hljs-function">zskiplistNode *<span class="hljs-title">zslCreateNode</span><span class="hljs-params">(<span class="hljs-keyword">int</span> level, <span class="hljs-keyword">double</span> score, sds ele)</span> </span>&#123;
     zskiplistNode *zn =
-        zmalloc(sizeof(*zn)+level*sizeof(struct zskiplistLevel));
+        zmalloc(<span class="hljs-keyword">sizeof</span>(*zn)+level*<span class="hljs-keyword">sizeof</span>(struct zskiplistLevel));
     zn-&gt;score = score;
     zn-&gt;ele = ele;
-    return zn;
+    <span class="hljs-keyword">return</span> zn;
 &#125;
 </code></pre>
 <p><code>ZSKIPLIST_MAXLEVEL</code> 定义的是最高的层数，Redis 7.0 定义为 32，Redis 5.0 定义为 64，Redis 3.0 定义为 32。</p>
-<h2 id="为什么要用跳表而不用平衡树？"><a href="#为什么要用跳表而不用平衡树？" class="headerlink" title="为什么要用跳表而不用平衡树？"></a>为什么要用跳表而不用平衡树？</h2><p>对于这个问题，Redis 作者 antirez 如是回答：</p>
+<h2 id="为什么要用跳表而不用平衡树"><a class="markdownIt-Anchor" href="#为什么要用跳表而不用平衡树"></a> 为什么要用跳表而不用平衡树？</h2>
+<p>对于这个问题，Redis 作者 antirez 如是回答：</p>
 <blockquote>
 <p>There are a few reasons:</p>
 <ol>
 <li>They are not very memory intensive. It’s up to you basically. Changing parameters about the probability of a node to have a given number of levels will make then less memory intensive than btrees.</li>
 <li>A sorted set is often target of many ZRANGE or ZREVRANGE operations, that is, traversing the skip list as a linked list. With this operation the cache locality of skip lists is at least as good as with other kind of balanced trees.</li>
-<li>They are simpler to implement, debug, and so forth. For instance thanks to the skip list simplicity I received a patch (already in Redis master) with augmented skip lists implementing ZRANK in O(log(N)). It required little changes to the code.<br>简单来说：</li>
+<li>They are simpler to implement, debug, and so forth. For instance thanks to the skip list simplicity I received a patch (already in Redis master) with augmented skip lists implementing ZRANK in O(log(N)). It required little changes to the code.<br />
+简单来说：</li>
 </ol>
 </blockquote>
 <p>1.B 树和 SkipList 不是内存密集型数据模型，用什么取决于你，只不过改变节点级数的时候 SkipList 可以比树用更少的内存。</p>
@@ -474,18 +514,20 @@ zskiplistNode *zslCreateNode(int level, double score, sds ele) &#123;
 <p>3.SkipList 实现简单，社区维护起来方便。比如社区提交来一个用<code>O(logN)</code>的<code>ZRANK</code>实现，只需要改动少量代码就能完成。</p>
 <p>详细来说：</p>
 <ul>
-<li><strong>从内存占用上来比较，跳表比平衡树更灵活</strong>。平衡树每个 Node 固定包含 2 个指针（指向左右子树），而跳表每个节点包含的指针数目平均为 1&#x2F;(1-p)，具体取决于参数 p 的大小。如果像 Redis 里的实现一样，取 p&#x3D;1&#x2F;4，那么平均每个节点包含 1.33 个指针，比树占用的内存更少。</li>
+<li><strong>从内存占用上来比较，跳表比平衡树更灵活</strong>。平衡树每个 Node 固定包含 2 个指针（指向左右子树），而跳表每个节点包含的指针数目平均为 1/(1-p)，具体取决于参数 p 的大小。如果像 Redis 里的实现一样，取 p=1/4，那么平均每个节点包含 1.33 个指针，比树占用的内存更少。</li>
 <li><strong>在做范围查找的时候，跳表比平衡树操作要简单</strong>。在平衡树上，我们找到指定范围的小值之后，还需要以<strong>中序遍历</strong>的顺序继续寻找其它不超过大值的节点。如果不对树进行改造，中序遍历并不容易实现。而在跳表上进行范围查找就非常简单，只需要在找到小值之后，对第 1 层链表进行遍历就可以实现。</li>
 <li><strong>从算法实现难度上来比较，跳表比平衡树要简单得多</strong>。平衡树的插入和删除操作可能引发子树的调整，逻辑复杂，而跳表的插入和删除只需要修改相邻节点的指针，操作简单快速。</li>
 </ul>
-<h1 id="REDIS-INTSET"><a href="#REDIS-INTSET" class="headerlink" title="REDIS_INTSET"></a>REDIS_INTSET</h1><p>intSet 即为：整数集合，整数集合本质上是一块连续内存空间。</p>
-<h2 id="编码结构-2"><a href="#编码结构-2" class="headerlink" title="编码结构"></a>编码结构</h2><pre><code class="C">typedef struct intset &#123;
-    // 编码方式
-    uint32_t encoding;
-    // 集合包含的元素数量
-    uint32_t length;
-    // 保存元素的数组
-    int8_t contents[];
+<h1 id="redis_intset"><a class="markdownIt-Anchor" href="#redis_intset"></a> REDIS_INTSET</h1>
+<p>intSet 即为：整数集合，整数集合本质上是一块连续内存空间。</p>
+<h2 id="编码结构-3"><a class="markdownIt-Anchor" href="#编码结构-3"></a> 编码结构</h2>
+<pre class="highlight"><code class="C"><span class="hljs-keyword">typedef</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">intset</span> &#123;</span>
+    <span class="hljs-comment">// 编码方式</span>
+    <span class="hljs-keyword">uint32_t</span> encoding;
+    <span class="hljs-comment">// 集合包含的元素数量</span>
+    <span class="hljs-keyword">uint32_t</span> length;
+    <span class="hljs-comment">// 保存元素的数组</span>
+    <span class="hljs-keyword">int8_t</span> contents[];
 &#125; intset;
 </code></pre>
 <p>前两个属性<code>encoding</code>和<code>length</code>都用于规划这个 set。本质上这个 set 的本体是<code>contents</code>。</p>
@@ -495,124 +537,135 @@ zskiplistNode *zslCreateNode(int level, double score, sds ele) &#123;
 <li>如果 encoding 属性值为 INTSET_ENC_INT32，那么 contents 就是一个 int32_t 类型的数组，数组中每一个元素的类型都是 int32_t；</li>
 </ul>
 <p>以此类推，不同类型的 contents 数组，意味着数组的大小也会不同。</p>
-<h2 id="contents-的升级"><a href="#contents-的升级" class="headerlink" title="contents 的升级"></a>contents 的升级</h2><p>前文提到，contents 由 encoding 进行编码。而 encoding 编码有多种。</p>
+<h2 id="contents-的升级"><a class="markdownIt-Anchor" href="#contents-的升级"></a> contents 的升级</h2>
+<p>前文提到，contents 由 encoding 进行编码。而 encoding 编码有多种。</p>
 <p>如果现在 contents 正由<code>int16_t</code>编码，而突然插入<code>int32_t</code>，这时 contents 需要升级。</p>
 <p>即：按新元素的类型（int32_t）扩展 contents 数组的空间大小，然后才能将新元素加入到整数集合里。</p>
 <p>在升级时，将所有数字全部转换为对应元素类型，并<strong>从后往前</strong>整理数据。</p>
 <p>在 contents 升级时，依然要维持整数集合的有序性。</p>
-<h3 id="为什么要contents升级"><a href="#为什么要contents升级" class="headerlink" title="为什么要contents升级"></a>为什么要contents升级</h3><p>如果统一使用<code>int64_t</code>来保存数据，自然没这么多事，用起来也方便。</p>
+<h3 id="为什么要contents升级"><a class="markdownIt-Anchor" href="#为什么要contents升级"></a> 为什么要contents升级</h3>
+<p>如果统一使用<code>int64_t</code>来保存数据，自然没这么多事，用起来也方便。</p>
 <p>但是在业务里有很多情况下用不到这么大的数据量，所以根据需求升级可以<strong>节省内存资源</strong>。</p>
 <p><strong>conten ts不支持降级。</strong></p>
-<h1 id="REDIS-QUICKLIST"><a href="#REDIS-QUICKLIST" class="headerlink" title="REDIS_QUICKLIST"></a>REDIS_QUICKLIST</h1><p>quickList(快速列表) 是 Redis 对 List 对象的一个实践。</p>
+<h1 id="redis_quicklist"><a class="markdownIt-Anchor" href="#redis_quicklist"></a> REDIS_QUICKLIST</h1>
+<p>quickList(快速列表) 是 Redis 对 List 对象的一个实践。</p>
 <p>在 Redis 3.0 之前，List 对象的底层数据结构是双向 listNode 或者 zipList 。</p>
 <p>在 Redis 3.2 更新中，<strong>List 对象的底层改由 quickList 实现</strong>。</p>
 <p>前文提到，zipList 当元素个数比较多时，每当修改元素时，必须重新分配存储空间，对执行效率影响很大。</p>
 <p>quickList 本质上是 <strong>listNode + zipList 的组合</strong>，quickList 的顶层设计就是一个链表，链表的每个节点就是一个 zipList。</p>
-<h2 id="从源码分析结构"><a href="#从源码分析结构" class="headerlink" title="从源码分析结构"></a>从源码分析结构</h2><pre><code class="C">// QuickList顶层链表
-typedef struct quicklist &#123;
-    // 链表头
+<h2 id="从源码分析结构"><a class="markdownIt-Anchor" href="#从源码分析结构"></a> 从源码分析结构</h2>
+<pre class="highlight"><code class="C"><span class="hljs-comment">// QuickList顶层链表</span>
+<span class="hljs-keyword">typedef</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">quicklist</span> &#123;</span>
+    <span class="hljs-comment">// 链表头</span>
     quicklistNode *head;
-    // 链表尾
+    <span class="hljs-comment">// 链表尾</span>
     quicklistNode *tail; 
-    // 所有zipList总元素个数
-    unsigned long count;
-    // node个数
-    unsigned long len;       
+    <span class="hljs-comment">// 所有zipList总元素个数</span>
+    <span class="hljs-keyword">unsigned</span> <span class="hljs-keyword">long</span> count;
+    <span class="hljs-comment">// node个数</span>
+    <span class="hljs-keyword">unsigned</span> <span class="hljs-keyword">long</span> len;       
     ...
 &#125; quicklist;
 </code></pre>
-<pre><code class="c">// QuickList节点设计
-typedef struct quicklistNode &#123;
-    // 前指针
-    struct quicklistNode *prev;
-    // 后指针
-    struct quicklistNode *next;
-    // 该节点所指向的zipList指针
-    unsigned char *zl;              
-    // zipList的的字节大小
-    unsigned int sz;                
-    // zipList的元素个数
-    unsigned int count : 16;        //ziplist中的元素个数 
+<pre class="highlight"><code class="c"><span class="hljs-comment">// QuickList节点设计</span>
+<span class="hljs-keyword">typedef</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">quicklistNode</span> &#123;</span>
+    <span class="hljs-comment">// 前指针</span>
+    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">quicklistNode</span> *<span class="hljs-title">prev</span>;</span>
+    <span class="hljs-comment">// 后指针</span>
+    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">quicklistNode</span> *<span class="hljs-title">next</span>;</span>
+    <span class="hljs-comment">// 该节点所指向的zipList指针</span>
+    <span class="hljs-keyword">unsigned</span> <span class="hljs-keyword">char</span> *zl;              
+    <span class="hljs-comment">// zipList的的字节大小</span>
+    <span class="hljs-keyword">unsigned</span> <span class="hljs-keyword">int</span> sz;                
+    <span class="hljs-comment">// zipList的元素个数</span>
+    <span class="hljs-keyword">unsigned</span> <span class="hljs-keyword">int</span> count : <span class="hljs-number">16</span>;        <span class="hljs-comment">//ziplist中的元素个数 </span>
     ....
 &#125; quicklistNode;
 </code></pre>
 <p>用图表达：</p>
-<p><img src="/2024/03/16/Redis%EF%BC%9A%E5%BA%95%E5%B1%82%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%BB%8B%E7%BB%8D%E4%B8%8E%E5%88%86%E6%9E%90/10.png" alt="10"></p>
+<p><img src="10.png" alt="10" /></p>
 <p>在向 quicklist 添加一个元素的时候，会先检查插入位置的压缩列表是否能容纳该元素，如果能容纳就直接保存到 quicklistNode 结构里的压缩列表，如果不能容纳，才会新建一个新的 quicklistNode 结构。</p>
 <p>quicklist 会控制 quicklistNode 结构里的压缩列表的大小或者元素个数，来规避潜在的连锁更新的风险，<strong>但是这并没有完全解决连锁更新的问题</strong>。</p>
-<h1 id="REDIS-LISTPACK"><a href="#REDIS-LISTPACK" class="headerlink" title="REDIS_LISTPACK"></a>REDIS_LISTPACK</h1><p>Redis 在5.0设计了一个新的数据结构：listPack，用于替代 zipList。</p>
+<h1 id="redis_listpack"><a class="markdownIt-Anchor" href="#redis_listpack"></a> REDIS_LISTPACK</h1>
+<p>Redis 在5.0设计了一个新的数据结构：listPack，用于替代 zipList。</p>
 <p>它最大特点是 listpack 中每个 entry 不再包含前一个节点的长度。</p>
 <p>zipList 正因<strong>需要保存前一个节点的长度字段</strong>，才导致了连锁更新的隐患。</p>
 <p>在 Redis7.0 版本中已经用 listPack 重构。</p>
-<h2 id="结构设计"><a href="#结构设计" class="headerlink" title="结构设计"></a>结构设计</h2><p><img src="/2024/03/16/Redis%EF%BC%9A%E5%BA%95%E5%B1%82%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%BB%8B%E7%BB%8D%E4%B8%8E%E5%88%86%E6%9E%90/11.png"></p>
+<h2 id="结构设计"><a class="markdownIt-Anchor" href="#结构设计"></a> 结构设计</h2>
+<p><img src="11.png" alt="" /></p>
 <p>在每个 Entry 中，又包含如下结构：</p>
-<p><img src="/2024/03/16/Redis%EF%BC%9A%E5%BA%95%E5%B1%82%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%BB%8B%E7%BB%8D%E4%B8%8E%E5%88%86%E6%9E%90/12.png"></p>
+<p><img src="12.png" alt="" /></p>
 <ul>
 <li>encoding 用于定义该元素的编码类型，会对不同长度的整数和字符串进行编码；</li>
 <li>data 存放实际数据；</li>
 <li>len 代表 encoding + data 的总长度；</li>
 </ul>
 <p>listPack 之于 zipList 最大的改变就是<strong>不再记录前一个节点的字段长度</strong>，这样无论节点如何变化，每个节点都不再因为其他节点的更新而连锁更新。</p>
-<h2 id="listPack-如何逆向遍历"><a href="#listPack-如何逆向遍历" class="headerlink" title="listPack 如何逆向遍历"></a>listPack 如何逆向遍历</h2><pre><code class="C">uint64_t lpDecodeBacklen(unsigned char *p) &#123;
-    uint64_t val = 0;
-    uint64_t shift = 0;
-    do &#123;
-        val |= (uint64_t)(p[0] &amp; 127) &lt;&lt; shift;
-        if (!(p[0] &amp; 128)) break;
-        shift += 7;
+<h2 id="listpack-如何逆向遍历"><a class="markdownIt-Anchor" href="#listpack-如何逆向遍历"></a> listPack 如何逆向遍历</h2>
+<pre class="highlight"><code class="C"><span class="hljs-function"><span class="hljs-keyword">uint64_t</span> <span class="hljs-title">lpDecodeBacklen</span><span class="hljs-params">(<span class="hljs-keyword">unsigned</span> <span class="hljs-keyword">char</span> *p)</span> </span>&#123;
+    <span class="hljs-keyword">uint64_t</span> val = <span class="hljs-number">0</span>;
+    <span class="hljs-keyword">uint64_t</span> shift = <span class="hljs-number">0</span>;
+    <span class="hljs-keyword">do</span> &#123;
+        val |= (<span class="hljs-keyword">uint64_t</span>)(p[<span class="hljs-number">0</span>] &amp; <span class="hljs-number">127</span>) &lt;&lt; shift;
+        <span class="hljs-keyword">if</span> (!(p[<span class="hljs-number">0</span>] &amp; <span class="hljs-number">128</span>)) <span class="hljs-keyword">break</span>;
+        shift += <span class="hljs-number">7</span>;
         p--;
-        if (shift &gt; 28) return UINT64_MAX;
-    &#125; while(1);
-    return val;
+        <span class="hljs-keyword">if</span> (shift &gt; <span class="hljs-number">28</span>) <span class="hljs-keyword">return</span> UINT64_MAX;
+    &#125; <span class="hljs-keyword">while</span>(<span class="hljs-number">1</span>);
+    <span class="hljs-keyword">return</span> val;
 &#125;
 </code></pre>
 <p>从当前列表项起始位置的指针开始，向左逐个字节解析，得到前一项的 entry-len 值。</p>
-<h1 id="REDIS-HASH"><a href="#REDIS-HASH" class="headerlink" title="REDIS_HASH"></a>REDIS_HASH</h1><p>Hash 本质上就是一个保存若干键值对的数据结构，类似于 Java 中的 HashMap。</p>
+<h1 id="redis_hash"><a class="markdownIt-Anchor" href="#redis_hash"></a> REDIS_HASH</h1>
+<p>Hash 本质上就是一个保存若干键值对的数据结构，类似于 Java 中的 HashMap。</p>
 <p>同样的，hash 中只能存在一个独一无二的 key，所有的操作都围绕 key 展开。</p>
 <p>hash 的最大优点在于其可以提供最佳<code>O(1)</code>的查询时间复杂度。</p>
 <p>通过一段原始数据 key，通过<strong>特定算法将其哈希值转化为数组下标</strong>，通过<strong>相同的算法处理相同的值可以计算相同的索引</strong>，所以只需要 O(1) 时间复杂度就可以查询到 key。</p>
 <p>但有一片阴云一直笼罩在哈希表之上：<strong>哈希冲突</strong>。</p>
-<h2 id="哈希冲突"><a href="#哈希冲突" class="headerlink" title="哈希冲突"></a>哈希冲突</h2><p>前文提到，哈希表通过算法将 key 转化为下标，可以做到相同 key，一定能有相同的下标值。</p>
+<h2 id="哈希冲突"><a class="markdownIt-Anchor" href="#哈希冲突"></a> 哈希冲突</h2>
+<p>前文提到，哈希表通过算法将 key 转化为下标，可以做到相同 key，一定能有相同的下标值。</p>
 <p>但 key 是无限的，下标值是有限的。无限对有限的映射，<strong>则必定有不同的 key 指向相同的下标</strong>，两个 key 抢占一个下标，就造成了<strong>哈希冲突</strong>。</p>
 <p>哈希冲突一般有多重解决方法，Redis 采用<strong>链式哈希</strong>解决。</p>
 <p>简单来说，链式哈希遇到哈希冲突，则将数组元素转化为一个链表，通过链表将冲突的元素连接起来。</p>
 <p>在链表中，查询时间复杂度为<code>O(n)</code>，这也是为什么要说 hash <strong>最佳时间复杂度</strong>为O(1)。</p>
-<h2 id="结构设计-1"><a href="#结构设计-1" class="headerlink" title="结构设计"></a>结构设计</h2><pre><code class="c">typedef struct dictht &#123;
-    // hash数组
+<h2 id="结构设计-2"><a class="markdownIt-Anchor" href="#结构设计-2"></a> 结构设计</h2>
+<pre class="highlight"><code class="c"><span class="hljs-keyword">typedef</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">dictht</span> &#123;</span>
+    <span class="hljs-comment">// hash数组</span>
     dictEntry **table;
-    // hash大小
-    unsigned long size;  
-    // 大小掩码，用于计算索引值
-    unsigned long sizemask;
-    // 已有的节点数量
-    unsigned long used;
+    <span class="hljs-comment">// hash大小</span>
+    <span class="hljs-keyword">unsigned</span> <span class="hljs-keyword">long</span> <span class="hljs-built_in">size</span>;  
+    <span class="hljs-comment">// 大小掩码，用于计算索引值</span>
+    <span class="hljs-keyword">unsigned</span> <span class="hljs-keyword">long</span> sizemask;
+    <span class="hljs-comment">// 已有的节点数量</span>
+    <span class="hljs-keyword">unsigned</span> <span class="hljs-keyword">long</span> used;
 &#125; dictht;
 </code></pre>
-<pre><code class="C">typedef struct dictEntry &#123;
-    // 键值对中的键
-    void *key;
+<pre class="highlight"><code class="C"><span class="hljs-keyword">typedef</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">dictEntry</span> &#123;</span>
+    <span class="hljs-comment">// 键值对中的键</span>
+    <span class="hljs-keyword">void</span> *key;
   
-    // 键值对中的值
-    union &#123;
-        void *val;
-        uint64_t u64;
-        int64_t s64;
-        double d;
+    <span class="hljs-comment">// 键值对中的值</span>
+    <span class="hljs-keyword">union</span> &#123;
+        <span class="hljs-keyword">void</span> *val;
+        <span class="hljs-keyword">uint64_t</span> u64;
+        <span class="hljs-keyword">int64_t</span> s64;
+        <span class="hljs-keyword">double</span> d;
     &#125; v;
-    // 指向下一个哈希表节点
-    struct dictEntry *next;
+    <span class="hljs-comment">// 指向下一个哈希表节点</span>
+    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">dictEntry</span> *<span class="hljs-title">next</span>;</span>
 &#125; dictEntry;
 </code></pre>
 <p>在 dictEntry 的 v 中，是一个联合体 union，里面存放一个指针，int 和 double。</p>
 <p>这样的好处是如果值是一个整数或者小数，可以直接<strong>嵌入</strong>在 dictEntry 中而不需要指针。</p>
-<h2 id="rehash操作"><a href="#rehash操作" class="headerlink" title="rehash操作"></a>rehash操作</h2><pre><code class="c">typedef struct dict &#123;
+<h2 id="rehash操作"><a class="markdownIt-Anchor" href="#rehash操作"></a> rehash操作</h2>
+<pre class="highlight"><code class="c"><span class="hljs-keyword">typedef</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">dict</span> &#123;</span>
     …
-    // 两个Hash表，交替使用，用于rehash操作
-    dictht ht[2]; 
+    <span class="hljs-comment">// 两个Hash表，交替使用，用于rehash操作</span>
+    dictht ht[<span class="hljs-number">2</span>]; 
     …
 &#125; dict;
 </code></pre>
-<p>在正常服务请求阶段，插入的数据，都会写入到<code>哈希表 1</code>，此时的<code>哈希表 2 </code> 并没有被分配空间。</p>
+<p>在正常服务请求阶段，插入的数据，都会写入到<code>哈希表 1</code>，此时的<code>哈希表 2</code> 并没有被分配空间。</p>
 <p>随着数据逐步增多，触发了 rehash 操作，这个过程分为三步：</p>
 <ul>
 <li>给表 2 分配空间，一般会是表 1 的 2 倍；</li>
@@ -624,8 +677,9 @@ typedef struct quicklistNode &#123;
 <p>渐进式哈希的核心是将数据迁移操作分步进行，而不是一口气完成。</p>
 <p><strong>在给表 2 分配空间后，每次哈希表的元素进行操作(增删改查)时，Redis会将被操作元素索引上的所有元素(因为可能是链表)迁移到表2上</strong>。</p>
 <p>随着操作越来越多，终有一刻表 1 能把所有数据都迁移到表 2 上，完成渐进式哈希操作。</p>
-<h2 id="何时触发rehash"><a href="#何时触发rehash" class="headerlink" title="何时触发rehash"></a>何时触发rehash</h2><p>我们首先要明白一个概念：Load Factor(负载因子)。</p>
-<p>负载因子 &#x3D; 哈希表已存节点数 &#x2F; 哈希表大小</p>
+<h2 id="何时触发rehash"><a class="markdownIt-Anchor" href="#何时触发rehash"></a> 何时触发rehash</h2>
+<p>我们首先要明白一个概念：Load Factor(负载因子)。</p>
+<p>负载因子 = 哈希表已存节点数 / 哈希表大小</p>
 <p>以下两种条件满足一种，哈希表就会进行 rehash 操作：</p>
 <ul>
 <li><strong>当负载因子大于等于 1 ，并且 Redis 没有执行 RDB 快照或没有进行 AOF 重写的时候，就会进行 rehash 操作。</strong></li>

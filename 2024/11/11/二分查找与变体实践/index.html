@@ -1,0 +1,540 @@
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>二分查找与变体实践 | ErickRen</title>
+        <meta name="author" content="Erick Ren" />
+        <meta name="description" content="Dream chaser never give up." />
+        <meta name="keywords" content="ErickRen" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+        <link rel="icon" href="https://q1.qlogo.cn/g?b=qq&nk=2969044006&s=5" />
+        <script src="https://cdn.staticfile.org/vue/3.2.47/vue.global.prod.min.js"></script>
+<link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/6.3.0/css/all.min.css" />
+<link rel="stylesheet" href="/css/fonts.min.css" />
+<script> const mixins = {}; </script>
+
+<script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
+
+
+<script src="https://cdn.staticfile.org/highlight.js/11.7.0/highlight.min.js"></script>
+<link
+    rel="stylesheet"
+    href="https://cdn.staticfile.org/highlight.js/11.7.0/styles/github.min.css"
+/>
+<script src="/js/lib/highlight.js"></script>
+
+
+
+<script src="/js/lib/preview.js"></script>
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/css/main.css" />
+
+    <!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.3.0"></head>
+    <body>
+        <div id="layout">
+            <transition name="fade">
+                <div id="loading" v-show="loading">
+                    <div id="loading-circle">
+                        <h2>LOADING</h2>
+                        <p>Enable the browser cache if loading is slow</p>                        </p>
+                        <img src="/images/loading.gif" />
+                    </div>
+                </div>
+            </transition>
+            <nav id="menu" :class="{ hidden: hiddenMenu, 'menu-color': menuColor}">
+    <div id="desktop-menu">
+        <a class="title" href="/">
+            <span>ERICKREN</span>
+        </a>
+        
+        <a href="/">
+            <i class="fa-solid fa-house fa-fw"></i>
+            <span>&ensp;Home</span>
+        </a>
+        
+        <a href="/about">
+            <i class="fa-solid fa-id-card fa-fw"></i>
+            <span>&ensp;About</span>
+        </a>
+        
+        <a href="/archives">
+            <i class="fa-solid fa-box-archive fa-fw"></i>
+            <span>&ensp;Archives</span>
+        </a>
+        
+        <a href="/categories">
+            <i class="fa-solid fa-bookmark fa-fw"></i>
+            <span>&ensp;Categories</span>
+        </a>
+        
+        <a href="/tags">
+            <i class="fa-solid fa-tags fa-fw"></i>
+            <span>&ensp;Tags</span>
+        </a>
+        
+    </div>
+    <div id="mobile-menu">
+        <div class="title" @click="showMenuItems = !showMenuItems">
+            <i class="fa-solid fa-bars fa-fw"></i>
+            <span>&emsp;ERICKREN</span>
+        </div>
+        <transition name="slide">
+            <div class="items" v-show="showMenuItems">
+                
+                <a href="/">
+                    <div class="item">
+                        <div style="min-width: 20px; max-width: 50px; width: 10%">
+                            <i class="fa-solid fa-house fa-fw"></i>
+                        </div>
+                        <div style="min-width: 100px; max-width: 150%; width: 20%">Home</div>
+                    </div>
+                </a>
+                
+                <a href="/about">
+                    <div class="item">
+                        <div style="min-width: 20px; max-width: 50px; width: 10%">
+                            <i class="fa-solid fa-id-card fa-fw"></i>
+                        </div>
+                        <div style="min-width: 100px; max-width: 150%; width: 20%">About</div>
+                    </div>
+                </a>
+                
+                <a href="/archives">
+                    <div class="item">
+                        <div style="min-width: 20px; max-width: 50px; width: 10%">
+                            <i class="fa-solid fa-box-archive fa-fw"></i>
+                        </div>
+                        <div style="min-width: 100px; max-width: 150%; width: 20%">Archives</div>
+                    </div>
+                </a>
+                
+                <a href="/categories">
+                    <div class="item">
+                        <div style="min-width: 20px; max-width: 50px; width: 10%">
+                            <i class="fa-solid fa-bookmark fa-fw"></i>
+                        </div>
+                        <div style="min-width: 100px; max-width: 150%; width: 20%">Categories</div>
+                    </div>
+                </a>
+                
+                <a href="/tags">
+                    <div class="item">
+                        <div style="min-width: 20px; max-width: 50px; width: 10%">
+                            <i class="fa-solid fa-tags fa-fw"></i>
+                        </div>
+                        <div style="min-width: 100px; max-width: 150%; width: 20%">Tags</div>
+                    </div>
+                </a>
+                
+            </div>
+        </transition>
+    </div>
+</nav>
+<transition name="fade">
+    <div id="menu-curtain" @click="showMenuItems = !showMenuItems" v-show="showMenuItems"></div>
+</transition>
+
+            <transition name="into">
+                <div id="main" v-show="!loading">
+                    <div class="article">
+    <div>
+        <h1>二分查找与变体实践</h1>
+    </div>
+    <div class="info">
+        <span class="date">
+            <span class="icon">
+                <i class="fa-solid fa-calendar fa-fw"></i>
+            </span>
+            2024/11/11
+        </span>
+        
+        <span class="category">
+            <a href="/categories/tech/">
+                <span class="icon">
+                    <i class="fa-solid fa-bookmark fa-fw"></i>
+                </span>
+                tech
+            </a>
+        </span>
+        
+        
+        <span class="tags">
+            <span class="icon">
+                <i class="fa-solid fa-tags fa-fw"></i>
+            </span>
+            
+            <span class="tag">
+                
+                <a href="/tags/Algorithm/" style="color: #03a9f4">Algorithm</a>
+            </span>
+            
+            <span class="tag">
+                
+                <a href="/tags/Binary-Search/" style="color: #ffa2c4">Binary Search</a>
+            </span>
+            
+        </span>
+        
+    </div>
+    
+    <div class="content" v-pre>
+        <blockquote>
+<p>本篇仅分析二分查找的细节问题，在阅读前请确保已经对“二分查找”概念与步骤有初步了解。</p>
+</blockquote>
+<span id="more"></span>
+<h2 id="二分查找的三个常用搜索区间"><a class="markdownIt-Anchor" href="#二分查找的三个常用搜索区间"></a> 二分查找的三个常用搜索区间</h2>
+<table>
+<thead>
+<tr>
+<th>搜索区间</th>
+<th>终止条件</th>
+<th>左右指针初始赋值</th>
+<th>左右指针赋值</th>
+<th>循环条件</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>左闭右闭[l,r]</td>
+<td>相错终止</td>
+<td>l = 0 r = nums.length - 1</td>
+<td>l = mid + 1 r = mid - 1</td>
+<td>l &lt;= r</td>
+</tr>
+<tr>
+<td>左闭右开[l,r)</td>
+<td>相交终止</td>
+<td>l = 0 r = nums.length</td>
+<td>l = mid + 1 r = mid</td>
+<td>l &lt; r</td>
+</tr>
+<tr>
+<td>左开右开(l,r)</td>
+<td>相邻终止</td>
+<td>l = -1 r = nums.length</td>
+<td>l = mid r = mid</td>
+<td>l + 1 &lt; r</td>
+</tr>
+</tbody>
+</table>
+<p>非一般实践中还有<code>左开右闭</code>等搜索区间，本文不再赘述。</p>
+<p>以 <a target="_blank" rel="noopener" href="https://leetcode.cn/problems/binary-search/description/">LeetCode704.二分查找</a> 为例：</p>
+<h3 id="左闭右闭"><a class="markdownIt-Anchor" href="#左闭右闭"></a> 左闭右闭</h3>
+<pre class="highlight"><code class="java"><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">int</span> <span class="hljs-title">search</span><span class="hljs-params">(<span class="hljs-keyword">int</span>[] nums, <span class="hljs-keyword">int</span> target)</span> </span>&#123;
+        <span class="hljs-keyword">int</span> l = <span class="hljs-number">0</span>;
+        <span class="hljs-keyword">int</span> r = nums.length - <span class="hljs-number">1</span>;
+        <span class="hljs-keyword">while</span> (l &lt;= r) &#123;
+            <span class="hljs-keyword">int</span> mid = l + (r - l) / <span class="hljs-number">2</span>;
+            <span class="hljs-keyword">if</span> (nums[mid] &lt; target) &#123;
+                l = mid + <span class="hljs-number">1</span>;
+            &#125; <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (nums[mid] &gt; target) &#123;
+                r = mid - <span class="hljs-number">1</span>;
+            &#125; <span class="hljs-keyword">else</span> &#123;
+                <span class="hljs-keyword">return</span> mid;
+            &#125;
+        &#125;
+        <span class="hljs-keyword">return</span> -<span class="hljs-number">1</span>;
+    &#125;
+</code></pre>
+<h3 id="左闭右开"><a class="markdownIt-Anchor" href="#左闭右开"></a> 左闭右开</h3>
+<pre class="highlight"><code class="java"><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">int</span> <span class="hljs-title">search</span><span class="hljs-params">(<span class="hljs-keyword">int</span>[] nums, <span class="hljs-keyword">int</span> target)</span> </span>&#123;
+        <span class="hljs-keyword">int</span> l = <span class="hljs-number">0</span>;
+        <span class="hljs-keyword">int</span> r = nums.length;
+        <span class="hljs-keyword">while</span> (l &lt; r) &#123;
+            <span class="hljs-keyword">int</span> mid = l + (r - l) / <span class="hljs-number">2</span>;
+            <span class="hljs-keyword">if</span> (nums[mid] &gt; target) &#123;
+                r = mid;
+            &#125; <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (nums[mid] &lt; target) &#123;
+                l = mid + <span class="hljs-number">1</span>;
+            &#125; <span class="hljs-keyword">else</span> &#123;
+                <span class="hljs-keyword">return</span> mid;
+            &#125;
+        &#125;
+        <span class="hljs-keyword">return</span> -<span class="hljs-number">1</span>;
+    &#125;
+</code></pre>
+<h3 id="左开右开"><a class="markdownIt-Anchor" href="#左开右开"></a> 左开右开</h3>
+<pre class="highlight"><code class="java"><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">int</span> <span class="hljs-title">search</span><span class="hljs-params">(<span class="hljs-keyword">int</span>[] nums, <span class="hljs-keyword">int</span> target)</span> </span>&#123;
+        <span class="hljs-keyword">int</span> l = -<span class="hljs-number">1</span>;
+        <span class="hljs-keyword">int</span> r = nums.length;
+        <span class="hljs-keyword">while</span> (l + <span class="hljs-number">1</span> &lt; r) &#123;
+            <span class="hljs-keyword">int</span> mid = l + (r - l) / <span class="hljs-number">2</span>;
+            <span class="hljs-keyword">if</span> (nums[mid] &gt; target) &#123;
+                r = mid;
+            &#125; <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (nums[mid] &lt; target) &#123;
+                l = mid;
+            &#125; <span class="hljs-keyword">else</span> &#123;
+                <span class="hljs-keyword">return</span> mid;
+            &#125;
+        &#125;
+        <span class="hljs-keyword">return</span> -<span class="hljs-number">1</span>;
+    &#125;
+</code></pre>
+<h2 id="二分查找变体"><a class="markdownIt-Anchor" href="#二分查找变体"></a> 二分查找变体</h2>
+<h3 id="查找左闭合边界"><a class="markdownIt-Anchor" href="#查找左闭合边界"></a> 查找左(闭合)边界</h3>
+<p>左边界是指<strong>在有序数组中，被搜索数的第一次出现下标</strong>。</p>
+<p>例如，在数组<code>[5,7,7,8,8,10]</code>中，7的左边界是1,8的左边界是3。</p>
+<p>而根据<code>搜索区间</code>，我们可以得到上述三种写法的查找左边界。</p>
+<p>下面以<code>左闭右闭</code>为例：</p>
+<pre class="highlight"><code class="java"><span class="hljs-function"><span class="hljs-keyword">private</span> <span class="hljs-keyword">int</span> <span class="hljs-title">getLeft</span><span class="hljs-params">(<span class="hljs-keyword">int</span>[] nums, <span class="hljs-keyword">int</span> target)</span> </span>&#123;
+    <span class="hljs-keyword">int</span> l = <span class="hljs-number">0</span>;
+    <span class="hljs-keyword">int</span> r = nums.length - <span class="hljs-number">1</span>;
+    <span class="hljs-comment">// int leftBoard = -2;</span>
+    <span class="hljs-keyword">while</span> (l &lt;= r) &#123;
+        <span class="hljs-keyword">int</span> mid = l + (r - l) / <span class="hljs-number">2</span>;
+        <span class="hljs-keyword">if</span> (nums[mid] &lt; target) &#123;
+            l = mid + <span class="hljs-number">1</span>;
+        &#125; <span class="hljs-keyword">else</span> &#123;
+            r = mid - <span class="hljs-number">1</span>;
+            <span class="hljs-comment">// leftBoard = r;</span>
+        &#125;
+    &#125;
+    <span class="hljs-comment">// 检查出界情况</span>
+    <span class="hljs-keyword">if</span> (l &gt;= nums.length || nums[l] != target) &#123;
+        <span class="hljs-keyword">return</span> -<span class="hljs-number">1</span>;
+    &#125;
+    <span class="hljs-keyword">return</span> l;
+    <span class="hljs-comment">// return leftBoard;</span>
+&#125;
+</code></pre>
+<p>对于左右边界，在这里有个核心问题：<strong>为什么当 nums[mid] &gt;= target 时，r = mid - 1</strong>。</p>
+<p>从搜索区间来看，每次搜索时，我们都在搜索闭区间[l, r]。nums[mid] &gt;= target 时，mid 不一定是左边界，此时要迁移右指针，把 mid 排除出搜索区间。</p>
+<p><span class="katex-display"><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi mathvariant="normal">令</mi><mi>r</mi><mi>e</mi><mi>s</mi><mi>u</mi><mi>l</mi><mi>t</mi><mi mathvariant="normal">为</mi><mi mathvariant="normal">预</mi><mi mathvariant="normal">期</mi><mi mathvariant="normal">结</mi><mi mathvariant="normal">果</mi><mspace linebreak="newline"></mspace><mi mathvariant="normal">当</mi><mi>n</mi><mi>u</mi><mi>m</mi><mi>s</mi><mo stretchy="false">[</mo><mi>m</mi><mi>i</mi><mi>d</mi><mo stretchy="false">]</mo><mo>&gt;</mo><mi>t</mi><mi>a</mi><mi>r</mi><mi>g</mi><mi>e</mi><mi>t</mi><mspace linebreak="newline"></mspace><mi mathvariant="normal">此</mi><mi mathvariant="normal">时</mi><mi>m</mi><mi>i</mi><mi>d</mi><mo>&gt;</mo><mi>r</mi><mi>e</mi><mi>s</mi><mi>u</mi><mi>l</mi><mi>t</mi></mrow><annotation encoding="application/x-tex">令result为预期结果\\
+当nums[mid] &gt; target\\
+此时mid &gt; result
+</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.69444em;vertical-align:0em;"></span><span class="mord cjk_fallback">令</span><span class="mord mathdefault" style="margin-right:0.02778em;">r</span><span class="mord mathdefault">e</span><span class="mord mathdefault">s</span><span class="mord mathdefault">u</span><span class="mord mathdefault" style="margin-right:0.01968em;">l</span><span class="mord mathdefault">t</span><span class="mord cjk_fallback">为</span><span class="mord cjk_fallback">预</span><span class="mord cjk_fallback">期</span><span class="mord cjk_fallback">结</span><span class="mord cjk_fallback">果</span></span><span class="mspace newline"></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord cjk_fallback">当</span><span class="mord mathdefault">n</span><span class="mord mathdefault">u</span><span class="mord mathdefault">m</span><span class="mord mathdefault">s</span><span class="mopen">[</span><span class="mord mathdefault">m</span><span class="mord mathdefault">i</span><span class="mord mathdefault">d</span><span class="mclose">]</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">&gt;</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.80952em;vertical-align:-0.19444em;"></span><span class="mord mathdefault">t</span><span class="mord mathdefault">a</span><span class="mord mathdefault" style="margin-right:0.02778em;">r</span><span class="mord mathdefault" style="margin-right:0.03588em;">g</span><span class="mord mathdefault">e</span><span class="mord mathdefault">t</span></span><span class="mspace newline"></span><span class="base"><span class="strut" style="height:0.73354em;vertical-align:-0.0391em;"></span><span class="mord cjk_fallback">此</span><span class="mord cjk_fallback">时</span><span class="mord mathdefault">m</span><span class="mord mathdefault">i</span><span class="mord mathdefault">d</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">&gt;</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.69444em;vertical-align:0em;"></span><span class="mord mathdefault" style="margin-right:0.02778em;">r</span><span class="mord mathdefault">e</span><span class="mord mathdefault">s</span><span class="mord mathdefault">u</span><span class="mord mathdefault" style="margin-right:0.01968em;">l</span><span class="mord mathdefault">t</span></span></span></span></span></p>
+<p><span class="katex-display"><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>n</mi><mi>u</mi><mi>m</mi><mi>s</mi><mo stretchy="false">[</mo><mi>m</mi><mi>i</mi><mi>d</mi><mo stretchy="false">]</mo><mo>=</mo><mo>=</mo><mi>t</mi><mi>a</mi><mi>r</mi><mi>g</mi><mi>e</mi><mi>t</mi><mo>:</mo><mrow><mo fence="true">{</mo><mtable rowspacing="0.15999999999999992em" columnalign="right center left" columnspacing="1em"><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mi>m</mi><mi>i</mi><mi>d</mi><mo>=</mo><mo>=</mo><mi>r</mi><mi>e</mi><mi>s</mi><mi>u</mi><mi>l</mi><mi>t</mi></mrow></mstyle></mtd><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow></mrow></mstyle></mtd><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mi>m</mi><mi>i</mi><mi>d</mi><mi mathvariant="normal">为</mi><mi mathvariant="normal">结</mi><mi mathvariant="normal">果</mi><mi mathvariant="normal">，</mi><mi>r</mi><mi mathvariant="normal">左</mi><mi mathvariant="normal">移</mi><mi mathvariant="normal">，</mi><mi mathvariant="normal">循</mi><mi mathvariant="normal">环</mi><mi mathvariant="normal">结</mi><mi mathvariant="normal">束</mi><mi mathvariant="normal">后</mi><mi mathvariant="normal">，</mi><mi mathvariant="normal">新</mi><mi>l</mi><mi mathvariant="normal">即</mi><mi mathvariant="normal">为</mi><mi mathvariant="normal">当</mi><mi mathvariant="normal">前</mi><mi>m</mi><mi>i</mi><mi>d</mi><mi mathvariant="normal">，</mi><mi mathvariant="normal">即</mi><mi mathvariant="normal">为</mi><mi mathvariant="normal">结</mi><mi mathvariant="normal">果</mi></mrow></mstyle></mtd></mtr><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mi>m</mi><mi>i</mi><mi>d</mi><mo>&gt;</mo><mi>r</mi><mi>e</mi><mi>s</mi><mi>u</mi><mi>l</mi><mi>t</mi></mrow></mstyle></mtd><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow></mrow></mstyle></mtd><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mi>m</mi><mi>i</mi><mi>d</mi><mi mathvariant="normal">不</mi><mi mathvariant="normal">为</mi><mi mathvariant="normal">结</mi><mi mathvariant="normal">果</mi><mi mathvariant="normal">，</mi><mi>r</mi><mi mathvariant="normal">应</mi><mi mathvariant="normal">当</mi><mi mathvariant="normal">左</mi><mi mathvariant="normal">移</mi><mi mathvariant="normal">。</mi></mrow></mstyle></mtd></mtr></mtable></mrow><mspace linebreak="newline"></mspace><mi>n</mi><mi>u</mi><mi>m</mi><mi>s</mi><mo stretchy="false">[</mo><mi>m</mi><mi>i</mi><mi>d</mi><mo stretchy="false">]</mo><mo>&gt;</mo><mi>t</mi><mi>a</mi><mi>r</mi><mi>g</mi><mi>e</mi><mi>t</mi><mo>:</mo><mi>r</mi><mi mathvariant="normal">左</mi><mi mathvariant="normal">移</mi><mi mathvariant="normal">。</mi></mrow><annotation encoding="application/x-tex">nums[mid] == target:\left\{
+\begin{array}{rcl}
+mid == result &amp;&amp; mid为结果，r左移，循环结束后，新l即为当前mid，即为结果\\
+mid &gt; result &amp;&amp; mid不为结果，r应当左移。
+\end{array} \right.\\
+nums[mid] &gt; target: r左移。
+</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathdefault">n</span><span class="mord mathdefault">u</span><span class="mord mathdefault">m</span><span class="mord mathdefault">s</span><span class="mopen">[</span><span class="mord mathdefault">m</span><span class="mord mathdefault">i</span><span class="mord mathdefault">d</span><span class="mclose">]</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span></span><span class="base"><span class="strut" style="height:0.36687em;vertical-align:0em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.80952em;vertical-align:-0.19444em;"></span><span class="mord mathdefault">t</span><span class="mord mathdefault">a</span><span class="mord mathdefault" style="margin-right:0.02778em;">r</span><span class="mord mathdefault" style="margin-right:0.03588em;">g</span><span class="mord mathdefault">e</span><span class="mord mathdefault">t</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">:</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:2.40003em;vertical-align:-0.95003em;"></span><span class="minner"><span class="mopen delimcenter" style="top:0em;"><span class="delimsizing size3">{</span></span><span class="mord"><span class="mtable"><span class="arraycolsep" style="width:0.5em;"></span><span class="col-align-r"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.45em;"><span style="top:-3.61em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathdefault">m</span><span class="mord mathdefault">i</span><span class="mord mathdefault">d</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mord mathdefault" style="margin-right:0.02778em;">r</span><span class="mord mathdefault">e</span><span class="mord mathdefault">s</span><span class="mord mathdefault">u</span><span class="mord mathdefault" style="margin-right:0.01968em;">l</span><span class="mord mathdefault">t</span></span></span><span style="top:-2.4099999999999997em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathdefault">m</span><span class="mord mathdefault">i</span><span class="mord mathdefault">d</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">&gt;</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mord mathdefault" style="margin-right:0.02778em;">r</span><span class="mord mathdefault">e</span><span class="mord mathdefault">s</span><span class="mord mathdefault">u</span><span class="mord mathdefault" style="margin-right:0.01968em;">l</span><span class="mord mathdefault">t</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.9500000000000004em;"><span></span></span></span></span></span><span class="arraycolsep" style="width:0.5em;"></span><span class="arraycolsep" style="width:0.5em;"></span><span class="col-align-c"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.45em;"><span style="top:-3.4499999999999997em;"><span class="pstrut" style="height:2.84em;"></span><span class="mord"></span></span><span style="top:-2.2499999999999996em;"><span class="pstrut" style="height:2.84em;"></span><span class="mord"></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.9500000000000004em;"><span></span></span></span></span></span><span class="arraycolsep" style="width:0.5em;"></span><span class="arraycolsep" style="width:0.5em;"></span><span class="col-align-l"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.45em;"><span style="top:-3.61em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathdefault">m</span><span class="mord mathdefault">i</span><span class="mord mathdefault">d</span><span class="mord cjk_fallback">为</span><span class="mord cjk_fallback">结</span><span class="mord cjk_fallback">果</span><span class="mord cjk_fallback">，</span><span class="mord mathdefault" style="margin-right:0.02778em;">r</span><span class="mord cjk_fallback">左</span><span class="mord cjk_fallback">移</span><span class="mord cjk_fallback">，</span><span class="mord cjk_fallback">循</span><span class="mord cjk_fallback">环</span><span class="mord cjk_fallback">结</span><span class="mord cjk_fallback">束</span><span class="mord cjk_fallback">后</span><span class="mord cjk_fallback">，</span><span class="mord cjk_fallback">新</span><span class="mord mathdefault" style="margin-right:0.01968em;">l</span><span class="mord cjk_fallback">即</span><span class="mord cjk_fallback">为</span><span class="mord cjk_fallback">当</span><span class="mord cjk_fallback">前</span><span class="mord mathdefault">m</span><span class="mord mathdefault">i</span><span class="mord mathdefault">d</span><span class="mord cjk_fallback">，</span><span class="mord cjk_fallback">即</span><span class="mord cjk_fallback">为</span><span class="mord cjk_fallback">结</span><span class="mord cjk_fallback">果</span></span></span><span style="top:-2.4099999999999997em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathdefault">m</span><span class="mord mathdefault">i</span><span class="mord mathdefault">d</span><span class="mord cjk_fallback">不</span><span class="mord cjk_fallback">为</span><span class="mord cjk_fallback">结</span><span class="mord cjk_fallback">果</span><span class="mord cjk_fallback">，</span><span class="mord mathdefault" style="margin-right:0.02778em;">r</span><span class="mord cjk_fallback">应</span><span class="mord cjk_fallback">当</span><span class="mord cjk_fallback">左</span><span class="mord cjk_fallback">移</span><span class="mord cjk_fallback">。</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.9500000000000004em;"><span></span></span></span></span></span><span class="arraycolsep" style="width:0.5em;"></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mspace" style="margin-right:0.16666666666666666em;"></span></span><span class="mspace newline"></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathdefault">n</span><span class="mord mathdefault">u</span><span class="mord mathdefault">m</span><span class="mord mathdefault">s</span><span class="mopen">[</span><span class="mord mathdefault">m</span><span class="mord mathdefault">i</span><span class="mord mathdefault">d</span><span class="mclose">]</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">&gt;</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.80952em;vertical-align:-0.19444em;"></span><span class="mord mathdefault">t</span><span class="mord mathdefault">a</span><span class="mord mathdefault" style="margin-right:0.02778em;">r</span><span class="mord mathdefault" style="margin-right:0.03588em;">g</span><span class="mord mathdefault">e</span><span class="mord mathdefault">t</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">:</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathdefault" style="margin-right:0.02778em;">r</span><span class="mord cjk_fallback">左</span><span class="mord cjk_fallback">移</span><span class="mord cjk_fallback">。</span></span></span></span></span></p>
+<p>根据<strong>相错终止</strong>的思路，最终 l 会停留在 r 的右侧，即 <strong>l = r + 1</strong>，如果 nums[mid] == target 时已经是左边界，那么右指针将不会再挪动，在循环终止时根据l的位置，即可断言：<strong>l 是左边界</strong>。</p>
+<p><span class="katex-display"><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi mathvariant="normal">例</mi><mi mathvariant="normal">如</mi><mi mathvariant="normal">，</mi><mi mathvariant="normal">现</mi><mi mathvariant="normal">有</mi><mi mathvariant="normal">数</mi><mi mathvariant="normal">组</mi><mo>:</mo><mspace linebreak="newline"></mspace><mo stretchy="false">[</mo><mn>5</mn><mo separator="true">,</mo><mn>7</mn><mo separator="true">,</mo><mn>7</mn><mo separator="true">,</mo><mn>8</mn><mo separator="true">,</mo><mn>8</mn><mo separator="true">,</mo><mn>10</mn><mo stretchy="false">]</mo><mspace linebreak="newline"></mspace><msup><mi>N</mi><mi>l</mi></msup><mi mathvariant="normal">表</mi><mi mathvariant="normal">示</mi><mi mathvariant="normal">左</mi><mi mathvariant="normal">指</mi><mi mathvariant="normal">针</mi><mi mathvariant="normal">位</mi><mi mathvariant="normal">置</mi><mo separator="true">;</mo><msup><mi>N</mi><mi>r</mi></msup><mi mathvariant="normal">表</mi><mi mathvariant="normal">示</mi><mi mathvariant="normal">右</mi><mi mathvariant="normal">指</mi><mi mathvariant="normal">针</mi><mi mathvariant="normal">位</mi><mi mathvariant="normal">置</mi><mo separator="true">;</mo><msup><mi>N</mi><mrow><mi>m</mi><mi>i</mi><mi>d</mi></mrow></msup><mi mathvariant="normal">表</mi><mi mathvariant="normal">示</mi><mi mathvariant="normal">搜</mi><mi mathvariant="normal">索</mi><mi mathvariant="normal">中</mi><mi mathvariant="normal">间</mi><mspace linebreak="newline"></mspace><mi mathvariant="normal">令</mi><mi>t</mi><mi>a</mi><mi>r</mi><mi>g</mi><mi>e</mi><mi>t</mi><mo>=</mo><mn>7</mn><mo separator="true">,</mo><mi mathvariant="normal">观</mi><mi mathvariant="normal">察</mi><mi mathvariant="normal">可</mi><mi mathvariant="normal">得</mi><mi mathvariant="normal">，</mi><mi>r</mi><mi>e</mi><mi>s</mi><mi>u</mi><mi>l</mi><mi>t</mi><mo>=</mo><mn>1</mn><mspace linebreak="newline"></mspace><mi mathvariant="normal">此</mi><mi mathvariant="normal">时</mi><mi mathvariant="normal">启</mi><mi mathvariant="normal">动</mi><mi mathvariant="normal">搜</mi><mi mathvariant="normal">索</mi><mi mathvariant="normal">：</mi><mspace linebreak="newline"></mspace><mo stretchy="false">[</mo><msup><mn>5</mn><mi>l</mi></msup><mo separator="true">,</mo><mn>7</mn><mo separator="true">,</mo><msup><mn>7</mn><mrow><mi>m</mi><mi>i</mi><mi>d</mi></mrow></msup><mo separator="true">,</mo><mn>8</mn><mo separator="true">,</mo><mn>8</mn><mo separator="true">,</mo><mn>1</mn><msup><mn>0</mn><mi>r</mi></msup><mo stretchy="false">]</mo><mo>:</mo><mi>r</mi><mi mathvariant="normal">左</mi><mi mathvariant="normal">移</mi><mspace linebreak="newline"></mspace><mi mathvariant="normal">此</mi><mi mathvariant="normal">时</mi><mi mathvariant="normal">，</mi><mi mathvariant="normal">满</mi><mi mathvariant="normal">足</mi><mi mathvariant="normal">上</mi><mi mathvariant="normal">文</mi><mi>n</mi><mi>u</mi><mi>m</mi><mo stretchy="false">[</mo><mi>m</mi><mi>i</mi><mi>d</mi><mo stretchy="false">]</mo><mo>=</mo><mo>=</mo><mi>t</mi><mi>a</mi><mi>r</mi><mi>g</mi><mi>e</mi><mi>t</mi><mi mathvariant="normal">，</mi><mi mathvariant="normal">显</mi><mi mathvariant="normal">然</mi><mi mathvariant="normal">此</mi><mi mathvariant="normal">时</mi><mi>m</mi><mi>i</mi><mi>d</mi><mi mathvariant="normal">≠</mi><mi>r</mi><mi>e</mi><mi>s</mi><mi>u</mi><mi>l</mi><mi>t</mi><mspace linebreak="newline"></mspace><mi mathvariant="normal">持</mi><mi mathvariant="normal">续</mi><mi mathvariant="normal">搜</mi><mi mathvariant="normal">索</mi><mi mathvariant="normal">：</mi><mspace linebreak="newline"></mspace><mo stretchy="false">[</mo><msup><mn>5</mn><mrow><mi>l</mi><mo separator="true">,</mo><mi>m</mi><mi>i</mi><mi>d</mi></mrow></msup><mo separator="true">,</mo><msup><mn>7</mn><mi>r</mi></msup><mo separator="true">,</mo><mn>7</mn><mo separator="true">,</mo><mn>8</mn><mo separator="true">,</mo><mn>8</mn><mo separator="true">,</mo><mn>10</mn><mo stretchy="false">]</mo><mo>:</mo><mi>l</mi><mi mathvariant="normal">右</mi><mi mathvariant="normal">移</mi><mspace linebreak="newline"></mspace><mo stretchy="false">[</mo><mn>5</mn><mo separator="true">,</mo><msup><mn>7</mn><mrow><mi>r</mi><mo separator="true">,</mo><mi>l</mi><mo separator="true">,</mo><mi>m</mi><mi>i</mi><mi>d</mi></mrow></msup><mo separator="true">,</mo><mn>7</mn><mo separator="true">,</mo><mn>8</mn><mo separator="true">,</mo><mn>8</mn><mo separator="true">,</mo><mn>10</mn><mo stretchy="false">]</mo><mo>:</mo><mi>r</mi><mi mathvariant="normal">左</mi><mi mathvariant="normal">移</mi><mspace linebreak="newline"></mspace><mi mathvariant="normal">此</mi><mi mathvariant="normal">时</mi><mi mathvariant="normal">两</mi><mi mathvariant="normal">指</mi><mi mathvariant="normal">针</mi><mi mathvariant="normal">相</mi><mi mathvariant="normal">错</mi><mi mathvariant="normal">，</mi><mi mathvariant="normal">循</mi><mi mathvariant="normal">环</mi><mi mathvariant="normal">结</mi><mi mathvariant="normal">束</mi><mi mathvariant="normal">。</mi><mspace linebreak="newline"></mspace><mi mathvariant="normal">值</mi><mi mathvariant="normal">得</mi><mi mathvariant="normal">讨</mi><mi mathvariant="normal">论</mi><mi mathvariant="normal">的</mi><mi mathvariant="normal">是</mi><mi mathvariant="normal">：</mi><mi mathvariant="normal">当</mi><mi>m</mi><mi>i</mi><mi>d</mi><mi mathvariant="normal">已</mi><mi mathvariant="normal">指</mi><mi mathvariant="normal">向</mi><mi>r</mi><mi>e</mi><mi>s</mi><mi>u</mi><mi>l</mi><mi>t</mi><mi mathvariant="normal">时</mi><mi mathvariant="normal">，</mi><mi mathvariant="normal">继</mi><mi mathvariant="normal">续</mi><mi mathvariant="normal">移</mi><mi mathvariant="normal">动</mi><mi mathvariant="normal">指</mi><mi mathvariant="normal">针</mi><mi mathvariant="normal">是</mi><mi mathvariant="normal">否</mi><mi mathvariant="normal">会</mi><mi mathvariant="normal">影</mi><mi mathvariant="normal">响</mi><mi mathvariant="normal">正</mi><mi mathvariant="normal">确</mi><mi mathvariant="normal">性</mi><mi mathvariant="normal">。</mi><mspace linebreak="newline"></mspace><mi mathvariant="normal">在</mi><mi mathvariant="normal">判</mi><mi mathvariant="normal">断</mi><mi mathvariant="normal">条</mi><mi mathvariant="normal">件</mi><mi>n</mi><mi>u</mi><mi>m</mi><mi>s</mi><mo stretchy="false">[</mo><mi>m</mi><mi>i</mi><mi>d</mi><mo stretchy="false">]</mo><mo>&gt;</mo><mo>=</mo><mi>t</mi><mi>a</mi><mi>r</mi><mi>g</mi><mi>e</mi><mi>t</mi><mi mathvariant="normal">，</mi><mi mathvariant="normal">只</mi><mi mathvariant="normal">对</mi><mi>r</mi><mi mathvariant="normal">进</mi><mi mathvariant="normal">行</mi><mi mathvariant="normal">操</mi><mi mathvariant="normal">作</mi><mi mathvariant="normal">，</mi><mi mathvariant="normal">则</mi><mi mathvariant="normal">意</mi><mi mathvariant="normal">味</mi><mi mathvariant="normal">着</mi><mi mathvariant="normal">：</mi><mi>l</mi><mi mathvariant="normal">永</mi><mi mathvariant="normal">远</mi><mi mathvariant="normal">不</mi><mi mathvariant="normal">会</mi><mi mathvariant="normal">越</mi><mi mathvariant="normal">过</mi><mi>r</mi><mi>e</mi><mi>s</mi><mi>u</mi><mi>l</mi><mi>t</mi><mspace linebreak="newline"></mspace><mi mathvariant="normal">故</mi><mi mathvariant="normal">当</mi><mi>l</mi><mi mathvariant="normal">为</mi><mi mathvariant="normal">返</mi><mi mathvariant="normal">回</mi><mi mathvariant="normal">条</mi><mi mathvariant="normal">件</mi><mi mathvariant="normal">时</mi><mi mathvariant="normal">，</mi><mi mathvariant="normal">正</mi><mi mathvariant="normal">确</mi><mi mathvariant="normal">性</mi><mi mathvariant="normal">可</mi><mi mathvariant="normal">以</mi><mi mathvariant="normal">保</mi><mi mathvariant="normal">障</mi><mi mathvariant="normal">。</mi></mrow><annotation encoding="application/x-tex">例如，现有数组:\\
+[5,7,7,8,8,10]\\
+N^{l}表示左指针位置;N^{r}表示右指针位置;N^{mid}表示搜索中间\\
+令 target = 7,观察可得，result = 1\\
+此时启动搜索：\\
+[5^{l},7,7^{mid},8,8,10^{r}]: r左移\\
+此时，满足上文 num[mid]==target，显然此时mid \neq result\\
+持续搜索：\\
+[5^{l,mid},7^{r},7,8,8,10]: l右移\\
+[5,7^{r,l,mid},7,8,8,10]: r左移\\
+此时两指针相错，循环结束。\\
+
+值得讨论的是：当mid已指向result时，继续移动指针是否会影响正确性。\\
+在判断条件 nums[mid] &gt;= target，只对r进行操作，则意味着：l永远不会越过result\\
+故当l为返回条件时，正确性可以保障。
+</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord cjk_fallback">例</span><span class="mord cjk_fallback">如</span><span class="mord cjk_fallback">，</span><span class="mord cjk_fallback">现</span><span class="mord cjk_fallback">有</span><span class="mord cjk_fallback">数</span><span class="mord cjk_fallback">组</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">:</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="mspace newline"></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">[</span><span class="mord">5</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord">7</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord">7</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord">8</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord">8</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord">1</span><span class="mord">0</span><span class="mclose">]</span></span><span class="mspace newline"></span><span class="base"><span class="strut" style="height:1.093548em;vertical-align:-0.19444em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.10903em;">N</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8991079999999999em;"><span style="top:-3.113em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight" style="margin-right:0.01968em;">l</span></span></span></span></span></span></span></span></span><span class="mord cjk_fallback">表</span><span class="mord cjk_fallback">示</span><span class="mord cjk_fallback">左</span><span class="mord cjk_fallback">指</span><span class="mord cjk_fallback">针</span><span class="mord cjk_fallback">位</span><span class="mord cjk_fallback">置</span><span class="mpunct">;</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.10903em;">N</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.7143919999999999em;"><span style="top:-3.113em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight" style="margin-right:0.02778em;">r</span></span></span></span></span></span></span></span></span><span class="mord cjk_fallback">表</span><span class="mord cjk_fallback">示</span><span class="mord cjk_fallback">右</span><span class="mord cjk_fallback">指</span><span class="mord cjk_fallback">针</span><span class="mord cjk_fallback">位</span><span class="mord cjk_fallback">置</span><span class="mpunct">;</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.10903em;">N</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8991079999999999em;"><span style="top:-3.113em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight">m</span><span class="mord mathdefault mtight">i</span><span class="mord mathdefault mtight">d</span></span></span></span></span></span></span></span></span><span class="mord cjk_fallback">表</span><span class="mord cjk_fallback">示</span><span class="mord cjk_fallback">搜</span><span class="mord cjk_fallback">索</span><span class="mord cjk_fallback">中</span><span class="mord cjk_fallback">间</span></span><span class="mspace newline"></span><span class="base"><span class="strut" style="height:0.80952em;vertical-align:-0.19444em;"></span><span class="mord cjk_fallback">令</span><span class="mord mathdefault">t</span><span class="mord mathdefault">a</span><span class="mord mathdefault" style="margin-right:0.02778em;">r</span><span class="mord mathdefault" style="margin-right:0.03588em;">g</span><span class="mord mathdefault">e</span><span class="mord mathdefault">t</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span><span class="mord">7</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord cjk_fallback">观</span><span class="mord cjk_fallback">察</span><span class="mord cjk_fallback">可</span><span class="mord cjk_fallback">得</span><span class="mord cjk_fallback">，</span><span class="mord mathdefault" style="margin-right:0.02778em;">r</span><span class="mord mathdefault">e</span><span class="mord mathdefault">s</span><span class="mord mathdefault">u</span><span class="mord mathdefault" style="margin-right:0.01968em;">l</span><span class="mord mathdefault">t</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">1</span></span><span class="mspace newline"></span><span class="base"><span class="strut" style="height:0em;vertical-align:0em;"></span><span class="mord cjk_fallback">此</span><span class="mord cjk_fallback">时</span><span class="mord cjk_fallback">启</span><span class="mord cjk_fallback">动</span><span class="mord cjk_fallback">搜</span><span class="mord cjk_fallback">索</span><span class="mord cjk_fallback">：</span></span><span class="mspace newline"></span><span class="base"><span class="strut" style="height:1.149108em;vertical-align:-0.25em;"></span><span class="mopen">[</span><span class="mord"><span class="mord">5</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8991079999999999em;"><span style="top:-3.113em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight" style="margin-right:0.01968em;">l</span></span></span></span></span></span></span></span></span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord">7</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord">7</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8991079999999999em;"><span style="top:-3.113em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight">m</span><span class="mord mathdefault mtight">i</span><span class="mord mathdefault mtight">d</span></span></span></span></span></span></span></span></span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord">8</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord">8</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord">1</span><span class="mord"><span class="mord">0</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.7143919999999999em;"><span style="top:-3.113em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight" style="margin-right:0.02778em;">r</span></span></span></span></span></span></span></span></span><span class="mclose">]</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">:</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathdefault" style="margin-right:0.02778em;">r</span><span class="mord cjk_fallback">左</span><span class="mord cjk_fallback">移</span></span><span class="mspace newline"></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord cjk_fallback">此</span><span class="mord cjk_fallback">时</span><span class="mord cjk_fallback">，</span><span class="mord cjk_fallback">满</span><span class="mord cjk_fallback">足</span><span class="mord cjk_fallback">上</span><span class="mord cjk_fallback">文</span><span class="mord mathdefault">n</span><span class="mord mathdefault">u</span><span class="mord mathdefault">m</span><span class="mopen">[</span><span class="mord mathdefault">m</span><span class="mord mathdefault">i</span><span class="mord mathdefault">d</span><span class="mclose">]</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span></span><span class="base"><span class="strut" style="height:0.36687em;vertical-align:0em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span><span class="mord mathdefault">t</span><span class="mord mathdefault">a</span><span class="mord mathdefault" style="margin-right:0.02778em;">r</span><span class="mord mathdefault" style="margin-right:0.03588em;">g</span><span class="mord mathdefault">e</span><span class="mord mathdefault">t</span><span class="mord cjk_fallback">，</span><span class="mord cjk_fallback">显</span><span class="mord cjk_fallback">然</span><span class="mord cjk_fallback">此</span><span class="mord cjk_fallback">时</span><span class="mord mathdefault">m</span><span class="mord mathdefault">i</span><span class="mord mathdefault">d</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel"><span class="mrel"><span class="mord"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.69444em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="rlap"><span class="strut" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span><span class="inner"><span class="mrel"></span></span><span class="fix"></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.19444em;"><span></span></span></span></span></span></span><span class="mrel">=</span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.69444em;vertical-align:0em;"></span><span class="mord mathdefault" style="margin-right:0.02778em;">r</span><span class="mord mathdefault">e</span><span class="mord mathdefault">s</span><span class="mord mathdefault">u</span><span class="mord mathdefault" style="margin-right:0.01968em;">l</span><span class="mord mathdefault">t</span></span><span class="mspace newline"></span><span class="base"><span class="strut" style="height:0em;vertical-align:0em;"></span><span class="mord cjk_fallback">持</span><span class="mord cjk_fallback">续</span><span class="mord cjk_fallback">搜</span><span class="mord cjk_fallback">索</span><span class="mord cjk_fallback">：</span></span><span class="mspace newline"></span><span class="base"><span class="strut" style="height:1.149108em;vertical-align:-0.25em;"></span><span class="mopen">[</span><span class="mord"><span class="mord">5</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8991079999999999em;"><span style="top:-3.1130000000000004em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight" style="margin-right:0.01968em;">l</span><span class="mpunct mtight">,</span><span class="mord mathdefault mtight">m</span><span class="mord mathdefault mtight">i</span><span class="mord mathdefault mtight">d</span></span></span></span></span></span></span></span></span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord">7</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.7143919999999999em;"><span style="top:-3.113em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight" style="margin-right:0.02778em;">r</span></span></span></span></span></span></span></span></span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord">7</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord">8</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord">8</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord">1</span><span class="mord">0</span><span class="mclose">]</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">:</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.69444em;vertical-align:0em;"></span><span class="mord mathdefault" style="margin-right:0.01968em;">l</span><span class="mord cjk_fallback">右</span><span class="mord cjk_fallback">移</span></span><span class="mspace newline"></span><span class="base"><span class="strut" style="height:1.149108em;vertical-align:-0.25em;"></span><span class="mopen">[</span><span class="mord">5</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord">7</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8991079999999999em;"><span style="top:-3.1130000000000004em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight" style="margin-right:0.02778em;">r</span><span class="mpunct mtight">,</span><span class="mord mathdefault mtight" style="margin-right:0.01968em;">l</span><span class="mpunct mtight">,</span><span class="mord mathdefault mtight">m</span><span class="mord mathdefault mtight">i</span><span class="mord mathdefault mtight">d</span></span></span></span></span></span></span></span></span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord">7</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord">8</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord">8</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord">1</span><span class="mord">0</span><span class="mclose">]</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">:</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathdefault" style="margin-right:0.02778em;">r</span><span class="mord cjk_fallback">左</span><span class="mord cjk_fallback">移</span></span><span class="mspace newline"></span><span class="base"><span class="strut" style="height:0em;vertical-align:0em;"></span><span class="mord cjk_fallback">此</span><span class="mord cjk_fallback">时</span><span class="mord cjk_fallback">两</span><span class="mord cjk_fallback">指</span><span class="mord cjk_fallback">针</span><span class="mord cjk_fallback">相</span><span class="mord cjk_fallback">错</span><span class="mord cjk_fallback">，</span><span class="mord cjk_fallback">循</span><span class="mord cjk_fallback">环</span><span class="mord cjk_fallback">结</span><span class="mord cjk_fallback">束</span><span class="mord cjk_fallback">。</span></span><span class="mspace newline"></span><span class="base"><span class="strut" style="height:0.69444em;vertical-align:0em;"></span><span class="mord cjk_fallback">值</span><span class="mord cjk_fallback">得</span><span class="mord cjk_fallback">讨</span><span class="mord cjk_fallback">论</span><span class="mord cjk_fallback">的</span><span class="mord cjk_fallback">是</span><span class="mord cjk_fallback">：</span><span class="mord cjk_fallback">当</span><span class="mord mathdefault">m</span><span class="mord mathdefault">i</span><span class="mord mathdefault">d</span><span class="mord cjk_fallback">已</span><span class="mord cjk_fallback">指</span><span class="mord cjk_fallback">向</span><span class="mord mathdefault" style="margin-right:0.02778em;">r</span><span class="mord mathdefault">e</span><span class="mord mathdefault">s</span><span class="mord mathdefault">u</span><span class="mord mathdefault" style="margin-right:0.01968em;">l</span><span class="mord mathdefault">t</span><span class="mord cjk_fallback">时</span><span class="mord cjk_fallback">，</span><span class="mord cjk_fallback">继</span><span class="mord cjk_fallback">续</span><span class="mord cjk_fallback">移</span><span class="mord cjk_fallback">动</span><span class="mord cjk_fallback">指</span><span class="mord cjk_fallback">针</span><span class="mord cjk_fallback">是</span><span class="mord cjk_fallback">否</span><span class="mord cjk_fallback">会</span><span class="mord cjk_fallback">影</span><span class="mord cjk_fallback">响</span><span class="mord cjk_fallback">正</span><span class="mord cjk_fallback">确</span><span class="mord cjk_fallback">性</span><span class="mord cjk_fallback">。</span></span><span class="mspace newline"></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord cjk_fallback">在</span><span class="mord cjk_fallback">判</span><span class="mord cjk_fallback">断</span><span class="mord cjk_fallback">条</span><span class="mord cjk_fallback">件</span><span class="mord mathdefault">n</span><span class="mord mathdefault">u</span><span class="mord mathdefault">m</span><span class="mord mathdefault">s</span><span class="mopen">[</span><span class="mord mathdefault">m</span><span class="mord mathdefault">i</span><span class="mord mathdefault">d</span><span class="mclose">]</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">&gt;</span></span><span class="base"><span class="strut" style="height:0.36687em;vertical-align:0em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span><span class="mord mathdefault">t</span><span class="mord mathdefault">a</span><span class="mord mathdefault" style="margin-right:0.02778em;">r</span><span class="mord mathdefault" style="margin-right:0.03588em;">g</span><span class="mord mathdefault">e</span><span class="mord mathdefault">t</span><span class="mord cjk_fallback">，</span><span class="mord cjk_fallback">只</span><span class="mord cjk_fallback">对</span><span class="mord mathdefault" style="margin-right:0.02778em;">r</span><span class="mord cjk_fallback">进</span><span class="mord cjk_fallback">行</span><span class="mord cjk_fallback">操</span><span class="mord cjk_fallback">作</span><span class="mord cjk_fallback">，</span><span class="mord cjk_fallback">则</span><span class="mord cjk_fallback">意</span><span class="mord cjk_fallback">味</span><span class="mord cjk_fallback">着</span><span class="mord cjk_fallback">：</span><span class="mord mathdefault" style="margin-right:0.01968em;">l</span><span class="mord cjk_fallback">永</span><span class="mord cjk_fallback">远</span><span class="mord cjk_fallback">不</span><span class="mord cjk_fallback">会</span><span class="mord cjk_fallback">越</span><span class="mord cjk_fallback">过</span><span class="mord mathdefault" style="margin-right:0.02778em;">r</span><span class="mord mathdefault">e</span><span class="mord mathdefault">s</span><span class="mord mathdefault">u</span><span class="mord mathdefault" style="margin-right:0.01968em;">l</span><span class="mord mathdefault">t</span></span><span class="mspace newline"></span><span class="base"><span class="strut" style="height:0.69444em;vertical-align:0em;"></span><span class="mord cjk_fallback">故</span><span class="mord cjk_fallback">当</span><span class="mord mathdefault" style="margin-right:0.01968em;">l</span><span class="mord cjk_fallback">为</span><span class="mord cjk_fallback">返</span><span class="mord cjk_fallback">回</span><span class="mord cjk_fallback">条</span><span class="mord cjk_fallback">件</span><span class="mord cjk_fallback">时</span><span class="mord cjk_fallback">，</span><span class="mord cjk_fallback">正</span><span class="mord cjk_fallback">确</span><span class="mord cjk_fallback">性</span><span class="mord cjk_fallback">可</span><span class="mord cjk_fallback">以</span><span class="mord cjk_fallback">保</span><span class="mord cjk_fallback">障</span><span class="mord cjk_fallback">。</span></span></span></span></span></p>
+<p>相应的，可以推理如果写判断条件 <strong>nums[mid] == target 时，l = mid + 1</strong>，此时 l 必定会越过左边界。所以我们要根据右指针返回结果：</p>
+<pre class="highlight"><code class="java"><span class="hljs-function"><span class="hljs-keyword">private</span> <span class="hljs-keyword">int</span> <span class="hljs-title">getLeft</span><span class="hljs-params">(<span class="hljs-keyword">int</span>[] nums, <span class="hljs-keyword">int</span> target)</span> </span>&#123;
+        <span class="hljs-keyword">int</span> l = <span class="hljs-number">0</span>;
+        <span class="hljs-keyword">int</span> r = nums.length - <span class="hljs-number">1</span>;
+        <span class="hljs-keyword">while</span> (l &lt;= r) &#123;
+            <span class="hljs-keyword">int</span> mid = l + (r - l) / <span class="hljs-number">2</span>;
+            <span class="hljs-keyword">if</span> (nums[mid] &lt; target) &#123;
+                l = mid + <span class="hljs-number">1</span>;
+            &#125; <span class="hljs-keyword">else</span> &#123;
+                r = mid - <span class="hljs-number">1</span>;
+            &#125;
+        &#125;
+        <span class="hljs-comment">// 检查出界情况</span>
+        <span class="hljs-keyword">if</span> (r + <span class="hljs-number">1</span> == nums.length || nums[r + <span class="hljs-number">1</span>] != target) &#123;
+            <span class="hljs-keyword">return</span> -<span class="hljs-number">1</span>;
+        &#125;
+        <span class="hljs-keyword">return</span> r + <span class="hljs-number">1</span>;
+    &#125;
+</code></pre>
+<p>但此种方法过于繁琐，所以使用l返回即可。</p>
+<p><code>左闭右开</code>写法：</p>
+<pre class="highlight"><code class="java"><span class="hljs-function"><span class="hljs-keyword">private</span> <span class="hljs-keyword">int</span> <span class="hljs-title">getLeft</span><span class="hljs-params">(<span class="hljs-keyword">int</span>[] nums, <span class="hljs-keyword">int</span> target)</span> </span>&#123;
+        <span class="hljs-keyword">int</span> l = <span class="hljs-number">0</span>;
+        <span class="hljs-keyword">int</span> r = nums.length;
+        <span class="hljs-keyword">while</span> (l &lt; r) &#123;
+            <span class="hljs-keyword">int</span> mid = l + (r - l) / <span class="hljs-number">2</span>;
+            <span class="hljs-keyword">if</span> (nums[mid] &lt; target) &#123;
+                l = mid + <span class="hljs-number">1</span>;
+            &#125; <span class="hljs-keyword">else</span> &#123;
+                r = mid;
+            &#125;
+        &#125;
+        <span class="hljs-comment">// 检查出界情况</span>
+        <span class="hljs-keyword">if</span> (l &gt;= nums.length || nums[l] != target) &#123;
+            <span class="hljs-keyword">return</span> -<span class="hljs-number">1</span>;
+        &#125;
+        <span class="hljs-keyword">return</span> l;
+    &#125;
+</code></pre>
+<h3 id="查找右边界"><a class="markdownIt-Anchor" href="#查找右边界"></a> 查找右边界</h3>
+<p>相似地，我们也可以反向推得到右边界写法：</p>
+<p><code>左闭右闭</code>写法：</p>
+<pre class="highlight"><code class="java"><span class="hljs-function"><span class="hljs-keyword">private</span> <span class="hljs-keyword">int</span> <span class="hljs-title">getRight</span><span class="hljs-params">(<span class="hljs-keyword">int</span>[] nums, <span class="hljs-keyword">int</span> target)</span> </span>&#123;
+        <span class="hljs-keyword">int</span> l = <span class="hljs-number">0</span>;
+        <span class="hljs-keyword">int</span> r = nums.length - <span class="hljs-number">1</span>;
+        <span class="hljs-keyword">while</span> (l &lt;= r) &#123;
+            <span class="hljs-keyword">int</span> mid = l + (r - l) / <span class="hljs-number">2</span>;
+            <span class="hljs-keyword">if</span> (nums[mid] &lt;= target) &#123;
+                l = mid + <span class="hljs-number">1</span>;
+            &#125; <span class="hljs-keyword">else</span> &#123;
+                r = mid - <span class="hljs-number">1</span>;
+            &#125;
+        &#125;
+        <span class="hljs-keyword">if</span> (r == -<span class="hljs-number">1</span> || nums[r] != target) &#123;
+            <span class="hljs-keyword">return</span> -<span class="hljs-number">1</span>;
+        &#125;
+        <span class="hljs-keyword">return</span> r;
+    &#125;
+</code></pre>
+<p><code>左开右闭</code>写法：</p>
+<pre class="highlight"><code class="java"><span class="hljs-function"><span class="hljs-keyword">private</span> <span class="hljs-keyword">int</span> <span class="hljs-title">getRight</span><span class="hljs-params">(<span class="hljs-keyword">int</span>[] nums, <span class="hljs-keyword">int</span> target)</span> </span>&#123;
+        <span class="hljs-keyword">int</span> l = <span class="hljs-number">0</span>;
+        <span class="hljs-keyword">int</span> r = nums.length;
+        <span class="hljs-keyword">while</span> (l &lt; r) &#123;
+            <span class="hljs-keyword">int</span> mid = l + (r - l) / <span class="hljs-number">2</span>;
+            <span class="hljs-keyword">if</span> (nums[mid] &lt;= target) &#123;
+                l = mid + <span class="hljs-number">1</span>;
+            &#125; <span class="hljs-keyword">else</span> &#123;
+                r = mid;
+            &#125;
+        &#125;
+        <span class="hljs-comment">//  注意：因为这里是左闭右"开" 所以r指针指向的并不是实际的位置，r-1才是。</span>
+        <span class="hljs-keyword">if</span> (r == <span class="hljs-number">0</span> || nums[r - <span class="hljs-number">1</span>] != target) &#123;
+            <span class="hljs-keyword">return</span> -<span class="hljs-number">1</span>;
+        &#125;
+        <span class="hljs-keyword">return</span> r - <span class="hljs-number">1</span>;
+    &#125;
+</code></pre>
+<h3 id="查找插入位置"><a class="markdownIt-Anchor" href="#查找插入位置"></a> 查找插入位置</h3>
+<p>以<a target="_blank" rel="noopener" href="https://leetcode.cn/problems/search-insert-position/description/">LeetCode.35搜索插入位置</a>为例：</p>
+<p><code>搜索插入位置</code>实际上和<code>查找左边界</code>非常类似，如果能搜索到刚好等于target的mid，自然最好，搜索到的位置就是插入位置。</p>
+<p><code>左闭右闭</code>写法：</p>
+<pre class="highlight"><code class="java"><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">int</span> <span class="hljs-title">searchInsert</span><span class="hljs-params">(<span class="hljs-keyword">int</span>[] nums, <span class="hljs-keyword">int</span> target)</span> </span>&#123;
+        <span class="hljs-keyword">int</span> l = <span class="hljs-number">0</span>;
+        <span class="hljs-keyword">int</span> r = nums.length - <span class="hljs-number">1</span>;
+        <span class="hljs-keyword">while</span> (l &lt;= r) &#123;
+            <span class="hljs-keyword">int</span> mid = l + (r - l) / <span class="hljs-number">2</span>;
+            <span class="hljs-keyword">if</span> (nums[mid] &gt; target) &#123;
+                r = mid - <span class="hljs-number">1</span>;
+            &#125; <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (nums[mid] &lt; target) &#123;
+                l = mid + <span class="hljs-number">1</span>;
+            &#125; <span class="hljs-keyword">else</span> &#123;
+                <span class="hljs-keyword">return</span> mid;
+            &#125;
+        &#125;
+        <span class="hljs-keyword">return</span> l;
+    &#125;
+</code></pre>
+<p><code>左闭右开</code>写法：</p>
+<pre class="highlight"><code class="java"><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">int</span> <span class="hljs-title">searchInsert</span><span class="hljs-params">(<span class="hljs-keyword">int</span>[] nums, <span class="hljs-keyword">int</span> target)</span> </span>&#123;
+    <span class="hljs-keyword">int</span> l = <span class="hljs-number">0</span>;
+    <span class="hljs-keyword">int</span> r = nums.length;
+    <span class="hljs-keyword">while</span> (l &lt; r) &#123;
+        <span class="hljs-keyword">int</span> mid = l + (r - l) / <span class="hljs-number">2</span>;
+        <span class="hljs-keyword">if</span> (nums[mid] &gt; target) &#123;
+            r = mid;
+        &#125; <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (nums[mid] &lt; target) &#123;
+            l = mid + <span class="hljs-number">1</span>;
+        &#125; <span class="hljs-keyword">else</span> &#123;
+            <span class="hljs-keyword">return</span> mid;
+        &#125;
+    &#125;
+    <span class="hljs-keyword">return</span> l;
+&#125;
+</code></pre>
+<h2 id="中指针整型溢出问题"><a class="markdownIt-Anchor" href="#中指针整型溢出问题"></a> 中指针整型溢出问题</h2>
+<p>中指针溢出问题指的是在静态类型语言下，<code>mid = (l + r) / 2</code>可能会造成int溢出，本质上是<code>l + r</code>大小溢出。</p>
+<p>在JDK下，该bug存在了9年之久。</p>
+<p>一般有两种解决方案：</p>
+<ul>
+<li>改写为先减再加的方式：<code>mid = l + (r - l) / 2</code>。可以避免<code>l + r</code>溢出。</li>
+<li>右移替代除法，效率会高一点点：<code>mid = l + ((r - l) &gt;&gt; 1)</code></li>
+</ul>
+<p>特别的，在 JDK 中如此计算 mid：<code>mid = (l + r) &gt;&gt;&gt; 1</code>。</p>
+<p><code>&gt;&gt;&gt;</code>是无符号右移运算符，与<code>&gt;&gt;</code>的区别是不考虑符号位，总是往左侧补0。<code>l + r</code>溢出的时候<strong>最高符号位从0变成了1</strong>，而用<code>&gt;&gt;&gt;</code>又变成了0，所以可以解决溢出问题。</p>
+<p>但是用这种写法要保证<code>l + r &gt;= 0</code>，如果<code>l + r</code>为负数，高位补0就会得到错误的正数。</p>
+<p>在一般情况下，l与r代表下标，相加恒为正数，但部分题目的搜索的不是<code>下标</code>，而是<code>数值</code>。l与r可能代表的是数值，相加可能为0。</p>
+<p>例如：<a target="_blank" rel="noopener" href="https://leetcode.cn/problems/minimum-moves-to-equal-array-elements-ii/description/">LeetCode.462最小操作次数使数组元素相等II</a>。</p>
+
+    </div>
+    
+    
+    
+    
+    <div id="comment">
+        <div id="giscus-container" class="giscus"></div>
+    </div>
+    
+    
+    
+    
+</div>
+
+                    <footer id="footer">
+    <div id="footer-wrap">
+        <div>
+            &copy;
+            2023 - 2024 ErickRen
+            <span id="footer-icon">
+                <i class="fa-solid fa-font-awesome fa-fw"></i>
+            </span>
+            &commat;Erick Ren
+        </div>
+        <div>
+            Based on the <a target="_blank" rel="noopener" href="https://hexo.io">Hexo Engine</a> &amp;
+            <a target="_blank" rel="noopener" href="https://github.com/theme-particlex/hexo-theme-particlex">ParticleX Theme</a>
+        </div>
+        
+    </div>
+</footer>
+
+                </div>
+            </transition>
+            
+            <transition name="fade">
+                <div id="preview" ref="preview" v-show="previewShow">
+                    <img id="preview-content" ref="previewContent" />
+                </div>
+            </transition>
+            
+        </div>
+        <script src="/js/main.js"></script>
+        
+        
+<script
+    src="https://giscus.app/client.js"
+    data-repo="ErickRen2023/erickren2023.github.io"
+    data-repo-id="R_kgDOJuubrg"
+    data-category="Announcements"
+    data-category-id="DIC_kwDOJuubrs4CXLJO"
+    data-mapping="pathname"
+    data-strict="0"
+    data-reactions-enabled="1"
+    data-emit-metadata="0"
+    data-input-position="top"
+    data-theme="light_high_contrast"
+    data-lang="en"
+    crossorigin
+    async
+></script>
+
+
+
+
+
+        
+    </body>
+</html>
