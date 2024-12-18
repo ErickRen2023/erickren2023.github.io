@@ -1,0 +1,633 @@
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>GC算法及垃圾回收器从垃圾回收到回收垃圾 | ErickRen</title>
+        <meta name="author" content="Erick Ren" />
+        <meta name="description" content="Dream chaser never give up." />
+        <meta name="keywords" content="ErickRen" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+        <link rel="icon" href="https://q1.qlogo.cn/g?b=qq&nk=2969044006&s=5" />
+        <script src="https://cdn.staticfile.org/vue/3.2.47/vue.global.prod.min.js"></script>
+<link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/6.3.0/css/all.min.css" />
+<link rel="stylesheet" href="/css/fonts.min.css" />
+<script> const mixins = {}; </script>
+
+<script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
+
+
+<script src="https://cdn.staticfile.org/highlight.js/11.7.0/highlight.min.js"></script>
+<link
+    rel="stylesheet"
+    href="https://cdn.staticfile.org/highlight.js/11.7.0/styles/github.min.css"
+/>
+<script src="/js/lib/highlight.js"></script>
+
+
+
+<script src="/js/lib/preview.js"></script>
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/css/main.css" />
+
+    <!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.3.0"></head>
+    <body>
+        <div id="layout">
+            <transition name="fade">
+                <div id="loading" v-show="loading">
+                    <div id="loading-circle">
+                        <h2>LOADING</h2>
+                        <p>Enable the browser cache if loading is slow</p>                        </p>
+                        <img src="/images/loading.gif" />
+                    </div>
+                </div>
+            </transition>
+            <nav id="menu" :class="{ hidden: hiddenMenu, 'menu-color': menuColor}">
+    <div id="desktop-menu">
+        <a class="title" href="/">
+            <span>ERICKREN</span>
+        </a>
+        
+        <a href="/">
+            <i class="fa-solid fa-house fa-fw"></i>
+            <span>&ensp;Home</span>
+        </a>
+        
+        <a href="/about">
+            <i class="fa-solid fa-id-card fa-fw"></i>
+            <span>&ensp;About</span>
+        </a>
+        
+        <a href="/archives">
+            <i class="fa-solid fa-box-archive fa-fw"></i>
+            <span>&ensp;Archives</span>
+        </a>
+        
+        <a href="/categories">
+            <i class="fa-solid fa-bookmark fa-fw"></i>
+            <span>&ensp;Categories</span>
+        </a>
+        
+        <a href="/tags">
+            <i class="fa-solid fa-tags fa-fw"></i>
+            <span>&ensp;Tags</span>
+        </a>
+        
+    </div>
+    <div id="mobile-menu">
+        <div class="title" @click="showMenuItems = !showMenuItems">
+            <i class="fa-solid fa-bars fa-fw"></i>
+            <span>&emsp;ERICKREN</span>
+        </div>
+        <transition name="slide">
+            <div class="items" v-show="showMenuItems">
+                
+                <a href="/">
+                    <div class="item">
+                        <div style="min-width: 20px; max-width: 50px; width: 10%">
+                            <i class="fa-solid fa-house fa-fw"></i>
+                        </div>
+                        <div style="min-width: 100px; max-width: 150%; width: 20%">Home</div>
+                    </div>
+                </a>
+                
+                <a href="/about">
+                    <div class="item">
+                        <div style="min-width: 20px; max-width: 50px; width: 10%">
+                            <i class="fa-solid fa-id-card fa-fw"></i>
+                        </div>
+                        <div style="min-width: 100px; max-width: 150%; width: 20%">About</div>
+                    </div>
+                </a>
+                
+                <a href="/archives">
+                    <div class="item">
+                        <div style="min-width: 20px; max-width: 50px; width: 10%">
+                            <i class="fa-solid fa-box-archive fa-fw"></i>
+                        </div>
+                        <div style="min-width: 100px; max-width: 150%; width: 20%">Archives</div>
+                    </div>
+                </a>
+                
+                <a href="/categories">
+                    <div class="item">
+                        <div style="min-width: 20px; max-width: 50px; width: 10%">
+                            <i class="fa-solid fa-bookmark fa-fw"></i>
+                        </div>
+                        <div style="min-width: 100px; max-width: 150%; width: 20%">Categories</div>
+                    </div>
+                </a>
+                
+                <a href="/tags">
+                    <div class="item">
+                        <div style="min-width: 20px; max-width: 50px; width: 10%">
+                            <i class="fa-solid fa-tags fa-fw"></i>
+                        </div>
+                        <div style="min-width: 100px; max-width: 150%; width: 20%">Tags</div>
+                    </div>
+                </a>
+                
+            </div>
+        </transition>
+    </div>
+</nav>
+<transition name="fade">
+    <div id="menu-curtain" @click="showMenuItems = !showMenuItems" v-show="showMenuItems"></div>
+</transition>
+
+            <transition name="into">
+                <div id="main" v-show="!loading">
+                    <div class="article">
+    <div>
+        <h1>GC算法及垃圾回收器从垃圾回收到回收垃圾</h1>
+    </div>
+    <div class="info">
+        <span class="date">
+            <span class="icon">
+                <i class="fa-solid fa-calendar fa-fw"></i>
+            </span>
+            2024/12/18
+        </span>
+        
+        <span class="category">
+            <a href="/categories/tech/">
+                <span class="icon">
+                    <i class="fa-solid fa-bookmark fa-fw"></i>
+                </span>
+                tech
+            </a>
+        </span>
+        
+        
+        <span class="tags">
+            <span class="icon">
+                <i class="fa-solid fa-tags fa-fw"></i>
+            </span>
+            
+            <span class="tag">
+                
+                <a href="/tags/Java/" style="color: #00a596">Java</a>
+            </span>
+            
+            <span class="tag">
+                
+                <a href="/tags/Garbage-Collector/" style="color: #00a596">Garbage Collector</a>
+            </span>
+            
+        </span>
+        
+    </div>
+    
+    <div class="content" v-pre>
+        <blockquote>
+<p>“Java 与 C++ 之间有一堵由内存动态分配和垃圾收集技术所围成的高墙，墙外面的人想进去，墙里面的人却想出来。”  —— 《深入理解Java虚拟机》</p>
+<p>Java 中垃圾回收(GC)机制是内存管理的核心组成部分，它负责自动回收不再使用的内存空间。</p>
+<p>本文将以垃圾回收的设计指标和常见算法起笔，用理论与图解结合的形式详细讲解 Java 中的 “清道夫” —— <strong>垃圾回收器</strong>的设计思路与实现原理。</p>
+<p>在阅读本文前，请确保你已经有 JavaEE 基础，对 JVM 内存结构有一定了解。</p>
+<p>如无特殊说明，下文中的 JVM 都特指 HotSpot 虚拟机。</p>
+</blockquote>
+ <span id="more"></span>
+<blockquote>
+<p>本文约 10836 词，预计需要 28 分钟。</p>
+</blockquote>
+<h1 id="垃圾回收的性能指标"><a class="markdownIt-Anchor" href="#垃圾回收的性能指标"></a> 垃圾回收的性能指标</h1>
+<h2 id="不可能三角"><a class="markdownIt-Anchor" href="#不可能三角"></a> 不可能三角</h2>
+<p>不可能三角(Impossible Trinity) 本属经济领域，又称<code>蒙代尔三角</code>。</p>
+<p>具体指<strong>在金融政策中: 资本自由流动、固定汇率、货币政策独立 三者不可兼备</strong>。</p>
+<p>在垃圾回收算法中，不可能三角指 <strong>高吞吐量、低暂停时间、高内存使用率</strong> 三者不可兼备。</p>
+<h2 id="吞吐量"><a class="markdownIt-Anchor" href="#吞吐量"></a> 吞吐量</h2>
+<p>吞吐量(Throughput) 指<strong>运行用户代码的时间占总运行时间的比例</strong>。</p>
+<p>其中<strong>总运行时间 = 用户代码运行时间 + 垃圾回收运行时间</strong>。</p>
+<p>垃圾回收运行时间越短，吞吐量越高。</p>
+<h2 id="暂停时间"><a class="markdownIt-Anchor" href="#暂停时间"></a> 暂停时间</h2>
+<p>暂停时间(Stop The World: STW) 是指<strong>垃圾回收过程中，需要其他线程暂停，垃圾回收线程单独运行的时间。</strong></p>
+<p>暂停时间越短，即 STW 越短，对局部运行效率影响越小，但可能会降低吞吐量。</p>
+<p>例如：为了更短的 STW，通过各种设计将一个 STW 拆分为多份，多份 STW 总和可能大于原先一次 STW，但可以防止程序运行效率骤降，平滑尖刺。</p>
+<h2 id="内存使用率"><a class="markdownIt-Anchor" href="#内存使用率"></a> 内存使用率</h2>
+<p>内存使用率(Footprint) 一般指 Java 堆内存中 <strong>能有效利用的内存 占 堆总内存 的比例</strong>。</p>
+<p>不同垃圾回收器在设计中<strong>可能会将堆分为利用部分和辅助垃圾回收的部分</strong>，辅助垃圾回收的部分堆无法正常使用。在不同的垃圾回收器下，堆的利用率不有很大不同。</p>
+<h1 id="垃圾判别"><a class="markdownIt-Anchor" href="#垃圾判别"></a> 垃圾判别</h1>
+<p>在 GC 过程中，最基础的任务是如何判别一个对象是否需要回收。</p>
+<p>在没有自动垃圾回收器的语言中，一般由程序员人工判定对象是否需要回收，这一般存在两个基础问题：<code>对象过早回收导致空指针异常</code>或<code>对象没有回收导致内存泄露</code>。</p>
+<p>在人工回收中，<strong>非常依赖程序员的思维能力与经验</strong>，稍有不慎就可能在内存层面对系统稳定性带来巨大压力。</p>
+<p>在自动垃圾回收中，一般通过两种方式判断对象是否为垃圾。</p>
+<h2 id="计数引用"><a class="markdownIt-Anchor" href="#计数引用"></a> 计数引用</h2>
+<p>计数引用(Reference Counting) 的核心思想是<strong>在创建新对象时为每个对象分配一个计数器，当对象被其他对象引用，则计数器加一，解除引用则减一</strong>。</p>
+<p>在该算法下，垃圾回收中只需要扫描所有对象的计数器，若计数器为 0，则可以直接回收。</p>
+<p>技术引用设计简单，易于实现，效率很高，但计数引用存在致命的问题：<code>循环引用</code>。</p>
+<p>现假设场景：</p>
+<p><img src="1.png" alt="" /></p>
+<p>**对象 A 和对象 B 互相持有对方引用，计数器都不为 0，照技术引用原理，不应该回收。但 A 和 B 已经无外部引用，无法从外部访问，则造成了内存泄露。**无法访问的对象被永远地留在了堆中，久而久之，堆会被无法访问对象填满，引发OOM (Out Of Memory)。</p>
+<h2 id="可达性分析"><a class="markdownIt-Anchor" href="#可达性分析"></a> 可达性分析</h2>
+<p>根据 GC 理论，垃圾回收应当回收程序中废弃的内存，也就是程序不再能访问到的内存，即<strong>不可达的内存</strong>。</p>
+<p><strong>可达性分析算法通过 GC Roots 对象作为起点，从这些节点开始搜索，分析引用链，以此确定不可达对象。当一个对象不在任何引用链上时，该对象应当被回收。</strong></p>
+<h3 id="gc-roots"><a class="markdownIt-Anchor" href="#gc-roots"></a> GC Roots</h3>
+<p>GC Roots 是可达性分析的根基，是一组<strong>必须活跃的引用</strong>，在 JVM 中，可以作为 GC Roots 的对象有以下几种：</p>
+<ul>
+<li><strong>虚拟机栈中引用的对象。</strong></li>
+<li><strong>方法区中静态属性、常量引用引用的对象。</strong></li>
+<li><strong>方法区中常量引用的对象。</strong></li>
+<li><strong>本地方法栈中引用的对象。</strong></li>
+<li><strong>被同步锁(synchronized) 持有的对象。</strong></li>
+<li><strong>存在跨代引用的对象。</strong></li>
+<li>Java虚拟机内部的引用，如基本数据类型对应的封装对象，常驻的异常对象(NullPointException，OutOfMemory) 以及系统类加载器。</li>
+<li>反映Java虚拟机内部情况的JMXBean、JVMTI中注册的回调、本地代码缓存。</li>
+</ul>
+<h3 id="oopmap"><a class="markdownIt-Anchor" href="#oopmap"></a> OopMap</h3>
+<p>OopMap(Ordinary Object Pointer Map)：普通对象指针地图。</p>
+<p>在每轮垃圾回收中，为了分析每个对象的可达性，都<strong>必须遍历整个虚拟机以寻找 GC Roots 对象，一旦方法区过大，则搜索效率极低</strong>。并且在搜索中为了保证结果正确，必须暂停所有的用户线程，即 STW: Stop The World。</p>
+<p>基于上述问题，HotSpot 引入了称为 OopMap 的数据结构，OopMap 是典型的<code>以空间换时间</code>的开发思想。</p>
+<p>OopMap 在程序运行到<code>特定的位置</code>时，记录栈和寄存器里哪些位置是引用。<strong>以 OopMap 为参照，垃圾回收器可以直接获取相关信息，而不需要遍历搜索整个堆，极大地提高了获取 GC Roots 的效率</strong>。</p>
+<h3 id="安全点与安全区"><a class="markdownIt-Anchor" href="#安全点与安全区"></a> 安全点与安全区</h3>
+<p><strong>在垃圾回收中，并非线程执行到任何位置都可以进行垃圾回收。当一段代码进行大量的引用关系变化时，该区域不应该进行垃圾回收工作，只有在特定位置，令其他线程挂起后，再让垃圾回收线程工作。</strong></p>
+<p>OopMap 在对象引用关系发生改变时需要更新，如果每个指令都更新对应的 OopMap，则需要大量的存储空间，拖慢执行效率。</p>
+<p>在上文提到，OopMap 只会在<code>特定的位置</code>记录信息，这些位置称为：安全点(Safe Point)。</p>
+<p>安全点的放置有一个核心标准：<code>是否具有让程序长时间执行特征</code>。长时间执行最明显的特征是<code>指令或指令序列的复用</code>。例如：方法调用、循环跳转、异常跳转。</p>
+<p><code>安全区域</code>可以简单理解为<strong>安全点的推广</strong>，将零维的安全判定拓展到了一维。即从点拓展到一段代码序列。<strong>安全区域指一段代码中对象的引用关系不会发生变化，在这个区域中的任何位置开始 GC 都是安全的。</strong></p>
+<h3 id="安全判定"><a class="markdownIt-Anchor" href="#安全判定"></a> 安全判定</h3>
+<p>在进行垃圾回收时，垃圾回收线程需要判断其他的用户线程是否处于安全状态，一般有以下方式：</p>
+<ul>
+<li><strong>安全点的判定</strong>
+<ul>
+<li>抢占式中断：当需要进行垃圾回收时，先中断所有线程，检查这些线程是否在安全点，如果不是，则恢复线程执行到安全点再中断。该方法效率低，目前已基本不再使用。</li>
+<li>主动中断：当需要进行垃圾回收时，设置一个中断标志，所有线程在执行时不断轮询该标志位，当标志为真则主动挂起，配合垃圾回收线程工作。</li>
+</ul>
+</li>
+<li><strong>安全区域的判定</strong>
+<ul>
+<li>当线程运行到安全区域时，则通过标识表示线程进入安全区，当需要垃圾回收时，可以忽略该线程，直接进行垃圾回收。</li>
+<li>当线程离开安全区域时，会先检查是否完成垃圾回收，如果垃圾回收仍在进行，则中断，直到垃圾回收结束为止。</li>
+</ul>
+</li>
+</ul>
+<p>通过安全判定，可以将垃圾回收过程与其他程序执行过程分离，便于垃圾回收展开。</p>
+<h1 id="垃圾回收算法"><a class="markdownIt-Anchor" href="#垃圾回收算法"></a> 垃圾回收算法</h1>
+<h2 id="标记-清除算法"><a class="markdownIt-Anchor" href="#标记-清除算法"></a> 标记 - 清除算法</h2>
+<p>标记 - 清除(Mark And Sweep) 算法在回收中分为两步：<code>标记(Mark) -&gt; 清除(Sweep)</code>。</p>
+<p>在标记阶段，垃圾回收器会先标记出所有可以回收的对象。在清除阶段，将可回收的对象清除。</p>
+<p>标记 - 清除算法是非常高效的回收算法，但存在致命的问题：<strong>经过多次标记清除后，会产生大量不连续的内存碎片，且该过程不可逆</strong>，大量碎片会导致分配大对象的效率骤降。</p>
+<p><img src="2.png" alt="" /></p>
+<h2 id="复制算法"><a class="markdownIt-Anchor" href="#复制算法"></a> 复制算法</h2>
+<p>为了解决内存碎片的问题，提出了<code>复制(Copying)算法</code>。</p>
+<p>复制算法的思路是将堆分为大小相同的两块，每次仅使用其中一块。当回收垃圾时，将堆中所有存活的对象依次转移到另一块堆中，并将堆整个清除。</p>
+<p><img src="3.png" alt="" /></p>
+<p><strong>复制算法没有内存碎片问题，但堆内存利用效率不高，只有50%，浪费了大量内存空间。</strong></p>
+<h2 id="标记-整理算法"><a class="markdownIt-Anchor" href="#标记-整理算法"></a> 标记 - 整理算法</h2>
+<p>标记 - 整理(Mark And Compact) 算法是<code>标记 - 清除</code>算法的改良版，标记过程两者类似，在<code>清除</code>阶段以<code>整理</code>算法替代。</p>
+<p>整理算法的核心是令所有存活对象移向内存一侧，清理其余部分。</p>
+<p>整理算法优化了内存使用率，但移动对象是复杂的过程，需要改变对象映射的内存地址，所以一次回收效率很低。不适合频繁的垃圾回收。</p>
+<h1 id="堆分代模型"><a class="markdownIt-Anchor" href="#堆分代模型"></a> 堆分代模型</h1>
+<p>单代垃垃圾回收，<strong>争取在一次垃圾回收过程中完成对整个 Java 堆的回收，尽可能提高吞吐量</strong>。</p>
+<p><strong>当堆过大时，对堆的一次回收可能会耗费极长时间，暂停时间飙升，响应业务响应。</strong></p>
+<p>一般情况下，暂停时间越短，则意味着垃圾回收<strong>少量多次</strong>，单次垃圾回收时间更短，总体时间反而更高。这是目前<code>短暂停时间 - 高吞吐量 两难处境</code>之间必要的取舍。</p>
+<p>为了达成<strong>少量</strong>的目标，需要控制垃圾回收的规模。一般做法是将堆划分为不同区域，分别进行回收。</p>
+<p>在 JVM 一般实现中，堆被分为两个部分，通常称作：<strong>年轻代 (Young Gen)</strong> 和 <strong>老年代 (Old Gen)</strong>。</p>
+<p>在分代模型下，每个对象都有一个<code>年龄</code>，通常存储于对象<code>Mark Word</code>中。<strong>当对象经过一次垃圾回收并存活下来，则年龄 + 1，当对象的年龄达到阈值，则从年轻代转移到老年代</strong>。这个过程称为：<strong>晋升</strong>。</p>
+<p>新老年代的划分主要依据统计结果，统计表明，在 Java 程序中，一定时间段内创建的新对象大部分都会被一轮 GC 回收。而剩下的对象会撑过多轮回收。</p>
+<p>因此，<strong>新对象创建在年轻代中，将存活的老对象晋升至老年代，通过调整对两代空间的回收频率，可以有效控制垃圾回收的规模，降低暂停时间。</strong></p>
+<h2 id="年轻代"><a class="markdownIt-Anchor" href="#年轻代"></a> 年轻代</h2>
+<p>年轻代(又称：新生代)是一个笼统的概念，主要由 <strong>伊甸园区(Eden Space)</strong> 和 <strong>幸存者区(Survivor Space)</strong> 组成，针对年轻代的垃圾回收称为：<code>Minor GC</code>或<code>Young GC</code>。</p>
+<p>因年轻代需要频繁回收，追求高效，所以大部分垃圾回收器在回收年轻代时使用复制算法。</p>
+<p><strong>当一个新对象被创建时，会进入伊甸园区，如果经过一轮垃圾回收仍然存活，则会通过复制算法进入幸存者区。</strong></p>
+<p><strong>在一般的分代理论中，幸存者区分为两部分<code>S0</code>与<code>S1</code>。在每次针对年轻代的垃圾回收中，幸存者区存活的对象伴随新进入幸存者区的对象，在 S0 区域和 S1 区域互相流转。</strong></p>
+<h3 id="分配担保原则"><a class="markdownIt-Anchor" href="#分配担保原则"></a> 分配担保原则</h3>
+<p>新生代的设计非有种“刀尖舞者”的感觉，Java 虚拟机在极小的伊甸园内孕育对象，会遇到<strong>伊甸园剩余空间不足以创建对象</strong>的情况。</p>
+<p>当伊甸园区的空间不足时，会进行<code>Minor GC</code>，<strong>只针对年轻代进行一次垃圾回收</strong>，也称作<code>Young GC</code>。</p>
+<p><strong>当进行 Minor GC 后，新生代剩余空间仍不足以创建对象，则使用<code>分配担保原则</code>，将年轻代所有对象晋升至老年代。该类现象通常发生在一段时间内创建大量对象时期，例如Spring容器启动时</strong>。</p>
+<h2 id="老年代"><a class="markdownIt-Anchor" href="#老年代"></a> 老年代</h2>
+<p><strong>老年代在设计时就认定：该区域相较于年轻代，不会进行频繁的垃圾回收。</strong></p>
+<p><strong>所以老年代一般不使用复制算法，而是<code>标记-整理</code>算法</strong>。力求对老年代区域实现完全的治理。</p>
+<p>针对老年代的垃圾回收一般称为：<code>Major GC</code> 或 <code>Old GC</code>。<strong>同时，当垃圾回收器同时回收年轻代和老年代时，该回收行为称作<code>Full GC</code></strong>。</p>
+<p>值得一提的是，在代码中可以使用<code>System.gc();</code>手动触发一次 Full GC。**该代码并不能保证 Full GC 立刻执行，而是唤醒垃圾回收器，最终 Full GC 的执行时间由垃圾回收器自行决断。**在工程中，<strong>不推荐手动触发垃圾回收器</strong>，手动触发垃圾回收可能会打断 JVM 的垃圾回收节奏，为线上环境带来不可控因素。在线上环境中，可以添加 JVM 参数：<code>-XX:+DisableExplicitGC</code>以禁用手动触发 GC。</p>
+<p>经上述介绍，堆分代模型示意图如下：</p>
+<p><img src="7.png" alt="" /></p>
+<h2 id="跨代引用"><a class="markdownIt-Anchor" href="#跨代引用"></a> 跨代引用</h2>
+<p>跨代引用是堆分代模型下无法避免的问题，通常在<code>Minor GC</code>下，有老年代对年轻代的引用，或在 <code>Major GC</code>下，有新生代对老年代的引用。</p>
+<p>在分代模型下，对一代的回收不涉及另一代，如果只存在跨代引用会导致误判对象不可达，导致产生悬空指针。</p>
+<p>例如，在<code>Minor GC</code>下，<strong>某对象只存在老年代对年轻代的引用</strong>，则该对象无法通过 GC Roots 判定可达，被垃圾回收，则老年代对象会持有一个悬空指针。</p>
+<p>为了解决该问题，JVM 提出一种数据结构用于记录跨代引用关系，即：</p>
+<h3 id="记忆集"><a class="markdownIt-Anchor" href="#记忆集"></a> 记忆集</h3>
+<p>记忆集位于年轻代中，是一种用于记录<strong>从非收集区域指向收集区域的指针集合</strong>的<strong>抽象数据结构</strong>。记忆集维护了类似一种映射表的关系，避免了全量扫描非收集区域，本质是<strong>以空间换时间</strong>。</p>
+<p>之所以称之为<strong>抽象数据结构</strong>，因为记忆集本质上是一种模型，不同的垃圾回收器对记忆集有不同的实现。</p>
+<h3 id="记忆集的实现与优化"><a class="markdownIt-Anchor" href="#记忆集的实现与优化"></a> 记忆集的实现与优化</h3>
+<p>记忆集可以用非收集区域中所有含跨代引用的对象数组来实现这个数据结构，以 Java 语言表示即为：</p>
+<pre class="highlight"><code class="java"><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">RememberedSet</span> </span>&#123;
+    <span class="hljs-keyword">private</span> Object[] set[OBJECT_INTERGENERATIONAL_REFERENCE_SIZE]; 
+&#125;
+</code></pre>
+<p>这种记录所有跨代引用对象的实现方案，空间占用极高，与之相匹配的维护成本也很高。</p>
+<p>所以，需要逐步对该结构进行优化。首先想到的就是<strong>控制规模</strong>，在垃圾回收中，不需要记录如此详细的数据，将某一代划分为多个区域，只需要记录整个分代中有哪些包含跨代引用的区域即可。</p>
+<p>对于控制规模，一般有三种常用规模：</p>
+<ul>
+<li><strong>字长精度</strong>：精确记录到每一个处理器寻址长度。其粒度最小，维护成本最高。该字包含跨代指针。</li>
+<li><strong>对象精度</strong>：每个记录精确到某个对象，对象中有字段包含跨代指针。</li>
+<li><strong>卡精度</strong>：每个记录精确到一片区域，该区域存在若干对象，其中有一个或多个对象有字段包含跨代指针。</li>
+</ul>
+<h3 id="卡表"><a class="markdownIt-Anchor" href="#卡表"></a> 卡表</h3>
+<p>HotSpot 以<strong>卡精度</strong>记录跨代引用，使用一众称为<strong>卡表 (CardTable)</strong> 的方式实现记忆集。因卡表的广泛使用，在某些资料中卡表甚至直接与记忆集划为等号。</p>
+<p>在维护卡表时，只需要一个字节数组，数组中每一个元素都对应着其标识的内存区域中的一块特定大小的内存块，这片内存块通常称为<strong>卡页 (CardPage)</strong>。在 HotSpot 实现中，卡页大小一般为 2 的 N 次幂的字节数，即 512 字节。</p>
+<p>由此，可以维护一个数组向卡页的映射，当卡页中存在跨代引用的对象时，将数组对应的位置为 1，没有则保持为 0。当对某一区域进行发生垃圾回收时，扫描卡表并将跨代引用的对象加入到 GC Roots 中，即可解决跨代引用的问题。</p>
+<h3 id="卡表的维护"><a class="markdownIt-Anchor" href="#卡表的维护"></a> 卡表的维护</h3>
+<p>卡表主要使用<strong>写屏障 (Write Barrier)</strong> 技术维护卡表状态。写屏障类似于 AOP (面向切面编程)，会在引用对象赋值时产生一个<strong>环形 (Around) 通知</strong>，即提供接口使得程序可以在<strong>写操作前后插入额外的指令</strong>。在赋值前插入称为<strong>写前屏障 (Pre-Write Barrier)</strong>，在之后的称为<strong>写后屏障(Post-Write Barrier)</strong>。</p>
+<p>值得一提的是，<strong>写屏障是有性能开销的</strong>，在应用写屏障后，虚拟机会为所有赋值操作前后插入指令，每次只要对引用进行更新，都会产生维护卡表相关逻辑。</p>
+<p>通过在赋值操作后插入指令，JVM 可以对卡表进行维护，以保证卡表数据的合法性和时效性。</p>
+<h2 id="永久代"><a class="markdownIt-Anchor" href="#永久代"></a> 永久代</h2>
+<p>永久代(PermGen Space)是 JDK7 及以前的设计，用于储存 Class 和 Meta 信息，是 JVM 模型中<code>方法区</code>的实现。**在 JDK8 被元空间(Meta Space)取代。**永久代严格意义上来说并不能划入堆分代模型之中，其只能算是 HotSpot 虚拟机对堆分代模型元素的一个借用。</p>
+<p>永久代并非不会发生垃圾回收，而是垃圾回收的条件<strong>非常苛刻</strong>，需要同时满足特定条件，才可能在<code>Full GC</code>时进行回收。</p>
+<p>方法区的某个类模板被回收，必须同时满足以下条件：</p>
+<ul>
+<li>该类的所有的实例都已被回收。</li>
+<li>加载该类的类加载器已经被回收。</li>
+<li>该类对应的<code>java.lang.Class</code>对象没有在任何地方被引用，无法在任何地方通过反射访问该类。</li>
+</ul>
+<p>JDK8 及后，方法区的实现被元空间取代。元空间是独立于 JVM 的一块区域，不归垃圾回收器管辖，永久代彻底淹没于历史之中。</p>
+<h1 id="垃圾回收器"><a class="markdownIt-Anchor" href="#垃圾回收器"></a> 垃圾回收器</h1>
+<p>垃圾回收器是对垃圾回收算法的实践，垃圾回收算法经历了一个较为完善的发展过程：</p>
+<p><code>单线程 GC -&gt; 多线程 GC -&gt; 并发 GC -&gt; 通用并发 GC</code>。</p>
+<p>其中<code>Serial</code>、<code>Parallel Scanvenge</code>和<code>ParNew</code>是针对年轻代的垃圾回收器；<code>SerialOld</code>、<code>Parallel Old</code>和<code>CMS</code>是针对老年代的垃圾回收器。<code>G1</code>、<code>ZGC</code>和<code>Shenandoah GC</code>是通用垃圾回收器。</p>
+<p>因部分垃圾回收器设计为单代回收，所以实践中一般由两种垃圾回收器组合使用，其组合关系如下：</p>
+<p><img src="4.png" alt="" /></p>
+<p>在工程实践中，常用三种垃圾回收器的组合，分别是：<code>Serial + SerialOld</code>、<code>Parallel Scanvenge + Parallel Old</code>和<code>ParNew + CMS</code>。</p>
+<h2 id="serial-serialold"><a class="markdownIt-Anchor" href="#serial-serialold"></a> Serial + SerialOld</h2>
+<p>Serial 与 SerialOld 组合使用单线程进行垃圾回收，是历史最悠久的垃圾回收器。其中 Serial 负责年轻代回收，SerialOld 负责老年代回收。</p>
+<p>Serial 采用<code>复制算法</code>回收年轻代，以优化频繁回收下效率问题。SerialOld 使用<code>标记-整理</code>算法回收老年代。</p>
+<p>随着 Java 发展，堆内存逐步增长，使得 Serial / SerialOld 组合单线程执行的暂停时间无法忍受，逐渐退出历史舞台。</p>
+<h2 id="parallel-scanvenge-parallel-old"><a class="markdownIt-Anchor" href="#parallel-scanvenge-parallel-old"></a> Parallel Scanvenge + Parallel Old</h2>
+<p>Parallel Scanvenge 与 Parallel Old 组合(以下简称 PS 和 PO)相较于 Serial 与 SerialOld 组合，使用多线程进行复制过程，提高了吞吐量。</p>
+<p>PS 采用<code>复制算法</code>回收年轻代，PO 使用<code>标记-整理</code> 算法回收老年代。</p>
+<p>PS + PO 是 JDK8 默认的垃圾回收器，重点关注垃圾回收的吞吐量。<strong>为了达成吞吐量的目标，PS + PO 垃圾回收器组合会自动地调整堆内存的大小，包括新生代中各部分大小、老年代的大小，晋升阈值。</strong></p>
+<p>PS + PO 非常适合用于无交互服务端程序，如：大文件生成，数学计算。</p>
+<h2 id="parnew-cms"><a class="markdownIt-Anchor" href="#parnew-cms"></a> ParNew + CMS</h2>
+<p>ParNew 回收器全称<code>Parallel New</code>，从名字推断与 PS 和 PO 同源。ParNew 主要设计与 CMS 配合使用，否则只能使用 Serial + CMS 组合。</p>
+<h1 id="并行垃圾回收器"><a class="markdownIt-Anchor" href="#并行垃圾回收器"></a> 并行垃圾回收器</h1>
+<p>在 Java 更广泛地应用于 Web 服务端程序开发后，<code>暂停时间</code>成为影响业务的核心因素，因此，更多的垃圾回收器追求<strong>与用户线程并行执行</strong>。其中有专清理老年代的<code>CMS 垃圾回收器</code>，混合回收的<code>G1 垃圾回收器</code>。</p>
+<h2 id="cms-垃圾回收器"><a class="markdownIt-Anchor" href="#cms-垃圾回收器"></a> CMS 垃圾回收器</h2>
+<h3 id="高效并发"><a class="markdownIt-Anchor" href="#高效并发"></a> 高效并发</h3>
+<p>CMS 全称 Concurrent Mark Sweep(并发标记清除)，重点关注暂停时间。</p>
+<p><strong>CMS 是划时代的垃圾回收器，其首次实现了<code>垃圾回收线程 与 用户线程 的并行执行</code></strong>。</p>
+<p>垃圾回收阶段，CMS 会暂停所有用户线程，并开始<code>初始标记</code>，即获取 GC Roots。</p>
+<p>初始标记获取到所有 GC Roots 后，恢复所有用户线程，并继续标记所有存活的对象，该阶段称为<code>并发标记</code>。</p>
+<p>在并发标记结束后，进入<code>重新标记</code>阶段，因<code>并发标记</code>阶段与用户线程一起执行，所以需要重新整理在这期间用户线程改变的引用关系，以修正错标、漏标等情况。</p>
+<p>在标记完成后，进入清理阶段，该阶段也与用户线程共同执行。</p>
+<p>过程图如下：</p>
+<p><img src="5.png" alt="" /></p>
+<p>CMS 在回收阶段只有<code>初始标记</code>与<code>重新标记</code>阶段会暂停所有线程执行。初始标记有 OopMap 信息，所以效率很高；重新标记也只负责引用改变的标记，所以暂停时间也很短。所以 CMS 在垃圾回收期间暂停所有线程的时间很短，大部分时间都花在了<code>并发标记</code>与<code>并发清理</code>阶段，这两个阶段与用户线程并行，不会延长暂停时间。</p>
+<p><strong>「软件工业是一个妥协的过程。」即使强如 CMS 也并非完美无瑕。</strong></p>
+<h3 id="跨代引用的效率问题"><a class="markdownIt-Anchor" href="#跨代引用的效率问题"></a> 跨代引用的效率问题</h3>
+<p>前文提到，JVM 使用<code>卡表</code>解决跨代引用问题。而维护卡表实际上有两部分，<strong>年轻代对老年代的引用 和 老年代对年轻代的引用</strong>。</p>
+<p><strong>CMS 只维护了老年代对年轻代的引用。</strong></p>
+<p>这么做主要因为：年轻代对象大多<strong>朝生暮死</strong>，如果记录了新生代到老年代的引用，那么这个引用关系很快会因为新生代对象被清理而失效，即<strong>需要频繁更新卡表</strong>。</p>
+<p>因此，CMS 不得不将整个年轻代作为 GC Roots 进行扫描，效率受到极大影响。</p>
+<h3 id="内存碎片问题"><a class="markdownIt-Anchor" href="#内存碎片问题"></a> 内存碎片问题</h3>
+<p>CMS 垃圾回收器采用<code>标记-清除</code>算法，所以存在大量<strong>内存碎片</strong>问题。</p>
+<p>CMS 垃圾回收器会在<code>Full GC</code>时整理内存碎片。</p>
+<h3 id="效率退化问题"><a class="markdownIt-Anchor" href="#效率退化问题"></a> 效率退化问题</h3>
+<p>当 Minor GC 时，<code>幸存者区</code>无法存放新生代的所有存活对象，并且老年代无法通过<code>分配担保原则</code>将新生代对象直接晋升到老年代时，CMS 会抛出<code>Concurrent Mode Failure</code>，CMS 会退化为 SerialOld，单线程回收老年代，造成效率大幅度下降。</p>
+<h3 id="浮动垃圾问题"><a class="markdownIt-Anchor" href="#浮动垃圾问题"></a> 浮动垃圾问题</h3>
+<p>浮动垃圾是指在<code>并发清理</code>阶段，垃圾回收线程与用户线程并行执行，此时用户线程改变对象引用关系而产生的废弃对象。这些对象本应该回收，却只能在下一次 Major GC 或 Full GC 时回收。</p>
+<h2 id="g1-垃圾回收器"><a class="markdownIt-Anchor" href="#g1-垃圾回收器"></a> G1 垃圾回收器</h2>
+<p>G1 垃圾回收器全称：<code>Garbage-First</code>，将 PS 与 CMS 的优点相结合，取得一个折中的吞吐量和暂停时间。</p>
+<p><strong>G1 是 JVM 垃圾回收器的一个里程碑，其首次在 Java 虚拟机层面实现了一个回收器管理整个堆内存。JDK9 默认使用 G1 垃圾回收器。G1 的一大特点是可以设置一个期望的停顿时间，G1 设置的期望暂停时间动态调整堆大小，并自主控制回收规模。</strong></p>
+<h3 id="堆分代的优化"><a class="markdownIt-Anchor" href="#堆分代的优化"></a> 堆分代的优化</h3>
+<p>在 G1 提出新的堆分代的模型后，原本的模型只能屈称<code>古典堆分代模型</code>，下文以此区分两种堆分代模型。</p>
+<p>在<code>古典堆分代模型</code>中，整个堆被划分为了两个大区域，分别称作<code>年轻代</code>与<code>老年代</code>。</p>
+<p>在 G1 堆分代模型中，整个堆被划分为若干分区，每个分区在不同时间段可以有不同的身份。</p>
+<p><img src="6.png" alt="" /></p>
+<p><code>伊甸园区、幸存者区和老年代</code>与古典分代理论一致，但其划分成了物理意义上分隔的多个小区域。</p>
+<p>其中，Humongous 专门用于存放大对象，其通常横跨多个连续的内存空间，隶属于老年代。</p>
+<p>为了更详细地讲解 G1 的堆分代模型，上图将 Humongous区 单独表示。移动一个大对象的成本极高，<strong>当一个大对象被创建时，若其对象大于分区大小的一半，则会直接存入老年代，并按照需求横跨一个或多个分区，。</strong></p>
+<p><strong>每个分区中最多只能存放一个巨型对象，并且剩余的空间无法再利用，会造成局部内存碎片</strong>。</p>
+<p>对 Humongous 来说，<code>Minor GC</code>和<code>Major GC</code>都会对其进行回收，但移动巨型对象极其耗费资源，所以 Humongous区 永远不会移动，即使<code>Full GC</code>。</p>
+<p><strong>值得注意的是，G1 分区是动态划分的，不同分区在不同时间点可能是不同身份。</strong></p>
+<p><strong>一个分区可能是伊甸园区，在下一次回收后就会被划分为老年代</strong>。</p>
+<h3 id="详细回收过程"><a class="markdownIt-Anchor" href="#详细回收过程"></a> 详细回收过程</h3>
+<p><img src="9.jpg" alt="" /></p>
+<ul>
+<li>初始标记：STW，<strong>标记从 GC Roots 直接可达的对象</strong>。这个标记阶段通常与年轻代收集一起执行，因此STW时间很短。</li>
+<li>并发标记： 在整个堆中查找活动对象，<strong>与应用线程并行</strong>，此阶段可能会被新生代GC中断。</li>
+<li>重新标记：<strong>修正并发标记期间因用户程序而导致标记产生变动的标记记录</strong>，这个阶段标记规模不大，STW时间较短。</li>
+<li>筛选回收：对各个 Region 中的回收的成本与价值进行排序，根据设定的停顿时间制定计划。此阶段理论上可以并行，但回收规模不大，时间用户可控，故停顿用户线程以提高回收效率。</li>
+</ul>
+<p>值得一提，G1 垃圾回收的大部分暂停时间都分配在了筛选回收，即对象迁移阶段。</p>
+<p>同时，<code>对象迁移的并发进行</code>也是未来低暂停垃圾回收器优化的抓手。</p>
+<h2 id="三色标记算法"><a class="markdownIt-Anchor" href="#三色标记算法"></a> 三色标记算法</h2>
+<p><strong>三色标记算法是<code>CMS</code>和<code>G1</code>标记对象存活状态的一种实现，三色标记法是 CMS 和 G1 在与用户线程并行的情况下能进行垃圾标记和回收的保障。</strong></p>
+<p>三色标记法将对象在一个 GC 周期分为了三个状态：</p>
+<ul>
+<li>白色：<strong>没有被标记或应回收的对象</strong>，在标记阶段开始阶段，除 GC Roots 之外，所有对象都是白色，在清理阶段，剩余的白色对象即为需要清理的对象。</li>
+<li>灰色：<strong>该对象已经被标记为存活，但其引用的对象未完全标记，仍需遍历其引用链以标记可能的可达对象</strong>。</li>
+<li>黑色：<strong>该对象存活，并且该对象引用链已扫描完毕</strong>。</li>
+</ul>
+<p>其中，灰色与黑色的相同点是<strong>该对象确认存活</strong>，不同点是<strong>该对象的引用链是否扫描完毕</strong>。</p>
+<h3 id="执行过程"><a class="markdownIt-Anchor" href="#执行过程"></a> 执行过程</h3>
+<p>在三色标记算法运行开始，所有的对象都是<code>白色对象</code>，按照以下步骤进行：</p>
+<ul>
+<li>GC Roots 标记为黑色对象，<strong>GC Roots 直接引用的对象为灰色对象</strong>，将这些对象保存为一个集合。</li>
+<li>遍历灰色对象集合，设遍历到的对象为 E，将 E 引用的对象标记为灰色并加入到集合中，<strong>并将 E 置黑</strong>。</li>
+<li>重复上一步，直到所有可达对象为黑色，即对象集合为空。</li>
+<li>清理白色对象。</li>
+</ul>
+<p>值得注意的是，<strong>遍历灰色对象集合</strong>这个过程，实际上是一个**广度优先搜索(BFS)**过程。</p>
+<h3 id="并发问题"><a class="markdownIt-Anchor" href="#并发问题"></a> 并发问题</h3>
+<p>三色标记算法在实际使用中基本处于并行环境，所以有多线程安全问题。</p>
+<p><strong>用户线程可能会在任意时刻改变对象的引用关系</strong>，导致并发问题，主要问题有二：</p>
+<ul>
+<li>多标问题：灰色对象未被遍历到时，该对象的引用被断开。<strong>这会导致该对象被错误地认为黑色对象。</strong></li>
+<li>漏标问题：黑色对象在标记时引用一个<code>事实白色对象（即：本应为垃圾的对象）</code>。因为黑色对象已经被扫描完毕，所以<strong>这会导致该白色对象被误认为垃圾，即漏标对象</strong>。</li>
+</ul>
+<p>一般实践中，多标问题会影响回收效果；而<strong>漏标问题会影响回收的正确性</strong>。所以一般回收器不会着重解决多标问题。</p>
+<p>在漏标问题下，一般又有两种条件：</p>
+<ul>
+<li>黑色对象重新引用了该白色对象。</li>
+<li>灰色对象断开了白色对象的引用。</li>
+</ul>
+<h3 id="增量更新"><a class="markdownIt-Anchor" href="#增量更新"></a> 增量更新</h3>
+<p>增量更新是 CMS 解决漏标问题的基本思路，基于<strong>写后屏障</strong>。</p>
+<p><strong>写后屏障(Post Write-Barrier)是指 JVM 在引用字段类型后，插入额外的字节码。</strong></p>
+<p>通过写后屏障，<strong>在用户线程更新引用关系时，将黑色对象重新置为灰色，加入集合中。</strong></p>
+<p>在遍历结束后，重新遍历集合，即可发现漏标的对象。</p>
+<p>其主要是在条件一突破，重新扫描黑色对象。</p>
+<h3 id="原始快照satb"><a class="markdownIt-Anchor" href="#原始快照satb"></a> 原始快照(SATB)</h3>
+<p>SATB 并非一个数据结构，而是一个概念，在实现中，也用到了写屏障技术，<strong>SATB 使用写前屏障(Pre Write-Barrier)</strong>。</p>
+<p><strong>在开始标记时，SATB 记录所有 GC Roots 的初始状态（即&quot;快照&quot;）。</strong></p>
+<p>在并发标记过程中，发生变化的对象会被记录下来。</p>
+<p>在标记结束后，重新遍历引用发生变化的对象，并根据新的引用关系和更新标记状态。</p>
+<h1 id="低暂停垃圾回收器"><a class="markdownIt-Anchor" href="#低暂停垃圾回收器"></a> 低暂停垃圾回收器</h1>
+<p>Java 程序多用于开发服务端应用，服务端应用的一大特点为：<strong>对响应时间非常敏感</strong>。</p>
+<p>JVM 中对响应时间影响最大的部分即 STW 时间，为了尽可能地压缩 STW 并保证较高的吞吐量，提出了低暂停的垃圾回收器，如 JDK11 中添加的 <code>ZGC</code> 与 JDK12 添加的 <code>ShenandoahGC</code>。</p>
+<p>在 ZGC 与 Shenandoah 规划下，<strong>JVM 堆在任意堆空间大小下，最大暂停时间都保持在 20ms 左右</strong>。</p>
+<p>在一般情况下，在堆内存大于 100GB  后，G1 的暂停时间会变得很长，为了达到设置的暂停时间，G1 可能会悲观地不断调整回收规模与分代比例，诱发频繁的 MinorGC，造成吞吐量雪崩。</p>
+<p>而 ZGC 可以在最大 <strong>16TB</strong> 的内存大小、Shenandoah 可以在最大 <strong>256TB</strong> 的内存大小下，保持一个正常的停顿，并保证一个可用的吞吐量，<strong>并且堆大小增长对暂停时间无明显相关</strong>。</p>
+<p>ShenandoahGC 与 ZGC 的一大共同点是<strong>大量操作对象头信息</strong>。</p>
+<h2 id="对象的堆内表示"><a class="markdownIt-Anchor" href="#对象的堆内表示"></a> 对象的堆内表示</h2>
+<p>一个对象在堆中表示，一般需要两部分信息：<strong>对象头(Object Header) 和 对象数据(Object Data)</strong>。</p>
+<p>其中对象头包括 <strong>Mark Word</strong>、<strong>元数据指针</strong>，对象数据则为对象字段及<strong>内存对齐填充</strong>。</p>
+<p><img src="10.png" alt="" /></p>
+<p>其中，Mark Word 负责标记对象的回收状态与锁状态。</p>
+<p>在 64 位虚拟机、<strong>开启指针压缩</strong>的情况下，Mark Word 的分布和状态如下图所示：</p>
+<p><img src="12.png" alt="" /></p>
+<p>其中，在<code>正常状态</code>、<code>偏向锁</code>下，分代年龄用四位表示，则分代年龄最大为 15，所以 G1 的默认晋升年龄为 16。</p>
+<h2 id="tb-级内存管理numa-架构"><a class="markdownIt-Anchor" href="#tb-级内存管理numa-架构"></a> TB 级内存管理：NUMA 架构</h2>
+<p>在一般生产环境中，采用的都是<code>UMA(Uniform Memory Access Architecture,统一内存访问)</code>架构。</p>
+<p>在 UMA 架构中，一片内存中存在有多颗所属逻辑 CPU，所有 CPU 通过一个共享的内存控制器访问共同的物理内存池。在多个逻辑 CPU 的访问中，必然会出现竞争，操作系统为了避免竞争过程的安全性问题，会引入锁来解决冲突。</p>
+<p>有锁在的场景大概率会影响访问效率，当 CPU 核数越来越多，竞争将越来越激烈，性能会大大降低。</p>
+<p>因此，为了解决现代服务端硬件的多核 CPU 调度效率问题，提出<code>NUMA(Non Uniform Memory Access Architecture,非统一内存访问)</code>架构。</p>
+<p>在 NUMA 架构中，每颗 CPU 都会有一块内存，CPU 会优先访问距离自己最近的内存。</p>
+<p>此外，<strong>NUMA 允许多台服务器组成一台逻辑服务器对外提供服务</strong>，因此堆空间也可能是分布式的。</p>
+<p>ZGC 与 ShenandoahGC 可以感知 NUMA 架构，并高效管理大规模的逻辑内存。</p>
+<h2 id="shenandoahgc"><a class="markdownIt-Anchor" href="#shenandoahgc"></a> ShenandoahGC</h2>
+<p>ShenandoahGC 是由 Red Hat 开发的一款极低延迟的垃圾回收器，其延续了 G1 的回收思路，通过<code>前向指针(Forward Pointer,也叫转移指针)</code>，能确保在并发状态下正确高效地执行 GC 任务。</p>
+<p>ShenandoahGC 分为 1.0、2.0 两个主要版本，1.0 版本被集成在 JDK8 和 JDK11 中，在之后的 JDK 中都采用 2.0 版本。</p>
+<h3 id="转移指针-前向指针"><a class="markdownIt-Anchor" href="#转移指针-前向指针"></a> 转移指针 / 前向指针</h3>
+<p>在 JVM 结构中，对象分为<code>对象头</code>与<code>对象数据</code>，对象头重包含<code>标记字段(Mark Word)</code>和<code>元指针数据</code>；对象数据中包含各种字段以及<strong>内存对齐填充</strong>，大体结构如下图所示：</p>
+<p><img src="11.png" alt="" /></p>
+<p>在 1.0 版本中，Shenandoah 修改了对象头的数据，为其中添加<code>前向指针(Forward Pointer,也叫转移指针)</code>，该指针大小 8 字节。</p>
+<p><img src="13.png" alt="" /></p>
+<p>在<strong>对象转移阶段</strong>，如果该对象不需要转移，则指针<strong>指向自己</strong>；否则指向<strong>转移后的对象</strong>，其中，转以后的对象的前向指针依旧指向自己。</p>
+<p>利用<strong>读前屏障(Pre-Read Barrier)</strong>，Shenandoah 可以确保在并发条件下，用户线程将获取到正确的对象。</p>
+<p>读屏障和写屏障类似，读屏障将在获取对象的前后插入指令，在上文中，当读取对象时，Shenandoah 插入了判断指令，判断对象的前向指针是否指向自己，以此来引导 JVM 读取并且将引用牵到正确的对象。</p>
+<p><img src="14.png" alt="" /></p>
+<p>在写操作时，Shenandoah 采用<code>写前屏障</code>，会检查写入对象的 Mark Word 中的 GC 状态，如果 GC 状态为 0，则表示目前没有 GC 进行，线程可以直接进行写入操作。否则，则根据 GC 状态进行相关状态，并<strong>可能要求用户线程执行标记工作</strong>。</p>
+<p>在 2.0 版本中，Shenandoah 不再插入前向指针，而是<strong>用前向指针 覆盖 转移前对象的 Mark Word</strong>，以此来消除额外的内存开销。</p>
+<p><img src="15.png" alt="" /></p>
+<h3 id="回收流程"><a class="markdownIt-Anchor" href="#回收流程"></a> 回收流程</h3>
+<p><img src="16.png" alt="" /></p>
+<ul>
+<li>初始标记：标记所有由Gc Roots直接引用的对象为存活状态。由于此阶段涉及的对象数量相对较少，因此 STW 一般非常短。</li>
+<li>并发标记：遍历堆上的所有对象，通过跟踪对象的引用关系，标记出所有可达的存活对象。为了加速这一过程，用户线程将会协助标记工作。</li>
+<li>标记结束：主要进行一些整理性的工作。例如：处理在并发标记阶段未被标记的对象（即被认定为垃圾的对象），并为下一个阶段做准备。</li>
+<li>并发转移：将标记为存活的对象从旧的内存区域转移到新的内存区域中，减少内存碎片，并提高未来垃圾收集的效率。</li>
+<li>并发重映射阶段：遍历所有的引用，将那些原本指向旧对象的引用更新为指向新对象。</li>
+</ul>
+<h2 id="zgc"><a class="markdownIt-Anchor" href="#zgc"></a> ZGC</h2>
+<p>ZGC(Z Garbage Collector) 是 Oracle 推出的专注于延迟的垃圾回收器，ZGC 在 JDK11 以实验性的特性引入，在 JDK15 正式投入生产使用。ZGC 可以基本确保暂停时间在 10ms 以内。</p>
+<p>JDK16 对 ZGC 进行了一次里程碑式升级。</p>
+<p>此后，ZGC 的<strong>最长暂停时间为 1ms</strong>，<strong>时间复杂度为O(1)</strong>。</p>
+<p><img src="17.png" alt="" /></p>
+<h3 id="堆划分"><a class="markdownIt-Anchor" href="#堆划分"></a> 堆划分</h3>
+<p>ZGC 的堆划分与 G1 类似，每个区域称为<code>Zpage</code>，有三种 Zpage:</p>
+<ul>
+<li>Small Page：2MB，放置小于 256 KB 的小对象。</li>
+<li>Medium Page：32MB，放置大于等于 256 KB 小于 4 MB 的对象。</li>
+<li>Large Page: 只存放一个大于 4MB 的对象(X * MB)。</li>
+</ul>
+<h3 id="着色指针"><a class="markdownIt-Anchor" href="#着色指针"></a> 着色指针</h3>
+<p>在 ZGC 规划中，着色指针将原来使用 8 字节的指针分为三部分：</p>
+<p><img src="18.png" alt="" /></p>
+<ul>
+<li>前 16bits：未使用。</li>
+<li>4bits 颜色位：每一位代表对象不同状态，某一时刻中，只有一位可以为 1。</li>
+<li>44bits：有效地址，44bits 可以表示最大 16TB 内存地址，所以 ZGC 理论上最大可以支持 16TB 堆。在一般实践中，有效地址一般只使用 42 位。</li>
+</ul>
+<p><strong>基此，ZGC 不支持 32 位操作系统</strong>。</p>
+<p>其中，颜色位分为：Finalizable、Remap、M0 和 M1。</p>
+<ul>
+<li>Finalizable：终结位，只能通过终结器访问的对象。</li>
+<li>Remap：转移完成，对象的引用关系已经变更。<strong>当对象初始化后，对象的颜色指针即被标记为 Remap。</strong></li>
+<li>M0 / M1：标记可达对象。M0 与 M1 主要用于<strong>区分不同的垃圾回收批次所标记的活跃对象</strong>。</li>
+</ul>
+<h3 id="m0-与-m1"><a class="markdownIt-Anchor" href="#m0-与-m1"></a> M0 与 M1</h3>
+<p><img src="19.png" alt="" /></p>
+<p>如果只使用一个标志位，则在第二轮标记时，无法分辨某对象为上轮存活还是本轮存活。故一般使用两个不同标志位，以区分不同的垃圾回收批次。</p>
+<p><img src="20.png" alt="" /></p>
+<h3 id="转发表与读屏障"><a class="markdownIt-Anchor" href="#转发表与读屏障"></a> 转发表与读屏障</h3>
+<p>转发表主要作用于 Remapped 状态的对象，用于关联<strong>转移前的地址和转移后的地址</strong>。</p>
+<p>在读取对象前，通过读屏障，引导读取适宜的指针地址。</p>
+<p><img src="21.png" alt="" /></p>
+<p>在读取过程中，若持错误指针访问对象，该操作会被读屏障截获，并根据转发表将该对象的指针修复为正常指针，即<code>指针自愈</code>。</p>
+<h3 id="内存多级映射"><a class="markdownIt-Anchor" href="#内存多级映射"></a> 内存多级映射</h3>
+<p>上文提到，同一个对象可能有不同 GC 状态，导致指针的不同，但该指针实际上表示的是同一个对象。</p>
+<p>为了将不同状态的指针指向同一个对象，ZGC 采用<strong>内存多级映射</strong>，使用<code>mmap</code>将不同的虚拟内存地址映射到同一个物理内存地址上。</p>
+<p><img src="22.png" alt="" /></p>
+<h3 id="回收流程-2"><a class="markdownIt-Anchor" href="#回收流程-2"></a> 回收流程</h3>
+<p><img src="23.png" alt="" /></p>
+<ul>
+<li>初始标记：STW，标记 GC Roots 直接引用的活跃对象，对象数量较少，STW 时间较短。</li>
+<li>并发标记：并行执行，遍历所有对象，标记可以到达的对象为存活。并且在访问对象时，通过<code>转发表</code>修正指针，即完成上轮回收遗留的问题。</li>
+<li>标记结束：STW，主要解决上一阶段漏标问题。</li>
+<li>并发处理：并行执行，完成回收工作前准备，确定回收规模。</li>
+<li>转移选择：STW，主要转移 GC Roots 直接关联的对象。</li>
+<li>并发转移：并行执行，将剩余对象转移到新区域中，用户线程会协助完成转移和重映射工作。</li>
+</ul>
+
+    </div>
+    
+    
+    
+    
+    <div id="comment">
+        <div id="giscus-container" class="giscus"></div>
+    </div>
+    
+    
+    
+    
+</div>
+
+                    <footer id="footer">
+    <div id="footer-wrap">
+        <div>
+            &copy;
+            2023 - 2024 ErickRen
+            <span id="footer-icon">
+                <i class="fa-solid fa-font-awesome fa-fw"></i>
+            </span>
+            &commat;Erick Ren
+        </div>
+        <div>
+            Based on the <a target="_blank" rel="noopener" href="https://hexo.io">Hexo Engine</a> &amp;
+            <a target="_blank" rel="noopener" href="https://github.com/theme-particlex/hexo-theme-particlex">ParticleX Theme</a>
+        </div>
+        
+    </div>
+</footer>
+
+                </div>
+            </transition>
+            
+            <transition name="fade">
+                <div id="preview" ref="preview" v-show="previewShow">
+                    <img id="preview-content" ref="previewContent" />
+                </div>
+            </transition>
+            
+        </div>
+        <script src="/js/main.js"></script>
+        
+        
+<script
+    src="https://giscus.app/client.js"
+    data-repo="ErickRen2023/erickren2023.github.io"
+    data-repo-id="R_kgDOJuubrg"
+    data-category="Announcements"
+    data-category-id="DIC_kwDOJuubrs4CXLJO"
+    data-mapping="pathname"
+    data-strict="0"
+    data-reactions-enabled="1"
+    data-emit-metadata="0"
+    data-input-position="top"
+    data-theme="light_high_contrast"
+    data-lang="en"
+    crossorigin
+    async
+></script>
+
+
+
+
+
+        
+    </body>
+</html>
