@@ -14,7 +14,8 @@ mixins.highlight = {
             let codes = document.querySelectorAll("pre");
             for (let i of codes) {
                 let code = i.innerText;
-                let language = [...i.classList, ...i.firstChild.classList][0] || "plaintext";
+                let language = [...i.classList, ...i.firstChild?.classList ?? []]
+    .filter(cls => !['highlight', 'line'].includes(cls))[0] || "plaintext"; // fix the pre class error
                 let highlighted;
                 try {
                     if (language === "highlight") {
