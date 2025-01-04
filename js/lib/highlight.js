@@ -17,6 +17,9 @@ mixins.highlight = {
                 let language = [...i.classList, ...i.firstChild.classList][0] || "plaintext";
                 let highlighted;
                 try {
+                    if (language === "highlight") {
+                        language = "java"
+                    }
                     highlighted = hljs.highlight(code, { language }).value;
                 } catch {
                     highlighted = code;
