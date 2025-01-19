@@ -1,0 +1,438 @@
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>Spring循环依赖从看懂到看开 | ErickRen</title>
+        <meta name="author" content="Erick Ren" />
+        <meta name="description" content="" />
+        <meta name="keywords" content="ErickRen" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+        <link rel="icon" href="https://q1.qlogo.cn/g?b=qq&nk=2969044006&s=5" />
+        <script src="https://cdn.staticfile.org/vue/3.2.47/vue.global.prod.min.js"></script>
+<link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/6.3.0/css/all.min.css" />
+<link rel="stylesheet" href="/css/fonts.min.css" />
+<script> const mixins = {}; </script>
+
+<script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
+
+
+<!-- highlight support -->
+
+<script src="https://cdn.staticfile.org/highlight.js/11.7.0/highlight.min.js"></script>
+<link
+    rel="stylesheet"
+    href="https://cdn.staticfile.org/highlight.js/11.7.0/styles/github.min.css"
+/>
+<script src="/js/lib/highlight.js"></script>
+
+
+
+<!-- the math support  -->
+
+<script src="https://cdn.staticfile.org/KaTeX/0.16.4/katex.min.js"></script>
+<script src="https://cdn.staticfile.org/KaTeX/0.16.4/contrib/auto-render.min.js"></script>
+<link rel="stylesheet" href="https://cdn.staticfile.org/KaTeX/0.16.4/katex.min.css" />
+<script src="/js/lib/math.js"></script>
+
+
+<!-- preview support-->
+
+<script src="/js/lib/preview.js"></script>
+
+
+<!-- serach support -->
+
+
+<!-- comment:only for placeholder -->
+
+
+
+
+<!-- index -->
+
+
+<!-- css -->
+<link rel="stylesheet" href="/css/main.css" />
+
+    <!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.3.0"></head>
+    <body>
+        <div id="layout">
+            <transition name="fade">
+                <div id="loading" v-show="loading">
+                    <div id="loading-circle">
+                        <h2>LOADING</h2>
+                    </div>
+                </div>
+            </transition>
+            <nav id="menu" :class="{ hidden: hiddenMenu, 'menu-color': menuColor}">
+    <div id="desktop-menu">
+        <a class="title" href="/">
+            <span>ERICKREN</span>
+        </a>
+        
+        <a href="/">
+            <i class="fa-solid fa-house fa-fw"></i>
+            <span>&ensp;Home</span>
+        </a>
+        
+        <a href="/about">
+            <i class="fa-solid fa-id-card fa-fw"></i>
+            <span>&ensp;About</span>
+        </a>
+        
+        <a href="/archives">
+            <i class="fa-solid fa-box-archive fa-fw"></i>
+            <span>&ensp;Archives</span>
+        </a>
+        
+        <a href="/categories">
+            <i class="fa-solid fa-bookmark fa-fw"></i>
+            <span>&ensp;Categories</span>
+        </a>
+        
+        <a href="/tags">
+            <i class="fa-solid fa-tags fa-fw"></i>
+            <span>&ensp;Tags</span>
+        </a>
+        
+    </div>
+    <div id="mobile-menu">
+        <div class="title" @click="showMenuItems = !showMenuItems">
+            <i class="fa-solid fa-bars fa-fw"></i>
+            <span>&emsp;ERICKREN</span>
+        </div>
+        <transition name="slide">
+            <div class="items" v-show="showMenuItems">
+                
+                <a href="/">
+                    <div class="item">
+                        <div style="min-width: 20px; max-width: 50px; width: 10%">
+                            <i class="fa-solid fa-house fa-fw"></i>
+                        </div>
+                        <div style="min-width: 100px; max-width: 150%; width: 20%">Home</div>
+                    </div>
+                </a>
+                
+                <a href="/about">
+                    <div class="item">
+                        <div style="min-width: 20px; max-width: 50px; width: 10%">
+                            <i class="fa-solid fa-id-card fa-fw"></i>
+                        </div>
+                        <div style="min-width: 100px; max-width: 150%; width: 20%">About</div>
+                    </div>
+                </a>
+                
+                <a href="/archives">
+                    <div class="item">
+                        <div style="min-width: 20px; max-width: 50px; width: 10%">
+                            <i class="fa-solid fa-box-archive fa-fw"></i>
+                        </div>
+                        <div style="min-width: 100px; max-width: 150%; width: 20%">Archives</div>
+                    </div>
+                </a>
+                
+                <a href="/categories">
+                    <div class="item">
+                        <div style="min-width: 20px; max-width: 50px; width: 10%">
+                            <i class="fa-solid fa-bookmark fa-fw"></i>
+                        </div>
+                        <div style="min-width: 100px; max-width: 150%; width: 20%">Categories</div>
+                    </div>
+                </a>
+                
+                <a href="/tags">
+                    <div class="item">
+                        <div style="min-width: 20px; max-width: 50px; width: 10%">
+                            <i class="fa-solid fa-tags fa-fw"></i>
+                        </div>
+                        <div style="min-width: 100px; max-width: 150%; width: 20%">Tags</div>
+                    </div>
+                </a>
+                
+            </div>
+        </transition>
+    </div>
+</nav>
+<transition name="fade">
+    <div id="menu-curtain" @click="showMenuItems = !showMenuItems" v-show="showMenuItems"></div>
+</transition>
+
+            <transition name="into">
+                <div id="main" v-show="!loading">
+                    <div class="article">
+    <div>
+        <h1>Spring循环依赖从看懂到看开</h1>
+    </div>
+    <div class="info">
+
+        <span class="date">
+            <span class="icon">
+                <i class="fa-solid fa-calendar fa-fw"></i>
+            </span>
+            2025/01/20
+        </span>
+
+        
+        <span class="category">
+            <a href="/categories/tech/">
+                <span class="icon">
+                    <i class="fa-solid fa-bookmark fa-fw"></i>
+                </span>
+                tech
+            </a>
+        </span>
+        
+
+        
+        <span class="tags">
+            <span class="icon">
+                <i class="fa-solid fa-tags fa-fw"></i>
+            </span>
+            
+            <span class="tag">
+                
+                <a href="/tags/Java/" style="color: #00a596">Java</a>
+            </span>
+            
+            <span class="tag">
+                
+                <a href="/tags/Spring/" style="color: #00a596">Spring</a>
+            </span>
+            
+        </span>
+        
+        
+    </div>
+    <div class="content" v-pre>
+        <blockquote>
+<p>Spring 循环依赖是 Spring 设计中的典型问题，它涉及到许多核心思想，如：IOC，AOP，反射。循环依赖的解决是 Spring 设计哲学的极佳体现之一，本文将通过原理与图解结合的形式，试图讲清 Spring 对循环依赖的设计思路与解决方案。</p>
+<p>因原型(多例) Bean 不支持循环依赖，故下文讨论范围限于单例 Bean。</p>
+</blockquote>
+<span id="more"></span>
+<h1 id="循环依赖"><a class="markdownIt-Anchor" href="#循环依赖"></a> 循环依赖</h1>
+<p>在 Spring 中<code>类与类之间的依赖关系形成闭环(特指一个 Bean 引用另一个 Bean)</code>会形成循环依赖。</p>
+<p>例如，给定 A B C 三类。</p>
+<p>在 A 类中依赖 B 类，B 类中依赖 C 类，C 类中注依赖 A 类。</p>
+<p>用图示表示如下：</p>
+<p><img src="1.png" alt="" /></p>
+<p>一般生产中，更经常遇到的是两个类互相依赖的情况。</p>
+<p>例如：</p>
+<p>给定 UserService OrderService 两个 Service Bean。</p>
+<p>OrderService 需要通过 UserService 查询订单对应用户；UserService 需要通过 OrderService 查询用户所属订单。</p>
+<p>两者互相依赖，关系图如下：</p>
+<p><img src="2.png" alt="" /></p>
+<p>此时，发生循环依赖问题，解决循环依赖问题之前，首先需要了解 Spring Bean 的创建流程及生命周期。</p>
+<p>在阅读本文之前，强烈推荐你阅读<a href="https://erickren2023.github.io/2024/03/19/Bean%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E4%BB%8E%E4%BA%86%E8%A7%A3%E5%88%B0%E4%BA%86%E6%96%AD/">Bean生命周期相关文章</a>。</p>
+<h1 id="bean的创建"><a class="markdownIt-Anchor" href="#bean的创建"></a> Bean的创建</h1>
+<p>在无循环依赖情况下，Bean 创建大致遵循以下步骤：</p>
+<p><img src="3.png" alt="" /></p>
+<p>其中单例池为：<code>DefaultSingletonBeanRegistry#singletonObjects</code>。</p>
+<pre class="highlight"><code class="java"><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">DefaultSingletonBeanRegistry</span> 
+    <span class="hljs-keyword">extends</span> <span class="hljs-title">SimpleAliasRegistry</span> 
+    <span class="hljs-keyword">implements</span> <span class="hljs-title">SingletonBeanRegistry</span> </span>&#123;
+    <span class="hljs-comment">// ....</span>
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">final</span> Map&lt;String, Object&gt; singletonObjects = <span class="hljs-keyword">new</span> ConcurrentHashMap(<span class="hljs-number">256</span>);
+    <span class="hljs-comment">// ....</span>
+&#125;
+</code></pre>
+<p>其中，<code>singletonObjects</code> 存储单例、已成熟的对象。</p>
+<p>与之对应的，根据上述创建图，Bean 在<strong>创建</strong>期间大体有 5 种状态：等待创建 -&gt; 反射创建普通对象 -&gt; 属性填充/依赖注入(后的对象) -&gt; AOP完成的动态代理对象 -&gt; (存入单例池的)成熟对象。</p>
+<p>为了下文表述更加清晰，请牢记上述 Bean 五种状态顺序，至少需要牢记以下准则：</p>
+<ul>
+<li>正常情况下，AOP 在属性注入之后</li>
+<li>属性填充针对的是未进行 AOP 的原始对象(未经过动态代理的对象)，即对半成品对象进行属性填充。</li>
+</ul>
+<h1 id="二级缓存的引入"><a class="markdownIt-Anchor" href="#二级缓存的引入"></a> 二级缓存的引入</h1>
+<p>现给定例子 AService BService，其中两者互相引用。</p>
+<p>假定现创建 AService，此时在属性注入环节，未观察到 BService，则进入 BService 创建流程。</p>
+<p>在 BService 创建流程下，需要对 AService 进行注入，此时陷入循环。</p>
+<p><img src="4.png" alt="" /></p>
+<p>为了打破这种循环，我们需要将 ASerivce <strong>创建实例但未注入完成</strong>的半成品对象暂时储存起来，以供 BService 使用。</p>
+<p>由此，Spring 引入了<code>earlySingletonObjects</code>，意为<code>早期单例对象</code>，用于缓存创建完成、但属性尚未注入的对象。</p>
+<p>由此，可以得到新流程：</p>
+<p><img src="5.png" alt="" /></p>
+<p>上述流程看似完美，但忽略了 Spring 中的重要功能：AOP。</p>
+<p>经过 AOP 创建代理对象，存入单例池的实际上是由框架生成的<code>代理对象</code>。</p>
+<p>即：在理想情况来说，AService 中引入的属性应是 AOP 后的代理对象 BService_Proxy，而 B 对象中引入的属性应当是 AOP 后的代理对象 AService_Proxy，而上述解决方式明显存在缺陷。</p>
+<p>但根据上述解决方案，存入二级缓存的是未 AOP 的 AService 原对象。而在 Bean 创建流程中，<strong>AOP 位于属性注入之后进行</strong>。</p>
+<p>为了解决该问题，Spring 在检测到循环依赖后，会将 AOP 流程提前进行。</p>
+<h1 id="三级缓存的引入"><a class="markdownIt-Anchor" href="#三级缓存的引入"></a> 三级缓存的引入</h1>
+<p>为了提前 AOP 操作，需要判断是否进行循环引用，Spring 在创建 Bean 流程中会判断循环依赖：</p>
+<pre class="highlight"><code class="java"><span class="hljs-comment">// org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory#doCreateBean片段：</span>
+
+<span class="hljs-keyword">boolean</span> earlySingletonExposure = (mbd.isSingleton() &amp;&amp; <span class="hljs-keyword">this</span>.allowCircularReferences &amp;&amp;
+                                  isSingletonCurrentlyInCreation(beanName));
+<span class="hljs-keyword">if</span> (earlySingletonExposure) &#123;
+    <span class="hljs-keyword">if</span> (logger.isTraceEnabled()) &#123;
+        logger.trace(<span class="hljs-string">"Eagerly caching bean '"</span> + beanName +
+                     <span class="hljs-string">"' to allow for resolving potential circular references"</span>);
+    &#125;
+    addSingletonFactory(beanName, () -&gt; getEarlyBeanReference(beanName, mbd, bean));
+&#125;
+</code></pre>
+<p>在实践中，检测循环依赖需要判断：<code>Bean 是否单例</code>、<code>是否允许循环依赖</code>、<code>该 Bean 是否处于创建流程中</code>。</p>
+<p>isSingletonCurrentlyInCreation() 用于判断该 Bean 是否在流程中，其实现是一个元素为 String 的集合。</p>
+<p>该 Bean 存入三级缓存，即：</p>
+<p>而在判断确认后，会将该 Bean 存入三级缓存，即：</p>
+<pre class="highlight"><code class="java"><span class="hljs-keyword">private</span> <span class="hljs-keyword">final</span> Map&lt;String, ObjectFactory&lt;?&gt;&gt; singletonFactories = <span class="hljs-keyword">new</span> HashMap&lt;&gt;(<span class="hljs-number">16</span>);
+</code></pre>
+<p>准确来说，存入的不是 Bean，而是一个工厂 Bean，该工厂是一个函数式接口：</p>
+<pre class="highlight"><code class="java"><span class="hljs-meta">@FunctionalInterface</span>
+<span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">interface</span> <span class="hljs-title">ObjectFactory</span>&lt;<span class="hljs-title">T</span>&gt; </span>&#123;
+
+	<span class="hljs-comment">/**
+	 * Return an instance (possibly shared or independent)
+	 * of the object managed by this factory.
+	 * <span class="hljs-doctag">@return</span> the resulting instance
+	 * <span class="hljs-doctag">@throws</span> BeansException in case of creation errors
+	 */</span>
+	<span class="hljs-function">T <span class="hljs-title">getObject</span><span class="hljs-params">()</span> <span class="hljs-keyword">throws</span> BeansException</span>;
+
+&#125;
+</code></pre>
+<p>在 Spring 实现中，存入了一段 lambda 表达式，该 lambda 表达式最终提前进行 AOP 返回代理对象：</p>
+<pre class="highlight"><code class="java"><span class="hljs-function"><span class="hljs-keyword">protected</span> Object <span class="hljs-title">getEarlyBeanReference</span><span class="hljs-params">(String beanName, RootBeanDefinition mbd, Object bean)</span> </span>&#123;
+		Object exposedObject = bean;
+		<span class="hljs-keyword">if</span> (!mbd.isSynthetic() &amp;&amp; hasInstantiationAwareBeanPostProcessors()) &#123;
+			<span class="hljs-keyword">for</span> (SmartInstantiationAwareBeanPostProcessor bp : getBeanPostProcessorCache().smartInstantiationAware) &#123;
+				exposedObject = bp.getEarlyBeanReference(exposedObject, beanName);
+			&#125;
+		&#125;
+		<span class="hljs-keyword">return</span> exposedObject;
+	&#125;
+</code></pre>
+<p>在循环依赖时，Spring 采用的思想为<strong>提前暴露需要的 Bean</strong>，以此引申出二级缓存作为实现。</p>
+<h2 id="三级缓存并不能完全解决循环依赖"><a class="markdownIt-Anchor" href="#三级缓存并不能完全解决循环依赖"></a> 三级缓存并不能完全解决循环依赖</h2>
+<p>当循环依赖基于构造器注入对象时，Spring 无法解决该问题，直接抛出异常：</p>
+<pre class="highlight"><code class="java"><span class="hljs-meta">@Service</span>
+<span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">AService</span> </span>&#123;
+    BService bService;
+
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">AService</span><span class="hljs-params">(BService bService)</span> </span>&#123;
+        <span class="hljs-keyword">this</span>.bService = bService;
+    &#125;
+&#125;
+<span class="hljs-meta">@Service</span>
+<span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">BService</span> </span>&#123;
+    AService aService;
+
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">BService</span><span class="hljs-params">(AService aService)</span> </span>&#123;
+        <span class="hljs-keyword">this</span>.aService = aService;
+    &#125;
+&#125;
+</code></pre>
+<pre class="highlight"><code class="text">Error creating bean with name 'AService': Requested bean is currently in creation: Is there an unresolvable circular reference?
+</code></pre>
+<p>基于构造器注入时，创建对象需要<strong>执行构造方法</strong>，此时<strong>未生成半成品对象</strong>而流程于此终止。</p>
+<p>所以三级缓存无法解决基于构造器注入的循环依赖，需要依靠 @Lazy 注解解决。</p>
+<h1 id="lazy注解解决循环依赖"><a class="markdownIt-Anchor" href="#lazy注解解决循环依赖"></a> @Lazy注解解决循环依赖</h1>
+<p>在一般实践中，可以使用<code>@Lazy</code>注解解决循环依赖问题；在构造方法上加上 @Lazy 注解也可以解决基于构造器注入的循环依赖。</p>
+<p>@Lazy 是 Spring 框架的注解之一，用于延迟加载 Bean 对象。在 Spring 启动时，标注了 @Lazy 的对象会在首次使用时被实例化，反之，则在容器启动时即进行实例化。</p>
+<p>被 @Lazy 标记的属性，在依赖该属性而不需要执行(例如：依赖注入)时，会使用 CGLIB 框架生成一个代理对象，<strong>依赖注入时也注入该代理对象</strong>，不会触发原对象的加载。</p>
+<pre class="highlight"><code class="java"><span class="hljs-comment">// CommonAnnotationBeanPostProcessor.ResourceElement#getResourceToInject</span>
+<span class="hljs-function"><span class="hljs-keyword">protected</span> Object <span class="hljs-title">getResourceToInject</span><span class="hljs-params">(Object target, @Nullable String requestingBeanName)</span> </span>&#123;
+            <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.lazyLookup ? CommonAnnotationBeanPostProcessor.<span class="hljs-keyword">this</span>.buildLazyResourceProxy(<span class="hljs-keyword">this</span>, requestingBeanName) : CommonAnnotationBeanPostProcessor.<span class="hljs-keyword">this</span>.getResource(<span class="hljs-keyword">this</span>, requestingBeanName);
+        &#125;
+<span class="hljs-comment">// CommonAnnotationBeanPostProcessor#buildLazyResourceProxy</span>
+<span class="hljs-function"><span class="hljs-keyword">protected</span> Object <span class="hljs-title">buildLazyResourceProxy</span><span class="hljs-params">(<span class="hljs-keyword">final</span> LookupElement element, @Nullable <span class="hljs-keyword">final</span> String requestingBeanName)</span> </span>&#123;
+        TargetSource ts = <span class="hljs-keyword">new</span> TargetSource() &#123;
+            <span class="hljs-keyword">public</span> Class&lt;?&gt; getTargetClass() &#123;
+                <span class="hljs-keyword">return</span> element.lookupType;
+            &#125;
+
+            <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">boolean</span> <span class="hljs-title">isStatic</span><span class="hljs-params">()</span> </span>&#123;
+                <span class="hljs-keyword">return</span> <span class="hljs-keyword">false</span>;
+            &#125;
+
+            <span class="hljs-function"><span class="hljs-keyword">public</span> Object <span class="hljs-title">getTarget</span><span class="hljs-params">()</span> </span>&#123;
+                <span class="hljs-keyword">return</span> CommonAnnotationBeanPostProcessor.<span class="hljs-keyword">this</span>.getResource(element, requestingBeanName);
+            &#125;
+
+            <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">releaseTarget</span><span class="hljs-params">(Object target)</span> </span>&#123;
+            &#125;
+        &#125;;
+        ProxyFactory pf = <span class="hljs-keyword">new</span> ProxyFactory();
+        pf.setTargetSource(ts);
+        <span class="hljs-keyword">if</span> (element.lookupType.isInterface()) &#123;
+            pf.addInterface(element.lookupType);
+        &#125;
+
+        ClassLoader classLoader = <span class="hljs-keyword">this</span>.beanFactory <span class="hljs-keyword">instanceof</span> ConfigurableBeanFactory ? ((ConfigurableBeanFactory)<span class="hljs-keyword">this</span>.beanFactory).getBeanClassLoader() : <span class="hljs-keyword">null</span>;
+        <span class="hljs-keyword">return</span> pf.getProxy(classLoader);
+    &#125;
+</code></pre>
+<p>通过新建一个代理对象，将该代理的 target 属性定位到<code>this.getResource(element, requestingBeanName)</code>，可以在使用时寻找到正确的对象，确保程序的正确性。</p>
+<hr />
+<p>@Lazy 代表了 Spring 解决循环依赖的一个思路，即<strong>再经过一层代理封装，Spring 从中调和</strong>，解决循环依赖。</p>
+<p>而三级缓存则是另一个思路：<strong>通过提前暴露未成熟的 Bean，将其注入</strong>，解决循环依赖。</p>
+
+    </div>
+
+
+    <!-- post comment -->
+    
+    
+    <div id="comment">
+        <div id="giscus-container" class="giscus"></div>
+    </div>
+    
+    
+</div>
+
+                    <footer id="footer">
+    <div id="footer-wrap">
+        <div>
+            &copy;
+            2023 - 2025
+            <!-- <span id="footer-icon">
+                <i class="fa-solid fa-font-awesome fa-fw"></i>
+            </span> -->
+            &commat;Erick Ren
+        </div>
+        <div>
+            Based on the <a target="_blank" rel="noopener" href="https://hexo.io">Hexo Engine</a> &amp;
+            <a target="_blank" rel="noopener" href="https://github.com/ErickRen2023/Starry">Starry</a>
+        </div>
+        
+    </div>
+</footer>
+
+                </div>
+            </transition>
+            
+            <transition name="fade">
+                <div id="preview" ref="preview" v-show="previewShow">
+                    <img id="preview-content" ref="previewContent" />
+                </div>
+            </transition>
+            
+        </div>
+        <script src="/js/main.js"></script>
+        
+        
+<script
+    src="https://giscus.app/client.js"
+    data-repo="ErickRen2023/erickren2023.github.io"
+    data-repo-id="R_kgDOJuubrg"
+    data-category="Announcements"
+    data-category-id="DIC_kwDOJuubrs4CXLJO"
+    data-mapping="pathname"
+    data-strict="0"
+    data-reactions-enabled="1"
+    data-emit-metadata="0"
+    data-input-position="top"
+    data-theme="light_high_contrast"
+    data-lang="en"
+    crossorigin
+    async
+></script>
+
+
+        
+    </body>
+</html>
